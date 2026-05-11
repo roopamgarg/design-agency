@@ -715,6 +715,53 @@
             </div>
         </section>
 
+        <!-- SCREEN SHELL -->
+        <section>
+            <h2>Screen Shell</h2>
+            <p class="desc">The <code>.app-shell</code> class is the mandatory wrapper for every screen. Defined once in <code>tokens.css</code> — never re-declare it in screen files.</p>
+
+            <div class="subsection">
+                <div class="subsection-title">Shell Tokens</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); max-width: 500px;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">Max Width</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">420px (--content-width-base)</div>
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">Min Height (mobile)</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">100dvh</div>
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">Min Height (desktop frame)</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">844px</div>
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">Frame Radius (desktop)</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">24px (--radius-3xl)</div>
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">Frame Shadow (desktop)</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">--shadow-2xl</div>
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">Page Padding (mobile)</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">16px (--space-page-x-mobile)</div>
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">Header Z-Index</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">200 (--z-sticky)</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">Placeholder Image Services</div>
+                <div style="display: grid; gap: var(--space-3); max-width: 600px;">
+                    <div style="padding: var(--space-3) var(--space-4); background: var(--color-bg-elevated); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);">
+                        <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">Pravatar — Avatars</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">https://i.pravatar.cc/{size}?img={1–70}</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: 2px;">Sizes: 36, 48, 64, 96</div>
+                    </div>
+                    <div style="padding: var(--space-3) var(--space-4); background: var(--color-bg-elevated); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);">
+                        <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">Unsplash — Hero & Profile Images</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">https://images.unsplash.com/photo-{id}?w={w}&h={h}&fit=crop</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: 2px;">Hero: 390×500 · Profile card: 390×488 · Background: 390×844</div>
+                    </div>
+                    <div style="padding: var(--space-3) var(--space-4); background: var(--color-bg-elevated); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);">
+                        <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">Picsum — Generic Thumbnails</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">https://picsum.photos/{width}/{height}</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: 2px;">Card thumbnail: 160×160</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ACCESSIBILITY -->
         <section>
             <h2>Accessibility Rules</h2>

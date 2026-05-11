@@ -872,7 +872,7 @@
                 <div class="component-label">Profile Card (Discovery)</div>
                 <div class="component-row">
                     <div class="profile-card">
-                        <div class="profile-card-image" style="background: linear-gradient(135deg, #3a3a3a 0%, #5a4a3a 100%);"></div>
+                        <img class="profile-card-image" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=390&h=488&fit=crop" alt="Maya's profile">
                         <div class="profile-card-overlay">
                             <div class="profile-card-name">Maya, 28</div>
                             <div class="profile-card-detail">Product Manager · 3 miles away</div>
@@ -887,7 +887,7 @@
                 <div class="component-label" style="margin-top: var(--space-6);">Match Card (List View)</div>
                 <div style="max-width: 420px;">
                     <div class="match-card">
-                        <div class="avatar avatar-lg" style="background: linear-gradient(135deg, #4a3a3a, #5a4a4a);"></div>
+                        <img class="avatar avatar-lg" src="https://i.pravatar.cc/64?img=12" alt="James">
                         <div style="flex: 1; min-width: 0;">
                             <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-base);">James, 33</div>
                             <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); margin-top: 2px;">Matched 2 hours ago</div>
@@ -921,18 +921,18 @@
             <div class="component-group">
                 <div class="component-label">Sizes</div>
                 <div class="component-row">
-                    <div class="avatar avatar-xs" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
-                    <div class="avatar avatar-sm" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
-                    <div class="avatar avatar-md" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
-                    <div class="avatar avatar-lg" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
-                    <div class="avatar avatar-xl" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
+                    <img class="avatar avatar-xs" src="https://i.pravatar.cc/28?img=3" alt="Avatar XS">
+                    <img class="avatar avatar-sm" src="https://i.pravatar.cc/36?img=5" alt="Avatar SM">
+                    <img class="avatar avatar-md" src="https://i.pravatar.cc/48?img=8" alt="Avatar MD">
+                    <img class="avatar avatar-lg" src="https://i.pravatar.cc/64?img=10" alt="Avatar LG">
+                    <img class="avatar avatar-xl" src="https://i.pravatar.cc/96?img=15" alt="Avatar XL">
                 </div>
 
                 <div class="component-label">With Ring & Verified Badge</div>
                 <div class="component-row">
-                    <div class="avatar avatar-lg avatar-ring" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
+                    <img class="avatar avatar-lg avatar-ring" src="https://i.pravatar.cc/64?img=20" alt="Avatar with ring">
                     <div style="position: relative; display: inline-block;">
-                        <div class="avatar avatar-lg avatar-verified" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
+                        <img class="avatar avatar-lg avatar-verified" src="https://i.pravatar.cc/64?img=25" alt="Verified avatar">
                     </div>
                 </div>
             </div>
@@ -1165,6 +1165,160 @@
             </div>
         </section>
 
+        <!-- SCREEN SHELL -->
+        <section data-component="screen-shell">
+            <h2>Screen Shell</h2>
+            <p class="section-description">The canonical <code>.app-shell</code> wrapper. Every screen in this product MUST use this exact pattern. On mobile it fills the viewport; on desktop (768px+) it renders as a centered phone frame with shadow and rounded corners.</p>
+
+            <div class="component-group">
+                <div class="component-label">Shell Structure (Demo)</div>
+                <div style="background: var(--color-bg-secondary); padding: var(--space-6); border-radius: var(--radius-xl); display: flex; justify-content: center;">
+                    <div style="width: 320px; min-height: 520px; background: var(--color-bg-primary); border-radius: var(--radius-3xl); box-shadow: var(--shadow-2xl), 0 0 0 1px var(--color-border-subtle); overflow: hidden; display: flex; flex-direction: column;">
+                        <!-- Header -->
+                        <div style="padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border-subtle); display: flex; align-items: center; justify-content: space-between;">
+                            <span style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-md);">Discover</span>
+                            <div style="display: flex; gap: var(--space-2);">
+                                <button class="btn btn-icon" style="width: 32px; height: 32px; font-size: 14px;">⚙</button>
+                            </div>
+                        </div>
+                        <!-- Content -->
+                        <div style="flex: 1; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-4);">
+                            <div style="border-radius: var(--radius-xl); overflow: hidden; aspect-ratio: 4/5; position: relative;">
+                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=320&h=400&fit=crop" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-4); background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);">
+                                    <div style="color: white; font-family: var(--font-family-display); font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">Sophia, 26</div>
+                                    <div style="color: rgba(255,255,255,0.85); font-size: var(--font-size-sm);">Designer · 2 miles</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Footer / Tab Bar -->
+                        <div style="display: flex; align-items: center; justify-content: space-around; height: 56px; border-top: 1px solid var(--color-border-subtle); background: var(--color-bg-elevated); border-radius: 0 0 var(--radius-3xl) var(--radius-3xl);">
+                            <div class="tab-item active"><div class="tab-item-icon">◇</div><span>Discover</span></div>
+                            <div class="tab-item"><div class="tab-item-icon">♥</div><span>Matches</span></div>
+                            <div class="tab-item"><div class="tab-item-icon">💬</div><span>Messages</span></div>
+                            <div class="tab-item"><div class="tab-item-icon">○</div><span>Profile</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-label" style="margin-top: var(--space-6);">Required HTML Structure</div>
+                <pre style="background: var(--color-bg-secondary); padding: var(--space-4); border-radius: var(--radius-lg); font-family: var(--font-family-mono); font-size: var(--font-size-xs); line-height: var(--line-height-relaxed); color: var(--color-text-secondary); overflow-x: auto;"><code>&lt;div class="app-shell"&gt;
+  &lt;header class="app-shell__header"&gt;...&lt;/header&gt;
+  &lt;main class="app-shell__content"&gt;...&lt;/main&gt;
+  &lt;nav class="app-shell__footer"&gt;...&lt;/nav&gt;
+&lt;/div&gt;</code></pre>
+
+                <div class="component-label" style="margin-top: var(--space-6);">Responsive Behavior</div>
+                <div style="display: grid; gap: var(--space-3); max-width: 560px;">
+                    <div style="padding: var(--space-3) var(--space-4); background: var(--color-bg-elevated); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);">
+                        <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">Mobile (&lt;768px)</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">Full viewport width and height. No frame. 16px horizontal padding.</div>
+                    </div>
+                    <div style="padding: var(--space-3) var(--space-4); background: var(--color-bg-elevated); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);">
+                        <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">Desktop (768px+)</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">420px max-width, centered, 24px rounded corners, device shadow. 844px min-height (iPhone 14), 90vh max-height.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PLACEHOLDER IMAGE GUIDANCE -->
+        <section data-component="placeholder-images">
+            <h2>Placeholder Images</h2>
+            <p class="section-description">All image slots MUST use real or high-quality stock images. Solid-color divs as placeholders are forbidden. Use these services and standard dimensions.</p>
+
+            <div class="component-group">
+                <div class="component-label">Avatar Placeholders (Pravatar)</div>
+                <div class="component-row">
+                    <div style="text-align: center;">
+                        <img src="https://i.pravatar.cc/36?img=1" alt="Avatar 36px" class="avatar avatar-sm" style="width: 36px; height: 36px;">
+                        <div style="font-size: 10px; color: var(--color-text-tertiary); margin-top: var(--space-1);">36px</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="https://i.pravatar.cc/48?img=5" alt="Avatar 48px" class="avatar avatar-md" style="width: 48px; height: 48px;">
+                        <div style="font-size: 10px; color: var(--color-text-tertiary); margin-top: var(--space-1);">48px</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="https://i.pravatar.cc/64?img=10" alt="Avatar 64px" class="avatar avatar-lg" style="width: 64px; height: 64px;">
+                        <div style="font-size: 10px; color: var(--color-text-tertiary); margin-top: var(--space-1);">64px</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="https://i.pravatar.cc/96?img=15" alt="Avatar 96px" class="avatar avatar-xl" style="width: 96px; height: 96px;">
+                        <div style="font-size: 10px; color: var(--color-text-tertiary); margin-top: var(--space-1);">96px</div>
+                    </div>
+                </div>
+                <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); font-family: var(--font-family-mono); margin-top: var(--space-2);">https://i.pravatar.cc/{size}?img={1–70}</div>
+
+                <div class="component-label" style="margin-top: var(--space-6);">Hero Image (Unsplash) — 390×500</div>
+                <div style="max-width: 320px; border-radius: var(--radius-xl); overflow: hidden;">
+                    <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=390&h=500&fit=crop" alt="Hero image placeholder" style="width: 100%; height: auto; display: block;">
+                </div>
+                <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); font-family: var(--font-family-mono); margin-top: var(--space-2);">https://images.unsplash.com/photo-{id}?w=390&h=500&fit=crop</div>
+
+                <div class="component-label" style="margin-top: var(--space-6);">Profile Card (Unsplash) — 390×488 (4:5)</div>
+                <div style="max-width: 320px; border-radius: var(--profile-card-radius); overflow: hidden; position: relative;">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=390&h=488&fit=crop" alt="Profile card placeholder" style="width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block;">
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-6) var(--space-5); background: var(--profile-card-overlay); color: white;">
+                        <div style="font-family: var(--font-family-display); font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">Marcus, 31</div>
+                        <div style="font-size: var(--font-size-sm); opacity: 0.9;">Architect · 5 miles away</div>
+                    </div>
+                </div>
+
+                <div class="component-label" style="margin-top: var(--space-6);">Standard Dimensions Reference</div>
+                <table style="width: 100%; max-width: 560px; font-size: var(--font-size-sm); border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--color-border-default); text-align: left;">
+                            <th style="padding: var(--space-2) var(--space-3); font-weight: var(--font-weight-semibold);">Slot</th>
+                            <th style="padding: var(--space-2) var(--space-3); font-weight: var(--font-weight-semibold);">Dimensions</th>
+                            <th style="padding: var(--space-2) var(--space-3); font-weight: var(--font-weight-semibold);">Service</th>
+                        </tr>
+                    </thead>
+                    <tbody style="color: var(--color-text-secondary);">
+                        <tr style="border-bottom: 1px solid var(--color-border-subtle);">
+                            <td style="padding: var(--space-2) var(--space-3);">Avatar (sm)</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">36×36</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">Pravatar</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--color-border-subtle);">
+                            <td style="padding: var(--space-2) var(--space-3);">Avatar (md)</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">48×48</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">Pravatar</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--color-border-subtle);">
+                            <td style="padding: var(--space-2) var(--space-3);">Avatar (lg)</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">64×64</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">Pravatar</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--color-border-subtle);">
+                            <td style="padding: var(--space-2) var(--space-3);">Avatar (xl)</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">96×96</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">Pravatar</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--color-border-subtle);">
+                            <td style="padding: var(--space-2) var(--space-3);">Hero image</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">390×500</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">Unsplash</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--color-border-subtle);">
+                            <td style="padding: var(--space-2) var(--space-3);">Profile card</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">390×488</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">Unsplash</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--color-border-subtle);">
+                            <td style="padding: var(--space-2) var(--space-3);">Card thumbnail</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">160×160</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">Picsum / Unsplash</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: var(--space-2) var(--space-3);">Background</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">390×844 / 1440×900</td>
+                            <td style="padding: var(--space-2) var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs);">Unsplash</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <!-- DARK MODE PREVIEW -->
         <section data-component="dark-mode">
             <h2>Dark Mode</h2>
@@ -1178,7 +1332,7 @@
                 </div>
                 <div style="background: var(--color-dark-bg-secondary); border-radius: var(--radius-lg); padding: var(--space-4); border: 1px solid var(--color-dark-border-default);">
                     <div style="display: flex; align-items: center; gap: var(--space-3);">
-                        <div class="avatar avatar-md" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
+                        <img class="avatar avatar-md" src="https://i.pravatar.cc/48?img=32" alt="Priya">
                         <div>
                             <div style="font-weight: var(--font-weight-semibold); color: var(--color-dark-text-primary);">Priya, 24</div>
                             <div style="font-size: var(--font-size-sm); color: var(--color-dark-text-tertiary);">Matched yesterday</div>

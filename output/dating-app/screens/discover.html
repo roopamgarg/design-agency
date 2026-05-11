@@ -18,7 +18,7 @@
     html {
       font-family: var(--font-family-sans);
       background: var(--color-bg-primary);
-      color: var(--color-secondary);
+      color: var(--color-text-primary);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -32,12 +32,37 @@
 
     .app-shell {
       width: 100%;
-      max-width: 390px;
+      max-width: var(--content-width-base);
       min-height: 100dvh;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
-      position: relative;
       background: var(--color-bg-primary);
+      position: relative;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        background: var(--color-bg-secondary);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: var(--space-8) 0;
+      }
+      .app-shell {
+        min-height: var(--shell-min-height);
+        max-height: 90vh;
+        border-radius: var(--radius-3xl);
+        box-shadow: var(--shadow-2xl);
+        overflow: hidden;
+        border: var(--border-width-thin) solid var(--color-border-subtle);
+      }
+    }
+
+    @media (min-width: 1440px) {
+      body {
+        background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
+      }
     }
 
     /* Header */
@@ -52,10 +77,10 @@
 
     .header-title {
       font-family: var(--font-family-display);
-      font-size: 24px;
-      font-weight: 600;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
       color: var(--color-secondary);
-      letter-spacing: -0.01em;
+      letter-spacing: var(--letter-spacing-tight);
     }
 
     .header-actions {
@@ -75,21 +100,21 @@
       justify-content: center;
       cursor: pointer;
       color: var(--color-secondary);
-      transition: background 0.2s ease;
+      transition: background var(--transition-fast);
     }
 
     .icon-btn:hover {
-      background: rgba(44, 62, 80, 0.06);
+      background: var(--color-primary-subtle);
     }
 
     .icon-btn:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--outline-offset);
     }
 
     .icon-btn svg {
-      width: 22px;
-      height: 22px;
+      width: var(--space-5);
+      height: var(--space-5);
     }
 
     /* Progress pill */
@@ -97,21 +122,21 @@
       display: inline-flex;
       align-items: center;
       gap: var(--space-2);
-      padding: 6px 14px;
+      padding: var(--space-1) var(--space-3);
       margin: 0 var(--space-5) var(--space-3);
       background: var(--color-bg-elevated);
       border-radius: var(--radius-full);
-      font-size: 13px;
-      font-weight: 500;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
       color: var(--color-secondary);
       box-shadow: var(--shadow-sm);
       width: fit-content;
     }
 
     .progress-pill .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
+      width: var(--space-1);
+      height: var(--space-1);
+      border-radius: var(--radius-full);
       background: var(--color-primary);
     }
 
@@ -137,7 +162,7 @@
     .profile-photo {
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, #D4A574 0%, #C9A96E 25%, #B8860B 50%, #8B6914 75%, #6B4F12 100%);
+      background-image: url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=390&h=600&fit=crop');
       background-size: cover;
       background-position: center;
     }
@@ -155,20 +180,21 @@
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 5px;
-      z-index: 2;
+      gap: var(--space-1);
+      z-index: var(--z-above);
     }
 
     .photo-dots .dot {
-      width: 28px;
-      height: 3px;
-      border-radius: 2px;
-      background: rgba(255, 255, 255, 0.4);
-      transition: background 0.3s ease;
+      width: var(--space-6);
+      height: var(--space-1);
+      border-radius: var(--radius-sm);
+      background: var(--color-overlay-white-40);
+      transition: background var(--transition-normal);
+      cursor: pointer;
     }
 
     .photo-dots .dot.active {
-      background: rgba(255, 255, 255, 0.95);
+      background: var(--color-overlay-white-95);
     }
 
     /* Card info overlay */
@@ -179,7 +205,7 @@
       right: 0;
       padding: var(--space-5);
       padding-bottom: var(--space-4);
-      z-index: 2;
+      z-index: var(--z-above);
       display: flex;
       flex-direction: column;
       gap: var(--space-3);
@@ -193,10 +219,10 @@
 
     .card-name {
       font-family: var(--font-family-display);
-      font-size: 28px;
-      font-weight: 600;
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-semibold);
       color: var(--color-text-inverse);
-      letter-spacing: -0.01em;
+      letter-spacing: var(--letter-spacing-tight);
     }
 
     .card-meta {
@@ -207,27 +233,27 @@
     }
 
     .card-distance {
-      font-size: 14px;
-      color: rgba(255,255,255,0.85);
-      font-weight: 400;
+      font-size: var(--font-size-sm);
+      color: var(--color-overlay-white-85);
+      font-weight: var(--font-weight-regular);
     }
 
     .verified-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      background: rgba(74, 124, 89, 0.25);
-      border: 1px solid rgba(74, 124, 89, 0.4);
+      gap: var(--space-1);
+      padding: var(--space-1) var(--space-2);
+      background: var(--color-success-subtle);
+      border: var(--border-width-thin) solid var(--color-verified-border);
       border-radius: var(--radius-full);
-      font-size: 12px;
-      font-weight: 500;
-      color: #A8D5BA;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-success-light);
     }
 
     .verified-badge svg {
-      width: 13px;
-      height: 13px;
+      width: var(--space-3);
+      height: var(--space-3);
       color: var(--color-verified);
       fill: var(--color-verified);
     }
@@ -241,26 +267,26 @@
 
     .prompt-card {
       flex: 1;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: var(--color-overlay-white-95);
+      backdrop-filter: blur(var(--blur-lg));
+      -webkit-backdrop-filter: blur(var(--blur-lg));
       border-radius: var(--radius-lg);
       padding: var(--space-3) var(--space-4);
       box-shadow: var(--shadow-md);
     }
 
     .prompt-question {
-      font-size: 11px;
-      font-weight: 600;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: var(--letter-spacing-wider);
       color: var(--color-primary);
-      margin-bottom: 4px;
+      margin-bottom: var(--space-1);
     }
 
     .prompt-answer {
-      font-size: 13px;
-      line-height: 1.45;
+      font-size: var(--font-size-xs);
+      line-height: var(--line-height-snug);
       color: var(--color-secondary);
       display: -webkit-box;
       -webkit-line-clamp: 3;
@@ -270,34 +296,34 @@
 
     .prompt-like-btn {
       flex-shrink: 0;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      border-radius: var(--radius-full);
       border: 2px solid var(--color-like);
-      background: rgba(255,255,255,0.9);
-      backdrop-filter: blur(8px);
+      background: var(--color-overlay-white-90);
+      backdrop-filter: blur(var(--blur-md));
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all var(--transition-normal);
       color: var(--color-like);
     }
 
     .prompt-like-btn:hover {
       background: var(--color-like);
-      color: #FFF;
+      color: var(--color-primary-contrast);
       transform: scale(1.08);
     }
 
     .prompt-like-btn:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--outline-offset);
     }
 
     .prompt-like-btn svg {
-      width: 20px;
-      height: 20px;
+      width: var(--space-5);
+      height: var(--space-5);
     }
 
     /* Action bar */
@@ -314,26 +340,26 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: var(--space-1);
     }
 
     .action-btn {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      border: 2px solid;
+      width: var(--space-14);
+      height: var(--space-14);
+      border-radius: var(--radius-full);
+      border: var(--border-width-medium) solid;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: all var(--transition-spring);
       background: var(--color-bg-elevated);
       box-shadow: var(--shadow-md);
     }
 
     .action-btn svg {
-      width: 24px;
-      height: 24px;
+      width: var(--space-6);
+      height: var(--space-6);
     }
 
     .action-btn--pass {
@@ -343,7 +369,7 @@
 
     .action-btn--pass:hover {
       background: var(--color-pass);
-      color: #FFFFFF;
+      color: var(--color-primary-contrast);
       transform: scale(1.1);
       box-shadow: var(--shadow-lg);
     }
@@ -355,14 +381,14 @@
 
     .action-btn--like:hover {
       background: var(--color-like);
-      color: #FFFFFF;
+      color: var(--color-primary-contrast);
       transform: scale(1.1);
       box-shadow: var(--shadow-glow-match);
     }
 
     .action-btn:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 3px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--space-1);
     }
 
     .action-btn:active {
@@ -370,8 +396,8 @@
     }
 
     .action-label {
-      font-size: 11px;
-      font-weight: 500;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
       color: var(--color-pass);
     }
 
@@ -384,9 +410,9 @@
       display: flex;
       align-items: center;
       justify-content: space-around;
-      height: var(--tab-bar-height);
+      height: var(--space-14);
       background: var(--color-bg-elevated);
-      border-top: 1px solid rgba(44, 62, 80, 0.08);
+      border-top: var(--border-width-thin) solid var(--color-border-subtle);
       flex-shrink: 0;
       padding-bottom: env(safe-area-inset-bottom, 0);
       position: sticky;
@@ -400,18 +426,18 @@
       justify-content: center;
       min-width: var(--touch-target-min);
       min-height: var(--touch-target-min);
-      gap: 2px;
+      gap: var(--space-0-5);
       cursor: pointer;
       background: none;
       border: none;
       position: relative;
-      color: var(--color-pass);
-      transition: color 0.2s ease;
+      color: var(--color-text-tertiary);
+      transition: color var(--transition-fast);
       text-decoration: none;
     }
 
     .tab-item:focus-visible {
-      outline: 2px solid var(--color-primary);
+      outline: var(--outline-width) solid var(--color-primary);
       outline-offset: -2px;
       border-radius: var(--radius-sm);
     }
@@ -421,47 +447,25 @@
     }
 
     .tab-item svg {
-      width: 22px;
-      height: 22px;
+      width: var(--space-5);
+      height: var(--space-5);
     }
 
     .tab-label {
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.02em;
+      font-size: var(--badge-font-size);
+      font-weight: var(--font-weight-medium);
+      letter-spacing: var(--letter-spacing-wide);
     }
 
     .tab-notification-dot {
       position: absolute;
-      top: 4px;
-      right: 8px;
-      width: 8px;
-      height: 8px;
+      top: var(--space-1);
+      right: var(--space-2);
+      width: var(--space-2);
+      height: var(--space-2);
       background: var(--color-primary);
-      border-radius: 50%;
-      border: 1.5px solid var(--color-bg-elevated);
-    }
-
-    /* Responsive */
-    @media (min-width: 768px) {
-      .app-shell {
-        max-width: 420px;
-        margin: 0 auto;
-        border-left: 1px solid rgba(44,62,80,0.06);
-        border-right: 1px solid rgba(44,62,80,0.06);
-      }
-    }
-
-    @media (min-width: 1440px) {
-      body {
-        background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%);
-      }
-      .app-shell {
-        box-shadow: 0 0 60px rgba(0,0,0,0.06);
-        border-radius: 24px 24px 0 0;
-        margin-top: var(--space-8);
-        min-height: calc(100dvh - var(--space-8));
-      }
+      border-radius: var(--radius-full);
+      border: var(--border-width-default) solid var(--color-bg-elevated);
     }
 
     /* Animations */
@@ -478,14 +482,15 @@
       position: absolute;
       left: -9999px;
       top: var(--space-2);
-      z-index: 100;
+      z-index: var(--z-dropdown);
       background: var(--color-primary);
-      color: #fff;
+      color: var(--color-primary-contrast);
       padding: var(--space-2) var(--space-4);
       border-radius: var(--radius-md);
       font-size: var(--font-size-sm);
       text-decoration: none;
     }
+
     .skip-link:focus {
       left: var(--space-4);
     }
@@ -494,7 +499,6 @@
       .action-btn--like:focus {
         animation: none;
       }
-      .carousel-slides,
       .action-btn,
       .prompt-like-btn,
       .tab-item,
@@ -507,6 +511,7 @@
 <body>
   <div class="app-shell" data-screen="discover">
     <a href="#main-card" class="skip-link">Skip to main content</a>
+
     <!-- Header -->
     <header class="header" role="banner">
       <h1 class="header-title">Today's Picks</h1>
@@ -599,14 +604,14 @@
         </svg>
         <span class="tab-label">Discover</span>
       </a>
-      <a href="#" class="tab-item" aria-label="Matches, 1 new">
+      <a href="matches.html" class="tab-item" aria-label="Matches, 1 new">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
         </svg>
         <span class="tab-label">Matches</span>
         <span class="tab-notification-dot" aria-hidden="true"></span>
       </a>
-      <a href="#" class="tab-item" aria-label="Messages">
+      <a href="messages.html" class="tab-item" aria-label="Messages">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
@@ -623,8 +628,8 @@
 
   <script>
     (function() {
-      const dots = document.querySelectorAll('.photo-dots .dot');
-      let currentPhoto = 0;
+      var dots = document.querySelectorAll('.photo-dots .dot');
+      var currentPhoto = 0;
 
       dots.forEach(function(dot, index) {
         dot.addEventListener('click', function() {

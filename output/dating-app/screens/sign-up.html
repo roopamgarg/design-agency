@@ -16,7 +16,6 @@
     }
 
     html {
-      font-size: 16px;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -24,32 +23,42 @@
     body {
       font-family: var(--font-family-sans);
       color: var(--color-text-primary);
-      background-color: var(--color-bg-secondary);
+      background-color: var(--color-bg-primary);
       min-height: 100dvh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
-    .phone-frame {
+    .app-shell {
       width: 100%;
-      max-width: 390px;
+      max-width: var(--content-width-base);
       min-height: 100dvh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-bg-primary);
       position: relative;
     }
 
     @media (min-width: 768px) {
       body {
+        background: var(--color-bg-secondary);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
         padding: var(--space-8) 0;
       }
-
-      .phone-frame {
-        min-height: 844px;
-        max-height: 844px;
+      .app-shell {
+        min-height: var(--shell-min-height);
+        max-height: 90vh;
         border-radius: var(--radius-3xl);
         box-shadow: var(--shadow-2xl);
-        border: 1px solid var(--color-border-subtle);
         overflow: hidden;
+        border: var(--border-width-thin) solid var(--color-border-subtle);
+      }
+    }
+
+    @media (min-width: 1440px) {
+      body {
+        background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
       }
     }
 
@@ -57,18 +66,16 @@
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
-      background: var(--color-bg-primary);
       overflow-y: auto;
     }
 
     @media (min-width: 768px) {
       .screen {
-        min-height: 844px;
-        max-height: 844px;
+        min-height: var(--shell-min-height);
+        max-height: 90vh;
       }
     }
 
-    /* ---------- Header ---------- */
     .header {
       display: flex;
       align-items: center;
@@ -96,13 +103,13 @@
     }
 
     .btn-back:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--outline-offset);
     }
 
     .btn-back svg {
-      width: 20px;
-      height: 20px;
+      width: var(--space-5);
+      height: var(--space-5);
     }
 
     .step-dots {
@@ -114,15 +121,15 @@
     }
 
     .step-dot {
-      width: 6px;
-      height: 6px;
+      width: var(--space-2, 6px);
+      height: var(--space-2, 6px);
       border-radius: var(--radius-full);
       background: var(--color-border-strong);
       transition: all var(--transition-normal);
     }
 
     .step-dot.active {
-      width: 18px;
+      width: var(--space-5);
       background: var(--color-primary);
     }
 
@@ -130,7 +137,6 @@
       background: var(--color-primary);
     }
 
-    /* ---------- Content ---------- */
     .content {
       flex: 1;
       display: flex;
@@ -156,7 +162,6 @@
       margin-bottom: var(--space-8);
     }
 
-    /* ---------- Tabs ---------- */
     .tab-group {
       display: flex;
       background: var(--color-bg-secondary);
@@ -167,7 +172,7 @@
 
     .tab-btn {
       flex: 1;
-      height: 40px;
+      height: var(--btn-height-sm);
       min-height: var(--touch-target-min);
       display: flex;
       align-items: center;
@@ -191,11 +196,10 @@
     }
 
     .tab-btn:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--outline-offset);
     }
 
-    /* ---------- Input fields ---------- */
     .input-group {
       margin-bottom: var(--space-5);
     }
@@ -214,10 +218,10 @@
     }
 
     .country-select {
-      width: 88px;
+      width: var(--space-24, 88px);
       flex-shrink: 0;
       height: var(--input-height);
-      border: 1px solid var(--input-border);
+      border: var(--border-width-thin) solid var(--input-border);
       border-radius: var(--input-radius);
       background: var(--input-bg);
       padding: 0 var(--space-3);
@@ -228,7 +232,7 @@
       appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237A7A7A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 10px center;
+      background-position: right var(--space-3) center;
       transition: border-color var(--transition-fast);
     }
 
@@ -241,7 +245,7 @@
     .text-input {
       flex: 1;
       height: var(--input-height);
-      border: 1px solid var(--input-border);
+      border: var(--border-width-thin) solid var(--input-border);
       border-radius: var(--input-radius);
       background: var(--input-bg);
       padding: 0 var(--input-padding-x);
@@ -269,7 +273,6 @@
       display: block;
     }
 
-    /* ---------- Primary button ---------- */
     .btn-primary {
       display: flex;
       align-items: center;
@@ -308,11 +311,10 @@
     }
 
     .btn-primary:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 3px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--space-1);
     }
 
-    /* ---------- Divider ---------- */
     .or-divider {
       display: flex;
       align-items: center;
@@ -334,7 +336,6 @@
       white-space: nowrap;
     }
 
-    /* ---------- Social buttons ---------- */
     .social-buttons {
       display: flex;
       flex-direction: column;
@@ -349,7 +350,7 @@
       width: 100%;
       height: var(--btn-height-lg);
       min-height: var(--touch-target-min);
-      border: 1px solid var(--color-border-default);
+      border: var(--border-width-thin) solid var(--color-border-default);
       border-radius: var(--btn-radius);
       background: var(--color-bg-elevated);
       color: var(--color-text-primary);
@@ -366,17 +367,16 @@
     }
 
     .btn-social:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 3px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--space-1);
     }
 
     .btn-social svg {
-      width: 20px;
-      height: 20px;
+      width: var(--space-5);
+      height: var(--space-5);
       flex-shrink: 0;
     }
 
-    /* ---------- Terms ---------- */
     .terms {
       margin-top: auto;
       padding-top: var(--space-6);
@@ -397,14 +397,11 @@
     }
 
     .terms a:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--outline-offset);
       border-radius: var(--radius-sm);
     }
 
-    /* =============================================
-       OTP Verification Section
-       ============================================= */
     .otp-section {
       display: none;
       flex-direction: column;
@@ -448,9 +445,9 @@
     }
 
     .otp-digit {
-      width: 48px;
-      height: 56px;
-      border: 1.5px solid var(--color-border-default);
+      width: var(--space-12);
+      height: var(--space-14);
+      border: var(--border-width-default) solid var(--color-border-default);
       border-radius: var(--input-radius);
       background: var(--input-bg);
       text-align: center;
@@ -498,8 +495,8 @@
     }
 
     .resend-link:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--outline-offset);
     }
 
     .btn-verify {
@@ -539,11 +536,10 @@
     }
 
     .btn-verify:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 3px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--space-1);
     }
 
-    /* ---------- Error states ---------- */
     .input-group.has-error .text-input,
     .input-group.has-error .country-select {
       border-color: var(--color-error);
@@ -562,38 +558,41 @@
       display: block;
     }
 
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     .skip-link {
       position: absolute;
       left: -9999px;
       top: var(--space-2);
-      z-index: 100;
+      z-index: var(--z-dropdown);
       background: var(--color-primary);
-      color: #fff;
+      color: var(--color-primary-contrast);
       padding: var(--space-2) var(--space-4);
       border-radius: var(--radius-md);
       font-size: var(--font-size-sm);
       text-decoration: none;
     }
+
     .skip-link:focus {
       left: var(--space-4);
-    }
-
-    @media (min-width: 1440px) {
-      body {
-        background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%);
-      }
-      .phone-frame {
-        box-shadow: 0 0 60px rgba(0,0,0,0.06);
-      }
     }
   </style>
 </head>
 <body>
-  <div class="phone-frame">
+  <div class="app-shell" data-screen="sign-up">
     <a href="#signupSection" class="skip-link">Skip to sign-up form</a>
-    <div class="screen" data-screen="sign-up">
+    <div class="screen">
 
-      <!-- Header -->
       <header class="header">
         <button class="btn-back" aria-label="Go back" id="btnBack">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -613,18 +612,15 @@
         </nav>
       </header>
 
-      <!-- Sign-up form -->
       <main class="content signup-section" id="signupSection">
         <h1 class="page-title">Create Your Account</h1>
         <p class="page-subtitle">We'll send you a verification code</p>
 
-        <!-- Phone / Email toggle -->
         <div class="tab-group" role="tablist" aria-label="Contact method">
           <button class="tab-btn" role="tab" id="tabPhone" aria-selected="true" aria-controls="panelPhone">Phone</button>
           <button class="tab-btn" role="tab" id="tabEmail" aria-selected="false" aria-controls="panelEmail">Email</button>
         </div>
 
-        <!-- Phone panel -->
         <div class="tab-panel active" role="tabpanel" id="panelPhone" aria-labelledby="tabPhone">
           <div class="input-group has-error">
             <label class="input-label" for="phoneNumber">Phone number</label>
@@ -654,7 +650,6 @@
           </div>
         </div>
 
-        <!-- Email panel -->
         <div class="tab-panel" role="tabpanel" id="panelEmail" aria-labelledby="tabEmail">
           <div class="input-group">
             <label class="input-label" for="emailAddress">Email address</label>
@@ -673,12 +668,10 @@
 
         <button class="btn-primary" id="btnContinue" disabled aria-label="Continue to verification">Continue</button>
 
-        <!-- Divider -->
         <div class="or-divider" role="separator">
           <span>or continue with</span>
         </div>
 
-        <!-- Social -->
         <div class="social-buttons">
           <button class="btn-social" aria-label="Continue with Apple">
             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -697,7 +690,6 @@
           </button>
         </div>
 
-        <!-- Terms -->
         <p class="terms">
           By continuing, you agree to our
           <a href="#">Terms of Service</a> and
@@ -705,7 +697,6 @@
         </p>
       </main>
 
-      <!-- OTP Verification -->
       <section class="content otp-section" id="otpSection" aria-label="Verification code entry">
         <h1 class="otp-title">Enter Verification Code</h1>
         <p class="otp-subtitle">
@@ -734,24 +725,8 @@
     </div>
   </div>
 
-  <!-- Visually-hidden utility -->
-  <style>
-    .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-  </style>
-
   <script>
     (function () {
-      /* ---------- Tab switching ---------- */
       var tabPhone = document.getElementById('tabPhone');
       var tabEmail = document.getElementById('tabEmail');
       var panelPhone = document.getElementById('panelPhone');
@@ -773,7 +748,6 @@
       tabPhone.addEventListener('click', function () { switchTab('phone'); });
       tabEmail.addEventListener('click', function () { switchTab('email'); });
 
-      /* Keyboard nav for tabs */
       [tabPhone, tabEmail].forEach(function (tab) {
         tab.addEventListener('keydown', function (e) {
           if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
@@ -783,7 +757,6 @@
         });
       });
 
-      /* ---------- Validation ---------- */
       function validateInput() {
         var isPhone = tabPhone.getAttribute('aria-selected') === 'true';
         var valid = false;
@@ -810,7 +783,6 @@
 
       emailInput.addEventListener('input', validateInput);
 
-      /* ---------- Continue → OTP ---------- */
       var signupSection = document.getElementById('signupSection');
       var otpSection = document.getElementById('otpSection');
       var otpDestination = document.getElementById('otpDestination');
@@ -828,7 +800,6 @@
         startResendTimer();
       });
 
-      /* ---------- Back button ---------- */
       document.getElementById('btnBack').addEventListener('click', function () {
         if (otpSection.classList.contains('active')) {
           otpSection.classList.remove('active');
@@ -838,7 +809,6 @@
         }
       });
 
-      /* ---------- OTP input handling ---------- */
       var otpDigits = document.querySelectorAll('.otp-digit');
       var btnVerify = document.getElementById('btnVerify');
 
@@ -883,7 +853,6 @@
         });
       });
 
-      /* ---------- Resend timer ---------- */
       var resendBtn = document.getElementById('resendBtn');
       var resendTimerEl = document.getElementById('resendTimer');
       var countdown;

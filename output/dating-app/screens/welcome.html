@@ -16,7 +16,6 @@
     }
 
     html {
-      font-size: 16px;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -24,68 +23,43 @@
     body {
       font-family: var(--font-family-sans);
       color: var(--color-text-primary);
-      background-color: var(--color-bg-secondary);
+      background-color: var(--color-bg-primary);
       min-height: 100dvh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
-    /* Desktop phone frame */
-    .phone-frame {
+    .app-shell {
       width: 100%;
-      max-width: 390px;
+      max-width: var(--content-width-base);
       min-height: 100dvh;
-      position: relative;
-      overflow: hidden;
-    }
-
-    @media (min-width: 768px) {
-      body {
-        padding: var(--space-8) 0;
-        align-items: center;
-      }
-
-      .phone-frame {
-        min-height: 844px;
-        max-height: 844px;
-        border-radius: var(--radius-3xl);
-        box-shadow: var(--shadow-2xl);
-        border: 1px solid var(--color-border-subtle);
-        overflow-y: auto;
-      }
-    }
-
-    .screen {
-      min-height: 100dvh;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
       background: var(--color-bg-primary);
       position: relative;
-      overflow: hidden;
     }
 
     @media (min-width: 768px) {
-      .screen {
-        min-height: 844px;
+      body {
+        background: var(--color-bg-secondary);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: var(--space-8) 0;
+      }
+      .app-shell {
+        min-height: var(--shell-min-height);
+        max-height: 90vh;
+        border-radius: var(--radius-3xl);
+        box-shadow: var(--shadow-2xl);
+        overflow: hidden;
+        border: var(--border-width-thin) solid var(--color-border-subtle);
       }
     }
 
-    /* Warm gradient background */
-    .screen::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 55%;
-      background: linear-gradient(
-        175deg,
-        rgba(201, 169, 110, 0.12) 0%,
-        rgba(184, 134, 11, 0.06) 40%,
-        transparent 100%
-      );
-      pointer-events: none;
+    @media (min-width: 1440px) {
+      body {
+        background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
+      }
     }
 
     .screen-content {
@@ -97,7 +71,23 @@
       z-index: var(--z-above);
     }
 
-    /* Logo & brand */
+    .screen-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 55%;
+      background: linear-gradient(
+        175deg,
+        var(--color-accent-subtle) 0%,
+        var(--color-primary-subtle) 40%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: -1;
+    }
+
     .brand {
       text-align: center;
       padding-top: var(--space-16);
@@ -105,8 +95,8 @@
     }
 
     .brand-icon {
-      width: 56px;
-      height: 56px;
+      width: var(--space-14);
+      height: var(--space-14);
       margin: 0 auto var(--space-5);
       display: flex;
       align-items: center;
@@ -133,11 +123,10 @@
       font-weight: var(--font-weight-light);
       color: var(--color-text-secondary);
       line-height: var(--line-height-relaxed);
-      max-width: 280px;
+      max-width: var(--content-width-narrow);
       margin: var(--space-3) auto 0;
     }
 
-    /* Carousel */
     .carousel {
       flex: 1;
       display: flex;
@@ -151,6 +140,8 @@
       position: relative;
       overflow: hidden;
       border-radius: var(--card-radius);
+      touch-action: pan-y;
+      user-select: none;
     }
 
     .carousel-slides {
@@ -166,7 +157,7 @@
 
     .benefit-card {
       background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      border: var(--border-width-thin) solid var(--card-border);
       border-radius: var(--card-radius);
       padding: var(--space-8) var(--space-6);
       text-align: center;
@@ -175,8 +166,8 @@
     }
 
     .benefit-icon {
-      width: 64px;
-      height: 64px;
+      width: var(--space-16);
+      height: var(--space-16);
       margin: 0 auto var(--space-5);
       border-radius: var(--radius-full);
       background: var(--color-primary-subtle);
@@ -186,8 +177,8 @@
     }
 
     .benefit-icon svg {
-      width: 28px;
-      height: 28px;
+      width: var(--space-7, 1.75rem);
+      height: var(--space-7, 1.75rem);
       color: var(--color-primary);
     }
 
@@ -206,11 +197,10 @@
       font-weight: var(--font-weight-regular);
       color: var(--color-text-secondary);
       line-height: var(--line-height-relaxed);
-      max-width: 300px;
+      max-width: var(--content-width-narrow);
       margin: 0 auto;
     }
 
-    /* Dot indicators */
     .carousel-dots {
       display: flex;
       justify-content: center;
@@ -219,8 +209,8 @@
     }
 
     .carousel-dot {
-      width: 8px;
-      height: 8px;
+      width: var(--space-2);
+      height: var(--space-2);
       border-radius: var(--radius-full);
       background: var(--color-border-strong);
       border: none;
@@ -233,20 +223,19 @@
     .carousel-dot::before {
       content: '';
       position: absolute;
-      inset: -8px;
+      inset: calc(-1 * var(--space-2));
     }
 
     .carousel-dot[aria-selected="true"] {
-      width: 24px;
+      width: var(--space-6);
       background: var(--color-primary);
     }
 
     .carousel-dot:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 3px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--space-1);
     }
 
-    /* CTAs */
     .cta-section {
       padding-bottom: var(--space-10);
     }
@@ -283,8 +272,8 @@
     }
 
     .btn-primary:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 3px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--space-1);
     }
 
     .sign-in-link {
@@ -309,138 +298,119 @@
     }
 
     .sign-in-link a:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 3px;
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--space-1);
       border-radius: var(--radius-sm);
-    }
-
-    /* Swipe touch handling */
-    .carousel-track {
-      touch-action: pan-y;
-      user-select: none;
     }
 
     .skip-link {
       position: absolute;
       left: -9999px;
       top: var(--space-2);
-      z-index: 100;
+      z-index: var(--z-dropdown);
       background: var(--color-primary);
-      color: #fff;
+      color: var(--color-primary-contrast);
       padding: var(--space-2) var(--space-4);
       border-radius: var(--radius-md);
       font-size: var(--font-size-sm);
       text-decoration: none;
     }
+
     .skip-link:focus {
       left: var(--space-4);
-    }
-
-    @media (min-width: 1440px) {
-      body {
-        background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%);
-      }
-      .phone-frame {
-        box-shadow: 0 0 60px rgba(0,0,0,0.06);
-      }
     }
   </style>
 </head>
 <body>
-  <div class="phone-frame">
+  <div class="app-shell" data-screen="welcome">
     <a href="#welcome-cta" class="skip-link">Skip to main content</a>
-    <main class="screen" data-screen="welcome">
-      <div class="screen-content">
+    <div class="screen-content">
 
-        <!-- Brand -->
-        <header class="brand">
-          <div class="brand-icon" aria-hidden="true">
-            <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="ember-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="var(--color-primary)" />
-                  <stop offset="100%" stop-color="var(--color-accent)" />
-                </linearGradient>
-              </defs>
-              <path d="M28 6C28 6 12 18 12 30C12 38.8 19.2 46 28 46C36.8 46 44 38.8 44 30C44 26 42 22 40 19C40 25 36 29 32 29C32 29 34 23 30 17C28 14 28 6 28 6Z" fill="url(#ember-grad)" />
-              <path d="M28 46C23.6 46 20 42.4 20 38C20 33 28 26 28 26C28 26 36 33 36 38C36 42.4 32.4 46 28 46Z" fill="var(--color-bg-primary)" opacity="0.4" />
-            </svg>
-          </div>
-          <h1 class="brand-name">Ember</h1>
-          <p class="brand-tagline">Intentional connections for people who value depth</p>
-        </header>
+      <header class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="ember-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="var(--color-primary)" />
+                <stop offset="100%" stop-color="var(--color-accent)" />
+              </linearGradient>
+            </defs>
+            <path d="M28 6C28 6 12 18 12 30C12 38.8 19.2 46 28 46C36.8 46 44 38.8 44 30C44 26 42 22 40 19C40 25 36 29 32 29C32 29 34 23 30 17C28 14 28 6 28 6Z" fill="url(#ember-grad)" />
+            <path d="M28 46C23.6 46 20 42.4 20 38C20 33 28 26 28 26C28 26 36 33 36 38C36 42.4 32.4 46 28 46Z" fill="var(--color-bg-primary)" opacity="0.4" />
+          </svg>
+        </div>
+        <h1 class="brand-name">Ember</h1>
+        <p class="brand-tagline">Intentional connections for people who value depth</p>
+      </header>
 
-        <!-- Benefit carousel -->
-        <section class="carousel" aria-label="App benefits" role="region">
-          <div class="carousel-track" aria-live="polite">
-            <div class="carousel-slides" id="carouselSlides">
+      <section class="carousel" aria-label="App benefits" role="region">
+        <div class="carousel-track" aria-live="polite">
+          <div class="carousel-slides" id="carouselSlides">
 
-              <article class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Slide 1 of 3">
-                <div class="benefit-card">
-                  <div class="benefit-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                    </svg>
-                  </div>
-                  <h2 class="benefit-title">Curated Daily Matches</h2>
-                  <p class="benefit-desc">5–8 thoughtfully selected profiles delivered each morning</p>
+            <article class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Slide 1 of 3">
+              <div class="benefit-card">
+                <div class="benefit-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                  </svg>
                 </div>
-              </article>
+                <h2 class="benefit-title">Curated Daily Matches</h2>
+                <p class="benefit-desc">5–8 thoughtfully selected profiles delivered each morning</p>
+              </div>
+            </article>
 
-              <article class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Slide 2 of 3">
-                <div class="benefit-card">
-                  <div class="benefit-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                    </svg>
-                  </div>
-                  <h2 class="benefit-title">Depth Over Volume</h2>
-                  <p class="benefit-desc">Like specific photos and prompts to start meaningful conversations</p>
+            <article class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Slide 2 of 3">
+              <div class="benefit-card">
+                <div class="benefit-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
                 </div>
-              </article>
+                <h2 class="benefit-title">Depth Over Volume</h2>
+                <p class="benefit-desc">Like specific photos and prompts to start meaningful conversations</p>
+              </div>
+            </article>
 
-              <article class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Slide 3 of 3">
-                <div class="benefit-card">
-                  <div class="benefit-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                      <path d="M9 12l2 2 4-4"/>
-                    </svg>
-                  </div>
-                  <h2 class="benefit-title">Trust Built In</h2>
-                  <p class="benefit-desc">Verified profiles and graduated trust features keep you safe</p>
+            <article class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Slide 3 of 3">
+              <div class="benefit-card">
+                <div class="benefit-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="M9 12l2 2 4-4"/>
+                  </svg>
                 </div>
-              </article>
+                <h2 class="benefit-title">Trust Built In</h2>
+                <p class="benefit-desc">Verified profiles and graduated trust features keep you safe</p>
+              </div>
+            </article>
 
-            </div>
           </div>
-
-          <div class="carousel-dots" role="tablist" aria-label="Slide navigation">
-            <button class="carousel-dot" role="tab" aria-selected="true" aria-label="Slide 1" data-slide="0"></button>
-            <button class="carousel-dot" role="tab" aria-selected="false" aria-label="Slide 2" data-slide="1"></button>
-            <button class="carousel-dot" role="tab" aria-selected="false" aria-label="Slide 3" data-slide="2"></button>
-          </div>
-        </section>
-
-        <!-- CTAs -->
-        <div class="cta-section" id="welcome-cta">
-          <a href="sign-up.html" class="btn-primary" role="button">Get Started</a>
-          <p class="sign-in-link">Already have an account? <a href="#">Sign In</a></p>
         </div>
 
+        <div class="carousel-dots" role="tablist" aria-label="Slide navigation">
+          <button class="carousel-dot" role="tab" aria-selected="true" aria-label="Slide 1" data-slide="0"></button>
+          <button class="carousel-dot" role="tab" aria-selected="false" aria-label="Slide 2" data-slide="1"></button>
+          <button class="carousel-dot" role="tab" aria-selected="false" aria-label="Slide 3" data-slide="2"></button>
+        </div>
+      </section>
+
+      <div class="cta-section" id="welcome-cta">
+        <a href="sign-up.html" class="btn-primary" role="button">Get Started</a>
+        <p class="sign-in-link">Already have an account? <a href="#">Sign In</a></p>
       </div>
-    </main>
+
+    </div>
   </div>
 
   <script>
     (function () {
-      const slides = document.getElementById('carouselSlides');
-      const dots = document.querySelectorAll('.carousel-dot');
-      const totalSlides = dots.length;
-      let current = 0;
-      let startX = 0;
-      let isDragging = false;
-      let autoTimer;
+      var slides = document.getElementById('carouselSlides');
+      var dots = document.querySelectorAll('.carousel-dot');
+      var totalSlides = dots.length;
+      var current = 0;
+      var startX = 0;
+      var isDragging = false;
+      var autoTimer;
 
       function goTo(index) {
         current = (index + totalSlides) % totalSlides;
@@ -457,7 +427,6 @@
         });
       });
 
-      /* Swipe support */
       var track = document.querySelector('.carousel-track');
 
       track.addEventListener('touchstart', function (e) {
@@ -474,7 +443,6 @@
         }
       }, { passive: true });
 
-      /* Auto-advance */
       function resetAuto() {
         clearInterval(autoTimer);
         autoTimer = setInterval(function () {
@@ -484,7 +452,6 @@
 
       resetAuto();
 
-      /* Pause auto-advance on hover/focus per WCAG 2.2.2 */
       var carouselRegion = document.querySelector('.carousel');
       carouselRegion.addEventListener('mouseenter', function () {
         clearInterval(autoTimer);
@@ -499,7 +466,6 @@
         resetAuto();
       });
 
-      /* Keyboard support */
       document.querySelector('.carousel-dots').addEventListener('keydown', function (e) {
         if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
           e.preventDefault();

@@ -60,7 +60,7 @@
   --color-text-tertiary: #7A7A7A;
   --color-text-disabled: #B0B0B0;
   --color-text-inverse: #FFFFFF;
-  --color-text-link: #8B6508;
+  --color-text-link: #B8860B;
 
   /* Borders */
   --color-border-default: #E5DFD8;
@@ -296,6 +296,103 @@
   --content-width-base: 420px;
   --content-width-wide: 560px;
 }
+
+/* ==========================================================================
+   Canonical Screen Shell — .app-shell
+   Every screen in this product MUST use this wrapper. No other wrapper
+   patterns are allowed. On mobile it fills the viewport; on desktop it
+   renders inside a centered phone-frame with a subtle device shadow.
+   ========================================================================== */
+
+.app-shell {
+  position: relative;
+  width: 100%;
+  max-width: var(--content-width-base); /* 420px */
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--color-bg-primary);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-shell > .app-shell__header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background: var(--color-bg-primary);
+  padding: var(--space-3) var(--space-page-x-mobile);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.app-shell > .app-shell__content {
+  flex: 1;
+  padding: var(--space-4) var(--space-page-x-mobile);
+  overflow-y: auto;
+}
+
+.app-shell > .app-shell__footer {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-sticky);
+  background: var(--color-bg-elevated);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* Desktop phone-frame treatment (768px+) */
+@media (min-width: 768px) {
+  body:has(.app-shell) {
+    background: var(--color-bg-secondary);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: var(--space-8) 0;
+    min-height: 100vh;
+  }
+
+  .app-shell {
+    min-height: 844px; /* iPhone 14 logical height */
+    max-height: 90vh;
+    border-radius: var(--radius-3xl);
+    box-shadow:
+      var(--shadow-2xl),
+      0 0 0 1px var(--color-border-subtle);
+    overflow: hidden;
+  }
+
+  .app-shell > .app-shell__header {
+    border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
+  }
+
+  .app-shell > .app-shell__footer {
+    border-radius: 0 0 var(--radius-3xl) var(--radius-3xl);
+  }
+}
+
+/* ==========================================================================
+   Placeholder Image Guidance
+   ---------------------------------------------------------------------------
+   All image slots MUST use real or high-quality stock placeholder images.
+   Never use solid-color divs as image placeholders.
+
+   Services:
+   - Unsplash:  https://images.unsplash.com/photo-{id}?w={width}&h={height}&fit=crop
+   - Picsum:    https://picsum.photos/{width}/{height}
+   - Pravatar:  https://i.pravatar.cc/{size}?img={n}   (n = 1–70)
+
+   Standard dimensions by slot:
+   - Avatars:   36px, 48px, 64px, 96px  (use Pravatar)
+   - Hero:      390x500                  (use Unsplash lifestyle/portrait)
+   - Profile card: 390x488              (4:5 ratio, use Unsplash portrait)
+   - Card thumb: 160x160                (use Picsum or Unsplash)
+   - Chat avatar: 36px, 48px            (use Pravatar)
+   - Background: 390x844 (mobile), 1440x900 (desktop)
+   ========================================================================== */
 
 /* Dark mode overrides */
 @media (prefers-color-scheme: dark) {

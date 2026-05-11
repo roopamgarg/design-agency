@@ -1,56 +1,145 @@
-/*
- * Design Tokens — shared CSS custom properties for all design outputs.
- * Updated by the Design System Agent. Referenced by all design HTML files.
- */
+/* ==========================================================================
+   Dating App — Design Tokens
+   Visual system: Luxury, muted, typography-forward, photography-centric
+   Accessibility: WCAG 2.1 AA
+   ========================================================================== */
 
 :root {
-  /* --- Colors --- */
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-primary-light: #dbeafe;
-  --color-secondary: #7c3aed;
-  --color-secondary-hover: #6d28d9;
+  /* --------------------------------------------------------------------------
+     Colors — Light Mode
+     Palette: Champagne, slate, warm neutrals, subtle rose-gold accent
+     -------------------------------------------------------------------------- */
 
-  --color-success: #16a34a;
-  --color-warning: #ca8a04;
-  --color-error: #dc2626;
-  --color-info: #0891b2;
+  /* Primary — Warm rose-gold accent */
+  --color-primary: #B8860B;
+  --color-primary-light: #D4A855;
+  --color-primary-dark: #8B6508;
+  --color-primary-subtle: rgba(184, 134, 11, 0.08);
+  --color-primary-contrast: #FFFFFF;
 
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f8fafc;
-  --color-bg-tertiary: #f1f5f9;
+  /* Secondary — Deep slate */
+  --color-secondary: #2C3E50;
+  --color-secondary-light: #415B76;
+  --color-secondary-dark: #1A252F;
+  --color-secondary-contrast: #FFFFFF;
 
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #475569;
-  --color-text-tertiary: #94a3b8;
-  --color-text-inverse: #ffffff;
+  /* Accent — Champagne highlight */
+  --color-accent: #C9A96E;
+  --color-accent-light: #E2CFA0;
+  --color-accent-dark: #A68540;
+  --color-accent-subtle: rgba(201, 169, 110, 0.1);
 
-  --color-border: #e2e8f0;
-  --color-border-focus: #2563eb;
+  /* Semantic — Status colors (muted to match luxury palette) */
+  --color-success: #4A7C59;
+  --color-success-light: #6B9E7A;
+  --color-success-subtle: rgba(74, 124, 89, 0.08);
 
-  /* --- Typography --- */
-  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-family-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --color-warning: #B8860B;
+  --color-warning-light: #D4A855;
+  --color-warning-subtle: rgba(184, 134, 11, 0.08);
 
-  --font-size-xs: 0.75rem;    /* 12px */
-  --font-size-sm: 0.875rem;   /* 14px */
-  --font-size-base: 1rem;     /* 16px */
-  --font-size-lg: 1.125rem;   /* 18px */
-  --font-size-xl: 1.25rem;    /* 20px */
-  --font-size-2xl: 1.5rem;    /* 24px */
-  --font-size-3xl: 1.875rem;  /* 30px */
-  --font-size-4xl: 2.25rem;   /* 36px */
+  --color-error: #9B2335;
+  --color-error-light: #C04050;
+  --color-error-subtle: rgba(155, 35, 53, 0.08);
 
-  --font-weight-normal: 400;
+  --color-info: #4A6FA5;
+  --color-info-light: #6B8FBF;
+  --color-info-subtle: rgba(74, 111, 165, 0.08);
+
+  /* Surfaces */
+  --color-bg-primary: #FAF8F5;
+  --color-bg-secondary: #F5F0EB;
+  --color-bg-tertiary: #EDE6DD;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-overlay: rgba(26, 37, 47, 0.6);
+  --color-bg-scrim: rgba(26, 37, 47, 0.4);
+
+  /* Text */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #4A4A4A;
+  --color-text-tertiary: #7A7A7A;
+  --color-text-disabled: #B0B0B0;
+  --color-text-inverse: #FFFFFF;
+  --color-text-link: #B8860B;
+
+  /* Borders */
+  --color-border-default: #E5DFD8;
+  --color-border-subtle: #F0EBE5;
+  --color-border-strong: #C9C1B8;
+  --color-border-focus: #B8860B;
+
+  /* Match & Interaction (dating-specific) */
+  --color-match: #C9A96E;
+  --color-match-glow: rgba(201, 169, 110, 0.3);
+  --color-like: #B8860B;
+  --color-pass: #94A3B8;
+  --color-super-like: #4A6FA5;
+  --color-verified: #4A7C59;
+  --color-online: #4A7C59;
+  --color-premium: linear-gradient(135deg, #B8860B, #C9A96E);
+
+  /* --------------------------------------------------------------------------
+     Colors — Dark Mode
+     -------------------------------------------------------------------------- */
+  --color-dark-bg-primary: #121212;
+  --color-dark-bg-secondary: #1E1E1E;
+  --color-dark-bg-tertiary: #2A2A2A;
+  --color-dark-bg-elevated: #2A2A2A;
+  --color-dark-text-primary: #F5F0EB;
+  --color-dark-text-secondary: #C9C1B8;
+  --color-dark-text-tertiary: #8A8078;
+  --color-dark-border-default: #3A3530;
+  --color-dark-border-subtle: #2A2520;
+  --color-dark-primary: #D4A855;
+  --color-dark-accent: #E2CFA0;
+
+  /* --------------------------------------------------------------------------
+     Typography
+     System: Inter for UI, Playfair Display for editorial/emotional moments
+     -------------------------------------------------------------------------- */
+
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-family-display: 'Playfair Display', 'Georgia', serif;
+  --font-family-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+  /* Font Sizes — Modular scale 1.25 (Major Third) */
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-md: 1.125rem;    /* 18px */
+  --font-size-lg: 1.25rem;     /* 20px */
+  --font-size-xl: 1.5rem;      /* 24px */
+  --font-size-2xl: 1.875rem;   /* 30px */
+  --font-size-3xl: 2.25rem;    /* 36px */
+  --font-size-4xl: 3rem;       /* 48px */
+  --font-size-5xl: 3.75rem;    /* 60px */
+
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  --line-height-tight: 1.25;
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.35;
   --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 1.8;
 
-  /* --- Spacing --- */
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+
+  /* --------------------------------------------------------------------------
+     Spacing — 4px base unit
+     -------------------------------------------------------------------------- */
+
+  --space-0: 0;
   --space-1: 0.25rem;   /* 4px */
   --space-2: 0.5rem;    /* 8px */
   --space-3: 0.75rem;   /* 12px */
@@ -60,67 +149,288 @@
   --space-8: 2rem;      /* 32px */
   --space-10: 2.5rem;   /* 40px */
   --space-12: 3rem;     /* 48px */
+  --space-14: 3.5rem;   /* 56px */
   --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
 
-  /* --- Border Radius --- */
-  --radius-sm: 0.25rem;  /* 4px */
-  --radius-md: 0.375rem; /* 6px */
-  --radius-lg: 0.5rem;   /* 8px */
-  --radius-xl: 0.75rem;  /* 12px */
-  --radius-2xl: 1rem;    /* 16px */
+  /* Layout */
+  --space-page-x-mobile: var(--space-4);
+  --space-page-x-tablet: var(--space-8);
+  --space-page-x-desktop: var(--space-12);
+  --space-content-max: 420px;
+  --space-card-padding: var(--space-5);
+
+  /* --------------------------------------------------------------------------
+     Border Radius
+     -------------------------------------------------------------------------- */
+
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
   --radius-full: 9999px;
 
-  /* --- Shadows --- */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  /* --------------------------------------------------------------------------
+     Shadows — Soft, warm-tinted for luxury feel
+     -------------------------------------------------------------------------- */
 
-  /* --- Transitions --- */
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow: 350ms ease;
+  --shadow-xs: 0 1px 2px rgba(26, 26, 26, 0.04);
+  --shadow-sm: 0 2px 4px rgba(26, 26, 26, 0.06);
+  --shadow-md: 0 4px 12px rgba(26, 26, 26, 0.08);
+  --shadow-lg: 0 8px 24px rgba(26, 26, 26, 0.1);
+  --shadow-xl: 0 16px 48px rgba(26, 26, 26, 0.12);
+  --shadow-2xl: 0 24px 64px rgba(26, 26, 26, 0.16);
+  --shadow-inner: inset 0 2px 4px rgba(26, 26, 26, 0.04);
+  --shadow-glow-match: 0 0 24px rgba(201, 169, 110, 0.3);
+  --shadow-glow-primary: 0 0 16px rgba(184, 134, 11, 0.25);
 
-  /* --- Breakpoints (reference only — use in media queries) --- */
-  /* Mobile: max-width 767px */
-  /* Tablet: 768px – 1439px */
-  /* Desktop: 1440px+ */
+  /* --------------------------------------------------------------------------
+     Transitions & Motion
+     Philosophy: Deliberate, smooth, purposeful (not flashy)
+     -------------------------------------------------------------------------- */
 
-  /* --- Z-Index Scale --- */
-  --z-dropdown: 10;
-  --z-sticky: 20;
-  --z-overlay: 30;
-  --z-modal: 40;
-  --z-toast: 50;
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-deliberate: 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* --------------------------------------------------------------------------
+     Z-Index Scale
+     -------------------------------------------------------------------------- */
+
+  --z-base: 0;
+  --z-above: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-drawer: 400;
+  --z-modal-backdrop: 500;
+  --z-modal: 600;
+  --z-popover: 700;
+  --z-tooltip: 800;
+  --z-toast: 900;
+  --z-max: 9999;
+
+  /* --------------------------------------------------------------------------
+     Breakpoints (reference values — use in media queries)
+     -------------------------------------------------------------------------- */
+
+  --breakpoint-sm: 375px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  /* --------------------------------------------------------------------------
+     Component-Specific Tokens
+     -------------------------------------------------------------------------- */
+
+  /* Cards */
+  --card-radius: var(--radius-xl);
+  --card-padding: var(--space-5);
+  --card-shadow: var(--shadow-md);
+  --card-bg: var(--color-bg-elevated);
+  --card-border: var(--color-border-subtle);
+
+  /* Buttons */
+  --btn-height-sm: 36px;
+  --btn-height-md: 44px;
+  --btn-height-lg: 52px;
+  --btn-radius: var(--radius-full);
+  --btn-font-weight: var(--font-weight-semibold);
+  --btn-letter-spacing: var(--letter-spacing-wide);
+
+  /* Inputs */
+  --input-height: 48px;
+  --input-radius: var(--radius-lg);
+  --input-border: var(--color-border-default);
+  --input-border-focus: var(--color-border-focus);
+  --input-bg: var(--color-bg-elevated);
+  --input-padding-x: var(--space-4);
+
+  /* Avatars */
+  --avatar-xs: 28px;
+  --avatar-sm: 36px;
+  --avatar-md: 48px;
+  --avatar-lg: 64px;
+  --avatar-xl: 96px;
+  --avatar-2xl: 128px;
+  --avatar-border: 2px solid var(--color-bg-elevated);
+
+  /* Badges */
+  --badge-height: 22px;
+  --badge-radius: var(--radius-full);
+  --badge-font-size: var(--font-size-xs);
+  --badge-padding-x: var(--space-2);
+
+  /* Bottom Sheet */
+  --sheet-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  --sheet-handle-width: 36px;
+  --sheet-handle-height: 4px;
+  --sheet-handle-radius: var(--radius-full);
+
+  /* Profile Cards (dating-specific) */
+  --profile-card-radius: var(--radius-2xl);
+  --profile-card-aspect: 4 / 5;
+  --profile-card-overlay: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.3) 40%,
+    transparent 70%
+  );
+
+  /* Touch targets (accessibility) */
+  --touch-target-min: 44px;
+
+  /* Content widths */
+  --content-width-narrow: 320px;
+  --content-width-base: 420px;
+  --content-width-wide: 560px;
 }
 
-/* --- Base Reset --- */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* ==========================================================================
+   Canonical Screen Shell — .app-shell
+   Every screen in this product MUST use this wrapper. No other wrapper
+   patterns are allowed. On mobile it fills the viewport; on desktop it
+   renders inside a centered phone-frame with a subtle device shadow.
+   ========================================================================== */
 
-body {
+.app-shell {
+  position: relative;
+  width: 100%;
+  max-width: var(--content-width-base); /* 420px */
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--color-bg-primary);
   font-family: var(--font-family-sans);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
   color: var(--color-text-primary);
-  background-color: var(--color-bg-primary);
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- Accessibility --- */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+.app-shell > .app-shell__header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background: var(--color-bg-primary);
+  padding: var(--space-3) var(--space-page-x-mobile);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.app-shell > .app-shell__content {
+  flex: 1;
+  padding: var(--space-4) var(--space-page-x-mobile);
+  overflow-y: auto;
+}
+
+.app-shell > .app-shell__footer {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-sticky);
+  background: var(--color-bg-elevated);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* Desktop phone-frame treatment (768px+) */
+@media (min-width: 768px) {
+  body:has(.app-shell) {
+    background: var(--color-bg-secondary);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: var(--space-8) 0;
+    min-height: 100vh;
+  }
+
+  .app-shell {
+    min-height: 844px; /* iPhone 14 logical height */
+    max-height: 90vh;
+    border-radius: var(--radius-3xl);
+    box-shadow:
+      var(--shadow-2xl),
+      0 0 0 1px var(--color-border-subtle);
+    overflow: hidden;
+  }
+
+  .app-shell > .app-shell__header {
+    border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
+  }
+
+  .app-shell > .app-shell__footer {
+    border-radius: 0 0 var(--radius-3xl) var(--radius-3xl);
   }
 }
 
-:focus-visible {
-  outline: 2px solid var(--color-border-focus);
-  outline-offset: 2px;
+/* ==========================================================================
+   Placeholder Image Guidance
+   ---------------------------------------------------------------------------
+   All image slots MUST use real or high-quality stock placeholder images.
+   Never use solid-color divs as image placeholders.
+
+   Services:
+   - Unsplash:  https://images.unsplash.com/photo-{id}?w={width}&h={height}&fit=crop
+   - Picsum:    https://picsum.photos/{width}/{height}
+   - Pravatar:  https://i.pravatar.cc/{size}?img={n}   (n = 1–70)
+
+   Standard dimensions by slot:
+   - Avatars:   36px, 48px, 64px, 96px  (use Pravatar)
+   - Hero:      390x500                  (use Unsplash lifestyle/portrait)
+   - Profile card: 390x488              (4:5 ratio, use Unsplash portrait)
+   - Card thumb: 160x160                (use Picsum or Unsplash)
+   - Chat avatar: 36px, 48px            (use Pravatar)
+   - Background: 390x844 (mobile), 1440x900 (desktop)
+   ========================================================================== */
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-primary: var(--color-dark-bg-primary);
+    --color-bg-secondary: var(--color-dark-bg-secondary);
+    --color-bg-tertiary: var(--color-dark-bg-tertiary);
+    --color-bg-elevated: var(--color-dark-bg-elevated);
+    --color-text-primary: var(--color-dark-text-primary);
+    --color-text-secondary: var(--color-dark-text-secondary);
+    --color-text-tertiary: var(--color-dark-text-tertiary);
+    --color-border-default: var(--color-dark-border-default);
+    --color-border-subtle: var(--color-dark-border-subtle);
+    --color-primary: var(--color-dark-primary);
+    --color-accent: var(--color-dark-accent);
+    --color-bg-overlay: rgba(0, 0, 0, 0.7);
+    --color-bg-scrim: rgba(0, 0, 0, 0.5);
+
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.25);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.4);
+
+    --card-bg: var(--color-dark-bg-elevated);
+    --card-border: var(--color-dark-border-default);
+    --input-bg: var(--color-dark-bg-secondary);
+    --input-border: var(--color-dark-border-default);
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-normal: 0ms;
+    --transition-slow: 0ms;
+    --transition-deliberate: 0ms;
+    --transition-spring: 0ms;
+  }
 }

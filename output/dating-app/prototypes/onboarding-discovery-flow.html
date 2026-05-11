@@ -18,8 +18,8 @@
         min-height: 100vh;
       }
 
-      .device-frame {
-        width: 390px;
+      .app-shell {
+        width: var(--shell-width);
         max-width: 100vw;
         min-height: 100vh;
         background: var(--color-bg-primary);
@@ -28,7 +28,6 @@
         box-shadow: var(--shadow-xl);
       }
 
-      /* ── Screen system ── */
       [data-screen] {
         display: none;
         min-height: 100vh;
@@ -79,17 +78,16 @@
         .celebration-content { animation: none; }
       }
 
-      /* ── Progress indicator ── */
       .progress-bar {
         display: flex;
-        gap: 6px;
+        gap: var(--space-1-5);
         padding: var(--space-4) var(--space-6);
         padding-top: calc(var(--space-4) + env(safe-area-inset-top, 0px));
         background: var(--color-bg-primary);
       }
       .progress-dot {
         flex: 1;
-        height: 4px;
+        height: var(--track-height);
         border-radius: var(--radius-full);
         background: var(--color-border);
         transition: background var(--transition-base);
@@ -97,7 +95,6 @@
       .progress-dot.filled { background: var(--color-primary); }
       .progress-dot.current { background: var(--color-accent); }
 
-      /* ── Common elements ── */
       .screen-content {
         flex: 1;
         padding: var(--space-6);
@@ -151,7 +148,7 @@
       .btn-secondary {
         background: transparent;
         color: var(--color-primary);
-        border: 1.5px solid var(--color-primary);
+        border: var(--border-width-default) solid var(--color-primary);
       }
       .btn-ghost {
         background: transparent;
@@ -166,7 +163,7 @@
       .input-field {
         width: 100%;
         padding: var(--space-3) var(--space-4);
-        border: 1.5px solid var(--color-border);
+        border: var(--border-width-default) solid var(--color-border);
         border-radius: var(--radius-lg);
         font-family: var(--font-family-sans);
         font-size: var(--font-size-base);
@@ -218,10 +215,9 @@
         min-height: var(--touch-target-min);
       }
 
-      /* ── Selection cards ── */
       .selection-card {
         padding: var(--space-4) var(--space-5);
-        border: 1.5px solid var(--color-border);
+        border: var(--border-width-default) solid var(--color-border);
         border-radius: var(--radius-xl);
         cursor: pointer;
         transition: all var(--transition-fast);
@@ -243,7 +239,6 @@
         color: var(--color-text-secondary);
       }
 
-      /* ── Photo grid ── */
       .photo-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -252,7 +247,7 @@
       }
       .photo-slot {
         aspect-ratio: 3/4;
-        border: 2px dashed var(--color-border);
+        border: var(--border-width-medium) dashed var(--color-border);
         border-radius: var(--radius-lg);
         display: flex;
         flex-direction: column;
@@ -269,7 +264,13 @@
       .photo-slot:hover { border-color: var(--color-primary); color: var(--color-primary); }
       .photo-slot.filled {
         border: none;
-        background: linear-gradient(135deg, var(--color-primary-light), var(--color-accent-light));
+      }
+      .photo-slot.filled img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        inset: 0;
       }
       .photo-slot.filled::after {
         content: '✓';
@@ -277,14 +278,15 @@
         bottom: var(--space-1);
         right: var(--space-1);
         background: var(--color-success);
-        color: white;
-        width: 20px;
-        height: 20px;
+        color: var(--color-text-inverse);
+        width: var(--icon-sm);
+        height: var(--icon-sm);
         border-radius: var(--radius-full);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
+        font-size: var(--font-size-xs);
+        z-index: 2;
       }
       .photo-slot .plus { font-size: var(--font-size-2xl); font-weight: 300; }
       .photo-slot:first-child {
@@ -292,10 +294,9 @@
         aspect-ratio: auto;
       }
 
-      /* ── Prompt cards ── */
       .prompt-card {
         padding: var(--space-4);
-        border: 1.5px solid var(--color-border);
+        border: var(--border-width-default) solid var(--color-border);
         border-radius: var(--radius-xl);
         margin-top: var(--space-3);
         cursor: pointer;
@@ -317,7 +318,6 @@
         color: var(--color-text-secondary);
       }
 
-      /* ── Range slider ── */
       .range-control { margin-bottom: var(--space-6); }
       .range-header {
         display: flex;
@@ -336,26 +336,25 @@
       input[type="range"] {
         width: 100%;
         -webkit-appearance: none;
-        height: 4px;
+        height: var(--track-height);
         background: var(--color-border);
         border-radius: var(--radius-full);
         outline: none;
       }
       input[type="range"]::-webkit-slider-thumb {
         -webkit-appearance: none;
-        width: 24px;
-        height: 24px;
+        width: var(--icon-lg);
+        height: var(--icon-lg);
         border-radius: var(--radius-full);
         background: var(--color-primary);
         cursor: pointer;
         box-shadow: var(--shadow-sm);
       }
 
-      /* ── Toggle chips ── */
       .chip-group { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
       .chip {
         padding: var(--space-2) var(--space-4);
-        border: 1.5px solid var(--color-border);
+        border: var(--border-width-default) solid var(--color-border);
         border-radius: var(--radius-full);
         font-size: var(--font-size-sm);
         cursor: pointer;
@@ -371,7 +370,6 @@
         border-color: var(--color-primary);
       }
 
-      /* ── Discovery card ── */
       .discovery-header {
         display: flex;
         justify-content: space-between;
@@ -402,13 +400,13 @@
       .icon-btn:hover { background: var(--color-bg-tertiary); }
       .icon-btn .badge {
         position: absolute;
-        top: 6px;
-        right: 6px;
-        width: 10px;
-        height: 10px;
+        top: var(--space-1-5);
+        right: var(--space-1-5);
+        width: var(--icon-xs);
+        height: var(--icon-xs);
         background: var(--color-like);
         border-radius: var(--radius-full);
-        border: 2px solid var(--color-bg-primary);
+        border: var(--border-width-medium) solid var(--color-bg-primary);
       }
 
       .match-card {
@@ -423,18 +421,13 @@
       }
       .card-photo {
         aspect-ratio: var(--card-aspect-ratio);
-        background: linear-gradient(135deg, #E8D5B7, #C9A96E, #B8860B);
         position: relative;
         overflow: hidden;
       }
-      .card-photo-placeholder {
+      .card-photo img {
         width: 100%;
         height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 80px;
-        opacity: 0.3;
+        object-fit: cover;
       }
       .card-gradient {
         position: absolute;
@@ -442,7 +435,7 @@
         left: 0;
         right: 0;
         height: 50%;
-        background: linear-gradient(transparent, rgba(0,0,0,0.7));
+        background: linear-gradient(transparent, var(--color-overlay-dark-70));
       }
       .card-info {
         position: absolute;
@@ -450,7 +443,7 @@
         left: 0;
         right: 0;
         padding: var(--space-5);
-        color: white;
+        color: var(--color-text-inverse);
       }
       .card-name-row {
         display: flex;
@@ -469,14 +462,14 @@
       }
       .verified-badge {
         background: var(--color-verified);
-        color: white;
-        width: 22px;
-        height: 22px;
+        color: var(--color-text-inverse);
+        width: var(--icon-md);
+        height: var(--icon-md);
         border-radius: var(--radius-full);
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
+        font-size: var(--font-size-xs);
       }
       .card-distance {
         font-size: var(--font-size-sm);
@@ -486,14 +479,14 @@
       .card-prompt-preview {
         padding: var(--space-4) var(--space-5);
         background: var(--color-bg-secondary);
-        border-top: 1px solid var(--color-border-light);
+        border-top: var(--border-width-thin) solid var(--color-border-light);
       }
       .card-prompt-q {
         font-size: var(--font-size-xs);
         font-weight: var(--font-weight-semibold);
         color: var(--color-primary);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: var(--letter-spacing-wide);
       }
       .card-prompt-a {
         font-size: var(--font-size-sm);
@@ -508,32 +501,32 @@
         padding: var(--space-4);
       }
       .action-btn {
-        width: 60px;
-        height: 60px;
+        width: var(--action-btn-size);
+        height: var(--action-btn-size);
         border-radius: var(--radius-full);
-        border: 2px solid var(--color-border);
+        border: var(--border-width-medium) solid var(--color-border);
         background: var(--color-bg-primary);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
+        font-size: var(--font-size-2xl);
         transition: all var(--transition-fast);
         box-shadow: var(--shadow-sm);
       }
       .action-btn:hover { transform: scale(1.1); }
       .action-btn.pass-btn:hover {
         border-color: var(--color-pass);
-        background: #F3F4F6;
+        background: var(--color-bg-secondary);
       }
       .action-btn.like-btn:hover {
         border-color: var(--color-like);
-        background: #FDF2F8;
+        background: var(--color-primary-light);
       }
       .action-btn.like-btn.liked {
         border-color: var(--color-like);
         background: var(--color-like);
-        color: white;
+        color: var(--color-text-inverse);
         animation: heartBeat 0.6s ease;
       }
 
@@ -544,7 +537,6 @@
         padding-bottom: var(--space-3);
       }
 
-      /* ── Profile detail ── */
       .profile-detail-scroll {
         flex: 1;
         overflow-y: auto;
@@ -559,16 +551,16 @@
         left: 50%;
         transform: translateX(-50%);
         display: flex;
-        gap: 6px;
+        gap: var(--space-1-5);
         z-index: 2;
       }
       .photo-dot {
-        width: 8px;
-        height: 8px;
+        width: var(--icon-2xs);
+        height: var(--icon-2xs);
         border-radius: var(--radius-full);
-        background: rgba(255,255,255,0.5);
+        background: var(--color-overlay-white-50);
       }
-      .photo-dot.active { background: white; }
+      .photo-dot.active { background: var(--color-text-inverse); }
 
       .profile-section {
         padding: var(--space-5) var(--space-6);
@@ -631,34 +623,33 @@
         width: var(--touch-target-min);
         height: var(--touch-target-min);
         border-radius: var(--radius-full);
-        border: 1.5px solid var(--color-border);
-        background: white;
+        border: var(--border-width-default) solid var(--color-border);
+        background: var(--color-bg-primary);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
+        font-size: var(--font-size-base);
         transition: all var(--transition-fast);
       }
       .profile-prompt .like-element-btn:hover {
         border-color: var(--color-like);
-        background: #FDF2F8;
+        background: var(--color-primary-light);
       }
 
       .profile-sticky-actions {
         position: sticky;
         bottom: 0;
         background: var(--color-bg-primary);
-        border-top: 1px solid var(--color-border-light);
+        border-top: var(--border-width-thin) solid var(--color-border-light);
         padding: var(--space-3) var(--space-6);
         display: flex;
         gap: var(--space-3);
       }
       .profile-sticky-actions .btn { flex: 1; }
 
-      /* ── Match celebration ── */
       .celebration-screen {
-        background: linear-gradient(135deg, #1A1A2E 0%, #2C3E50 50%, #1A1A2E 100%);
+        background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-secondary) 50%, var(--color-text-primary) 100%);
         justify-content: center;
         align-items: center;
         text-align: center;
@@ -673,9 +664,9 @@
       }
       .confetti {
         position: absolute;
-        width: 10px;
-        height: 10px;
-        border-radius: 2px;
+        width: var(--icon-xs);
+        height: var(--icon-xs);
+        border-radius: var(--space-0-5);
         animation: confettiFall 3s ease-in forwards;
       }
       .celebration-content {
@@ -685,27 +676,24 @@
       .match-photos {
         display: flex;
         justify-content: center;
-        gap: calc(-1 * var(--space-4));
         margin-bottom: var(--space-8);
       }
       .match-avatar {
-        width: 120px;
-        height: 120px;
+        width: var(--avatar-xl);
+        height: var(--avatar-xl);
         border-radius: var(--radius-full);
-        border: 4px solid var(--color-primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 48px;
+        border: var(--border-width-heavy) solid var(--color-primary);
+        overflow: hidden;
         box-shadow: var(--shadow-glow-match);
       }
-      .match-avatar:first-child {
-        background: linear-gradient(135deg, #E8D5B7, #C9A96E);
-        margin-right: -16px;
-        z-index: 1;
+      .match-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
-      .match-avatar:last-child {
-        background: linear-gradient(135deg, #C9A96E, #B8860B);
+      .match-avatar:first-child {
+        margin-right: calc(-1 * var(--space-4));
+        z-index: 1;
       }
       .celebration-text {
         font-family: var(--font-family-display);
@@ -715,35 +703,35 @@
         margin-bottom: var(--space-2);
       }
       .celebration-sub {
-        color: rgba(255,255,255,0.7);
+        color: var(--color-overlay-white-70);
         font-size: var(--font-size-base);
         margin-bottom: var(--space-10);
       }
-      .celebration-actions { width: 280px; }
+      .celebration-actions { width: var(--actions-max-width); }
       .celebration-actions .btn-primary {
         background: var(--color-primary);
         box-shadow: var(--shadow-glow-match);
       }
 
-      /* ── Chat screen ── */
       .chat-header {
         display: flex;
         align-items: center;
         gap: var(--space-3);
         padding: var(--space-3) var(--space-4);
         padding-top: calc(var(--space-3) + env(safe-area-inset-top, 0px));
-        border-bottom: 1px solid var(--color-border-light);
+        border-bottom: var(--border-width-thin) solid var(--color-border-light);
         background: var(--color-bg-primary);
       }
       .chat-avatar {
-        width: 40px;
-        height: 40px;
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
         border-radius: var(--radius-full);
-        background: linear-gradient(135deg, #E8D5B7, #C9A96E);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
+        overflow: hidden;
+      }
+      .chat-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
       .chat-name {
         font-weight: var(--font-weight-semibold);
@@ -774,7 +762,7 @@
         border-radius: var(--radius-xl);
         margin-bottom: var(--space-4);
       }
-      .match-context-banner .emoji { font-size: 32px; }
+      .match-context-banner .emoji { font-size: var(--icon-xl); }
       .match-context-banner p {
         font-size: var(--font-size-sm);
         color: var(--color-primary);
@@ -809,7 +797,7 @@
         border-bottom-left-radius: var(--radius-sm);
       }
       .bubble-time {
-        font-size: 10px;
+        font-size: var(--font-size-2xs);
         opacity: 0.6;
         margin-top: var(--space-1);
       }
@@ -825,7 +813,7 @@
         flex-shrink: 0;
         padding: var(--space-2) var(--space-4);
         background: var(--color-bg-secondary);
-        border: 1px solid var(--color-border);
+        border: var(--border-width-thin) solid var(--color-border);
         border-radius: var(--radius-full);
         font-size: var(--font-size-xs);
         cursor: pointer;
@@ -843,13 +831,13 @@
         gap: var(--space-2);
         padding: var(--space-3) var(--space-4);
         padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
-        border-top: 1px solid var(--color-border-light);
+        border-top: var(--border-width-thin) solid var(--color-border-light);
         background: var(--color-bg-primary);
       }
       .compose-input {
         flex: 1;
         padding: var(--space-3) var(--space-4);
-        border: 1.5px solid var(--color-border);
+        border: var(--border-width-default) solid var(--color-border);
         border-radius: var(--radius-2xl);
         font-size: var(--font-size-sm);
         font-family: var(--font-family-sans);
@@ -870,12 +858,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: var(--font-size-lg);
         transition: all var(--transition-fast);
       }
       .send-btn {
         background: var(--color-primary);
-        color: white;
+        color: var(--color-text-inverse);
       }
       .send-btn:hover { background: var(--color-primary-hover); }
       .compose-icon-btn {
@@ -884,11 +872,10 @@
       }
       .compose-icon-btn:hover { color: var(--color-primary); }
 
-      /* ── Tab bar ── */
       .tab-bar {
         display: flex;
         height: var(--tab-bar-height);
-        border-top: 1px solid var(--color-border-light);
+        border-top: var(--border-width-thin) solid var(--color-border-light);
         background: var(--color-bg-primary);
         padding-bottom: env(safe-area-inset-bottom, 0px);
       }
@@ -898,58 +885,65 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 2px;
+        gap: var(--space-0-5);
         border: none;
         background: none;
         cursor: pointer;
         color: var(--color-text-tertiary);
-        font-size: 10px;
+        font-size: var(--font-size-2xs);
         transition: color var(--transition-fast);
         position: relative;
         min-height: var(--touch-target-min);
       }
       .tab-item.active { color: var(--color-primary); }
-      .tab-icon { font-size: 22px; }
+      .tab-icon { font-size: var(--icon-md); }
       .tab-badge {
         position: absolute;
-        top: 4px;
-        right: calc(50% - 18px);
-        width: 18px;
-        height: 18px;
+        top: var(--space-1);
+        right: calc(50% - var(--font-size-lg));
+        width: var(--font-size-lg);
+        height: var(--font-size-lg);
         background: var(--color-like);
-        color: white;
+        color: var(--color-text-inverse);
         border-radius: var(--radius-full);
-        font-size: 10px;
+        font-size: var(--font-size-2xs);
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: var(--font-weight-bold);
       }
 
-      /* ── Welcome screen hero ── */
       .welcome-hero {
         flex: 1;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
         padding: var(--space-8) var(--space-6);
-        background: linear-gradient(180deg, #F8F6F3 0%, #F5E6C8 50%, var(--color-bg-primary) 100%);
+        background: linear-gradient(180deg, var(--color-bg-secondary) 0%, var(--color-primary-light) 50%, var(--color-bg-primary) 100%);
         position: relative;
       }
       .welcome-logo {
         font-family: var(--font-family-display);
-        font-size: 48px;
+        font-size: var(--icon-4xl);
         font-weight: var(--font-weight-bold);
         color: var(--color-primary);
         margin-bottom: var(--space-4);
       }
       .welcome-illustration {
         position: absolute;
-        top: 15%;
+        top: 10%;
         left: 50%;
         transform: translateX(-50%);
-        font-size: 120px;
-        opacity: 0.15;
+        width: var(--illustration-size);
+        height: var(--illustration-size);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+        opacity: 0.2;
+      }
+      .welcome-illustration img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
 
       .benefit-cards {
@@ -968,14 +962,14 @@
         box-shadow: var(--shadow-xs);
       }
       .benefit-icon {
-        width: 44px;
-        height: 44px;
+        width: var(--benefit-icon-size);
+        height: var(--benefit-icon-size);
         border-radius: var(--radius-lg);
         background: var(--color-primary-light);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
+        font-size: var(--font-size-xl);
         flex-shrink: 0;
       }
       .benefit-text {
@@ -983,7 +977,6 @@
         font-weight: var(--font-weight-medium);
       }
 
-      /* ── OTP input ── */
       .otp-row {
         display: flex;
         gap: var(--space-3);
@@ -991,9 +984,9 @@
         margin: var(--space-8) 0;
       }
       .otp-digit {
-        width: 48px;
-        height: 56px;
-        border: 1.5px solid var(--color-border);
+        width: var(--otp-width);
+        height: var(--otp-height);
+        border: var(--border-width-default) solid var(--color-border);
         border-radius: var(--radius-lg);
         text-align: center;
         font-size: var(--font-size-2xl);
@@ -1007,63 +1000,61 @@
       }
       .otp-digit.filled { border-color: var(--color-primary); background: var(--color-primary-light); }
 
-      /* ── Prototype navigation ── */
       .prototype-nav {
         position: fixed;
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 390px;
+        width: var(--shell-width);
         max-width: 100vw;
         padding: var(--space-3) var(--space-2);
         background: var(--color-secondary);
         display: flex;
-        gap: 4px;
+        gap: var(--space-1);
         justify-content: center;
         flex-wrap: wrap;
         z-index: var(--z-toast);
-        border-top: 2px solid var(--color-primary);
+        border-top: var(--border-width-medium) solid var(--color-primary);
       }
       .prototype-nav button {
-        padding: 6px 10px;
+        padding: var(--space-1-5) var(--space-2-5);
         border-radius: var(--radius-sm);
-        border: 1px solid rgba(255,255,255,0.15);
-        background: rgba(255,255,255,0.08);
-        color: rgba(255,255,255,0.7);
+        border: var(--border-width-thin) solid var(--color-overlay-white-15);
+        background: var(--color-overlay-white-08);
+        color: var(--color-overlay-white-70);
         cursor: pointer;
-        font-size: 11px;
+        font-size: var(--font-size-xs);
         font-family: var(--font-family-sans);
         transition: all var(--transition-fast);
         white-space: nowrap;
       }
       .prototype-nav button:hover {
-        background: rgba(255,255,255,0.15);
-        color: white;
+        background: var(--color-overlay-white-15);
+        color: var(--color-text-inverse);
       }
       .prototype-nav button.active-nav {
         background: var(--color-primary);
-        color: white;
+        color: var(--color-text-inverse);
         border-color: var(--color-primary);
       }
       .prototype-toggle {
         position: fixed;
         bottom: var(--space-2);
         right: var(--space-2);
-        width: 36px;
-        height: 36px;
+        width: var(--icon-2xl);
+        height: var(--icon-2xl);
         border-radius: var(--radius-full);
         background: var(--color-secondary);
         color: var(--color-primary);
-        border: 2px solid var(--color-primary);
+        border: var(--border-width-medium) solid var(--color-primary);
         cursor: pointer;
         z-index: calc(var(--z-toast) + 1);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
+        font-size: var(--font-size-base);
       }
 
-      /* Hide nav by default on small screens, show with toggle */
       .prototype-nav.hidden { display: none; }
 
       .visually-hidden {
@@ -1098,13 +1089,15 @@
     </style>
 </head>
 <body>
-    <div class="device-frame">
+    <div class="app-shell">
       <a href="#main-content" class="visually-hidden">Skip to main content</a>
 
-      <!-- ═══════════════════════════ SCREEN 1: Welcome ═══════════════════════════ -->
+      <!-- SCREEN 1: Welcome -->
       <section data-screen="welcome" class="active" aria-label="Welcome screen" id="main-content">
         <div class="welcome-hero">
-          <div class="welcome-illustration">💛</div>
+          <div class="welcome-illustration">
+            <img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&h=400&fit=crop" alt="" loading="lazy">
+          </div>
           <div class="welcome-logo">Kindred</div>
           <h1>Dating that<br>feels different</h1>
           <p class="subtitle">Thoughtful connections, not endless swiping.</p>
@@ -1129,7 +1122,7 @@
         </div>
       </section>
 
-      <!-- ═══════════════════════════ SCREEN 2: Sign Up ═══════════════════════════ -->
+      <!-- SCREEN 2: Sign Up -->
       <section data-screen="signup" aria-label="Sign up screen">
         <div class="progress-bar">
           <div class="progress-dot current"></div>
@@ -1160,7 +1153,7 @@
         </div>
       </section>
 
-      <!-- ═══════════════════════════ SCREEN 3: Verify OTP ═══════════════════════════ -->
+      <!-- SCREEN 3: Verify OTP -->
       <section data-screen="verify" aria-label="Verification screen">
         <div class="progress-bar">
           <div class="progress-dot filled"></div>
@@ -1192,7 +1185,7 @@
         </div>
       </section>
 
-      <!-- ═══════════════════════════ SCREEN 4: Intent Declaration ═══════════════════════════ -->
+      <!-- SCREEN 4: Intent Declaration -->
       <section data-screen="intent" aria-label="Intent declaration screen">
         <div class="progress-bar">
           <div class="progress-dot filled"></div>
@@ -1236,7 +1229,7 @@
         </div>
       </section>
 
-      <!-- ═══════════════════════════ SCREEN 5: Basic Profile ═══════════════════════════ -->
+      <!-- SCREEN 5: Basic Profile -->
       <section data-screen="basic-profile" aria-label="Basic profile screen">
         <div class="progress-bar">
           <div class="progress-dot filled"></div>
@@ -1281,7 +1274,7 @@
         </div>
       </section>
 
-      <!-- ═══════════════════════════ SCREEN 6: Photo Upload ═══════════════════════════ -->
+      <!-- SCREEN 6: Photo Upload -->
       <section data-screen="photos" aria-label="Photo upload screen">
         <div class="progress-bar">
           <div class="progress-dot filled"></div>
@@ -1298,13 +1291,13 @@
           <p class="subtitle">Add at least 3 photos. Your first photo is your profile picture.</p>
           <div class="photo-grid" role="group" aria-label="Photo upload grid">
             <div class="photo-slot filled" onclick="togglePhotoSlot(this)" tabindex="0" aria-label="Photo 1 (uploaded)">
-              <span style="font-size:40px;">😊</span>
+              <img src="https://i.pravatar.cc/400?img=11" alt="Profile photo">
             </div>
             <div class="photo-slot filled" onclick="togglePhotoSlot(this)" tabindex="0" aria-label="Photo 2 (uploaded)">
-              <span style="font-size:28px;">🏔️</span>
+              <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=300&h=400&fit=crop" alt="Hiking photo">
             </div>
             <div class="photo-slot filled" onclick="togglePhotoSlot(this)" tabindex="0" aria-label="Photo 3 (uploaded)">
-              <span style="font-size:28px;">🎸</span>
+              <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=300&h=400&fit=crop" alt="Music photo">
             </div>
             <div class="photo-slot" onclick="togglePhotoSlot(this)" tabindex="0" aria-label="Add photo 4">
               <span class="plus">+</span>
@@ -1324,7 +1317,7 @@
         </div>
       </section>
 
-      <!-- ═══════════════════════════ SCREEN 7: Prompts ═══════════════════════════ -->
+      <!-- SCREEN 7: Prompts -->
       <section data-screen="prompts" aria-label="Prompts screen">
         <div class="progress-bar">
           <div class="progress-dot filled"></div>
@@ -1366,7 +1359,7 @@
         </div>
       </section>
 
-      <!-- ═══════════════════════════ SCREEN 8: Preferences ═══════════════════════════ -->
+      <!-- SCREEN 8: Preferences -->
       <section data-screen="preferences" aria-label="Preferences screen">
         <div class="progress-bar">
           <div class="progress-dot filled"></div>
@@ -1421,7 +1414,7 @@
         </div>
       </section>
 
-      <!-- ═══════════════════════════ SCREEN 9: Discovery ═══════════════════════════ -->
+      <!-- SCREEN 9: Discovery -->
       <section data-screen="discovery" aria-label="Discovery screen">
         <div class="discovery-header">
           <span class="discovery-title">Today's Picks</span>
@@ -1436,7 +1429,7 @@
 
         <div class="match-card" onclick="showScreen('profile-detail')" style="cursor: pointer;" role="button" aria-label="View Maya's full profile">
           <div class="card-photo">
-            <div class="card-photo-placeholder">👩</div>
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=750&fit=crop" alt="Maya's profile photo">
             <div class="card-gradient"></div>
             <div class="card-info">
               <div class="card-name-row">
@@ -1480,12 +1473,12 @@
         </nav>
       </section>
 
-      <!-- ═══════════════════════════ SCREEN 10: Profile Detail ═══════════════════════════ -->
+      <!-- SCREEN 10: Profile Detail -->
       <section data-screen="profile-detail" aria-label="Profile detail screen">
         <div class="profile-detail-scroll">
           <div class="profile-photos">
             <div class="card-photo" style="aspect-ratio: 3/4;">
-              <div class="card-photo-placeholder" style="font-size: 100px;">👩</div>
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=800&fit=crop" alt="Maya's main photo">
               <div class="photo-dots">
                 <span class="photo-dot active"></span>
                 <span class="photo-dot"></span>
@@ -1493,7 +1486,7 @@
                 <span class="photo-dot"></span>
               </div>
             </div>
-            <button class="back-btn" onclick="showScreen('discovery')" style="position:absolute;top:var(--space-3);left:var(--space-2);background:rgba(0,0,0,0.3);color:white;border-radius:var(--radius-full);width:40px;height:40px;display:flex;align-items:center;justify-content:center;padding:0;margin:0;" aria-label="Go back">←</button>
+            <button class="back-btn" onclick="showScreen('discovery')" style="position:absolute;top:var(--space-3);left:var(--space-2);background:var(--color-bg-overlay);color:var(--color-text-inverse);border-radius:var(--radius-full);width:var(--avatar-sm);height:var(--avatar-sm);display:flex;align-items:center;justify-content:center;padding:0;margin:0;" aria-label="Go back">←</button>
           </div>
 
           <div class="profile-section">
@@ -1541,7 +1534,7 @@
             </div>
           </div>
 
-          <div style="height: 100px;"></div>
+          <div style="height: var(--avatar-lg);"></div>
         </div>
 
         <div class="profile-sticky-actions">
@@ -1550,28 +1543,34 @@
         </div>
       </section>
 
-      <!-- ═══════════════════════════ SCREEN 11: Match Celebration ═══════════════════════════ -->
+      <!-- SCREEN 11: Match Celebration -->
       <section data-screen="match-celebration" class="celebration-screen" aria-label="Match celebration">
         <div class="confetti-container" id="confetti-container"></div>
         <div class="celebration-content">
           <div class="match-photos">
-            <div class="match-avatar">😊</div>
-            <div class="match-avatar">👩</div>
+            <div class="match-avatar">
+              <img src="https://i.pravatar.cc/240?img=11" alt="Your photo">
+            </div>
+            <div class="match-avatar">
+              <img src="https://i.pravatar.cc/240?img=5" alt="Maya's photo">
+            </div>
           </div>
           <div class="celebration-text">It's a Match!</div>
           <p class="celebration-sub">You and Maya liked each other</p>
           <div class="celebration-actions">
             <button class="btn btn-primary" onclick="showScreen('chat')">Send a Message</button>
-            <button class="btn btn-ghost" style="color: rgba(255,255,255,0.6);" onclick="showScreen('discovery')">Keep Browsing</button>
+            <button class="btn btn-ghost" style="color: var(--color-overlay-white-60);" onclick="showScreen('discovery')">Keep Browsing</button>
           </div>
         </div>
       </section>
 
-      <!-- ═══════════════════════════ SCREEN 12: Chat / First Message ═══════════════════════════ -->
+      <!-- SCREEN 12: Chat / First Message -->
       <section data-screen="chat" aria-label="Chat screen">
         <div class="chat-header">
           <button class="back-btn" onclick="showScreen('discovery')" style="margin:0;padding:var(--space-1);" aria-label="Go back">←</button>
-          <div class="chat-avatar" onclick="showScreen('profile-detail')" style="cursor:pointer;" role="button" aria-label="View Maya's profile">👩</div>
+          <div class="chat-avatar" onclick="showScreen('profile-detail')" style="cursor:pointer;" role="button" aria-label="View Maya's profile">
+            <img src="https://i.pravatar.cc/80?img=5" alt="Maya">
+          </div>
           <div>
             <div class="chat-name">Maya</div>
             <div class="chat-status">● Online now</div>
@@ -1617,7 +1616,6 @@
 
     </div>
 
-    <!-- Prototype navigation toggle -->
     <button class="prototype-toggle" onclick="toggleNav()" aria-label="Toggle prototype navigation">☰</button>
     <nav class="prototype-nav hidden" aria-label="Prototype screen navigation" id="proto-nav">
       <button onclick="showScreen('welcome')">Welcome</button>
@@ -1635,7 +1633,7 @@
     </nav>
 
     <script>
-      let currentScreen = 'welcome';
+      var currentScreen = 'welcome';
 
       function showScreen(id) {
         document.querySelectorAll('[data-screen]').forEach(function(s) {
@@ -1646,7 +1644,6 @@
           target.classList.add('active');
           currentScreen = id;
           updateNavHighlight(id);
-
           if (id === 'match-celebration') spawnConfetti();
         }
       }
@@ -1684,7 +1681,7 @@
       function togglePhotoSlot(el) {
         if (!el.classList.contains('filled')) {
           el.classList.add('filled');
-          el.innerHTML = '<span style="font-size:28px;">📷</span>';
+          el.innerHTML = '<img src="https://picsum.photos/300/400?random=' + Math.random() + '" alt="Uploaded photo">';
         }
       }
 
@@ -1697,19 +1694,27 @@
         btn.textContent = '♥';
         btn.style.color = 'var(--color-like)';
         btn.style.borderColor = 'var(--color-like)';
-        btn.style.background = '#FDF2F8';
+        btn.style.background = 'var(--color-primary-light)';
         btn.style.animation = 'heartBeat 0.6s ease';
       }
 
       function spawnConfetti() {
         var container = document.getElementById('confetti-container');
         container.innerHTML = '';
-        var colors = ['#B8860B', '#C9A96E', '#E84393', '#FFD700', '#FF6B6B', '#4ECDC4'];
+        var styles = getComputedStyle(document.documentElement);
+        var confettiColors = [
+          styles.getPropertyValue('--color-primary').trim(),
+          styles.getPropertyValue('--color-accent').trim(),
+          styles.getPropertyValue('--color-like').trim(),
+          styles.getPropertyValue('--color-warning').trim(),
+          styles.getPropertyValue('--color-error').trim(),
+          styles.getPropertyValue('--color-success').trim()
+        ];
         for (var i = 0; i < 60; i++) {
           var piece = document.createElement('div');
           piece.className = 'confetti';
           piece.style.left = Math.random() * 100 + '%';
-          piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+          piece.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
           piece.style.animationDelay = (Math.random() * 1.5) + 's';
           piece.style.animationDuration = (2 + Math.random() * 2) + 's';
           piece.style.width = (6 + Math.random() * 8) + 'px';

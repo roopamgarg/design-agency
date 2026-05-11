@@ -19,12 +19,40 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    .screen {
-      max-width: 390px;
+    .app-shell {
+      width: 100%;
+      max-width: var(--content-width-base);
+      min-height: 100dvh;
       margin: 0 auto;
-      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       background: var(--color-bg-primary);
-      padding-bottom: var(--space-10);
+      position: relative;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        background: var(--color-bg-secondary);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: var(--space-8) 0;
+      }
+      .app-shell {
+        min-height: var(--shell-min-height);
+        max-height: 90vh;
+        border-radius: var(--radius-3xl);
+        box-shadow: var(--shadow-2xl);
+        overflow: hidden;
+        overflow-y: auto;
+        border: var(--border-width-thin) solid var(--color-border-subtle);
+      }
+    }
+
+    @media (min-width: 1440px) {
+      body {
+        background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
+      }
     }
 
     /* Header */
@@ -36,12 +64,12 @@
       position: sticky;
       top: 0;
       background: var(--color-bg-primary);
-      z-index: 10;
+      z-index: var(--z-sticky);
     }
 
     .back-btn {
-      width: 40px;
-      height: 40px;
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
       border-radius: var(--radius-full);
       border: none;
       background: var(--color-bg-secondary);
@@ -50,43 +78,43 @@
       justify-content: center;
       cursor: pointer;
       color: var(--color-text-secondary);
-      transition: background 0.2s;
+      transition: background var(--transition-fast);
     }
 
-    .back-btn:hover { background: #EBE5DD; }
-    .back-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-    .back-btn svg { width: 20px; height: 20px; }
+    .back-btn:hover { background: var(--color-bg-tertiary); }
+    .back-btn:focus-visible { outline: var(--outline-width) solid var(--color-primary); outline-offset: var(--outline-offset); }
+    .back-btn svg { width: var(--icon-xl); height: var(--icon-xl); }
 
     .header-title {
       font-family: var(--font-family-display);
-      font-size: 22px;
-      font-weight: 600;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
       flex: 1;
     }
 
     .mark-read-btn {
       font-family: var(--font-family-sans);
-      font-size: 13px;
-      font-weight: 600;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
       color: var(--color-primary);
       background: none;
       border: none;
       cursor: pointer;
       padding: var(--space-2);
       border-radius: var(--radius-sm);
-      transition: background 0.2s;
+      transition: background var(--transition-fast);
       white-space: nowrap;
     }
 
-    .mark-read-btn:hover { background: rgba(184, 134, 11, 0.08); }
-    .mark-read-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    .mark-read-btn:hover { background: var(--color-primary-subtle); }
+    .mark-read-btn:focus-visible { outline: var(--outline-width) solid var(--color-primary); outline-offset: var(--outline-offset); }
 
     /* Section headings */
     .section-heading {
-      font-size: 12px;
-      font-weight: 600;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: var(--letter-spacing-widest);
       color: var(--color-text-tertiary);
       padding: var(--space-4) var(--space-5) var(--space-2);
     }
@@ -102,27 +130,26 @@
       gap: var(--space-3);
       padding: var(--space-4) var(--space-5);
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background var(--transition-fast);
       position: relative;
     }
 
     .notif-item:hover { background: var(--color-bg-secondary); }
-    .notif-item:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; border-radius: var(--radius-sm); }
+    .notif-item:focus-visible { outline: var(--outline-width) solid var(--color-primary); outline-offset: -2px; border-radius: var(--radius-sm); }
 
     .notif-item.read { opacity: 0.6; }
 
-    .notif-item + .notif-item { border-top: 1px solid var(--color-bg-secondary); }
+    .notif-item + .notif-item { border-top: var(--border-width-thin) solid var(--color-bg-secondary); }
 
-    /* Match notification gold accent */
     .notif-item.match-notif {
-      border-left: 3px solid var(--color-match);
-      padding-left: calc(var(--space-5) - 3px);
+      border-left: var(--border-width-heavy) solid var(--color-match);
+      padding-left: calc(var(--space-5) - var(--border-width-heavy));
     }
 
     /* Icon containers */
     .notif-icon {
-      width: 44px;
-      height: 44px;
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
       border-radius: var(--radius-full);
       display: flex;
       align-items: center;
@@ -130,101 +157,93 @@
       flex-shrink: 0;
     }
 
-    .notif-icon svg { width: 20px; height: 20px; }
+    .notif-icon svg { width: var(--icon-xl); height: var(--icon-xl); }
 
     .notif-icon.match {
-      background: rgba(201, 169, 110, 0.15);
+      background: var(--color-accent-subtle);
       color: var(--color-match);
     }
 
     .notif-icon.like {
-      background: rgba(155, 35, 53, 0.08);
+      background: var(--color-error-subtle);
       color: var(--color-error);
     }
 
     .notif-icon.message {
-      background: rgba(44, 62, 80, 0.08);
+      background: var(--color-secondary-subtle);
       color: var(--color-secondary);
     }
 
     .notif-icon.compass {
-      background: rgba(184, 134, 11, 0.1);
+      background: var(--color-primary-subtle);
       color: var(--color-primary);
     }
 
     .notif-icon.shield {
-      background: rgba(74, 124, 89, 0.1);
+      background: var(--color-success-subtle);
       color: var(--color-verified);
     }
 
     .notif-icon.sparkle {
-      background: rgba(201, 169, 110, 0.12);
+      background: var(--color-accent-subtle);
       color: var(--color-accent);
     }
 
     .notif-icon.chart {
-      background: rgba(44, 62, 80, 0.08);
+      background: var(--color-secondary-subtle);
       color: var(--color-secondary);
     }
 
     .notif-icon.check {
-      background: rgba(74, 124, 89, 0.1);
+      background: var(--color-success-subtle);
       color: var(--color-verified);
     }
 
     /* Overlapping avatars for match */
     .match-avatars {
       position: relative;
-      width: 44px;
-      height: 44px;
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
       flex-shrink: 0;
     }
 
     .match-avatars .mini-avatar {
-      width: 32px;
-      height: 32px;
+      width: var(--icon-4xl);
+      height: var(--icon-4xl);
       border-radius: var(--radius-full);
       position: absolute;
-      border: 2px solid var(--color-bg-primary);
+      border: var(--border-width-medium) solid var(--color-bg-primary);
+      object-fit: cover;
     }
 
     .match-avatars .mini-avatar:first-child {
       top: 0;
       left: 0;
-      background: linear-gradient(135deg, #C9A96E, #8B6914);
     }
 
     .match-avatars .mini-avatar:last-child {
       bottom: 0;
       right: 0;
-      background: linear-gradient(135deg, #2C3E50, #5D8AA8);
     }
 
     /* Message avatar */
     .msg-avatar {
-      width: 44px;
-      height: 44px;
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
       border-radius: var(--radius-full);
       flex-shrink: 0;
-      background: linear-gradient(135deg, #4A7C59, #7CB891);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-family: var(--font-family-display);
-      font-size: 16px;
-      font-weight: 600;
+      object-fit: cover;
     }
 
     /* Blurred avatar thumbnail for like */
     .blurred-avatar {
-      width: 36px;
-      height: 36px;
+      width: var(--icon-5xl);
+      height: var(--icon-5xl);
       border-radius: var(--radius-full);
-      background: linear-gradient(135deg, #C9A96E, #8B6914);
-      filter: blur(6px);
       flex-shrink: 0;
       margin-left: auto;
+      object-fit: cover;
+      filter: blur(var(--space-1-5));
     }
 
     /* Content */
@@ -234,24 +253,24 @@
     }
 
     .notif-title {
-      font-size: 14px;
-      font-weight: 600;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
       color: var(--color-text-primary);
-      line-height: 1.4;
+      line-height: var(--line-height-snug);
     }
 
     .notif-body {
-      font-size: 13px;
+      font-size: var(--font-size-sm);
       color: var(--color-text-tertiary);
-      line-height: 1.4;
-      margin-top: 2px;
+      line-height: var(--line-height-snug);
+      margin-top: var(--space-1);
     }
 
     .notif-preview {
-      font-size: 13px;
+      font-size: var(--font-size-sm);
       color: var(--color-text-secondary);
-      line-height: 1.4;
-      margin-top: 2px;
+      line-height: var(--line-height-snug);
+      margin-top: var(--space-1);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -265,15 +284,15 @@
     }
 
     .notif-time {
-      font-size: 12px;
+      font-size: var(--font-size-xs);
       color: var(--color-text-tertiary);
       white-space: nowrap;
     }
 
     /* Unread dot */
     .unread-dot {
-      width: 8px;
-      height: 8px;
+      width: var(--online-dot-size-sm);
+      height: var(--online-dot-size-sm);
       border-radius: var(--radius-full);
       background: var(--color-primary);
       flex-shrink: 0;
@@ -285,18 +304,21 @@
     .premium-cta {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: var(--space-1);
       background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-      color: white;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 10px;
+      color: var(--color-text-inverse);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      padding: var(--hero-dot-height) var(--space-3);
       border-radius: var(--radius-full);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: var(--letter-spacing-wide);
       white-space: nowrap;
       cursor: pointer;
+      transition: opacity var(--transition-fast);
     }
+
+    .premium-cta:hover { opacity: 0.9; }
 
     /* Right side wrapper */
     .notif-right {
@@ -311,12 +333,12 @@
     .trust-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      background: rgba(74, 124, 89, 0.1);
+      gap: var(--space-1);
+      background: var(--color-success-subtle);
       color: var(--color-verified);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 8px;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      padding: var(--space-1) var(--space-2);
       border-radius: var(--radius-full);
       margin-top: var(--space-1);
     }
@@ -325,9 +347,9 @@
       position: absolute;
       left: -9999px;
       top: var(--space-2);
-      z-index: 100;
+      z-index: var(--z-toast);
       background: var(--color-primary);
-      color: #fff;
+      color: var(--color-text-inverse);
       padding: var(--space-2) var(--space-4);
       border-radius: var(--radius-md);
       font-size: var(--font-size-sm);
@@ -336,22 +358,10 @@
     .skip-link:focus {
       left: var(--space-4);
     }
-
-    @media (min-width: 768px) {
-      .screen { box-shadow: 0 0 40px rgba(0,0,0,0.08); }
-      body { background: #EDEAE6; display: flex; justify-content: center; }
-    }
-
-    @media (min-width: 1440px) {
-      body { background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%); }
-      .screen {
-        box-shadow: 0 0 60px rgba(0,0,0,0.06);
-      }
-    }
   </style>
 </head>
 <body>
-  <div class="screen" data-screen="notifications">
+  <div class="app-shell" data-screen="notifications">
     <a href="#notif-today" class="skip-link">Skip to main content</a>
 
     <!-- Header -->
@@ -370,8 +380,8 @@
       <!-- Match -->
       <li class="notif-item match-notif" tabindex="0" role="article" aria-label="You matched with Maya, 2 hours ago">
         <div class="match-avatars" aria-hidden="true">
-          <div class="mini-avatar"></div>
-          <div class="mini-avatar"></div>
+          <img class="mini-avatar" src="https://i.pravatar.cc/32?img=1" alt="">
+          <img class="mini-avatar" src="https://i.pravatar.cc/32?img=5" alt="">
         </div>
         <div class="notif-content">
           <p class="notif-title">You matched with Maya!</p>
@@ -394,13 +404,13 @@
             <span class="premium-cta">See who</span>
           </div>
         </div>
-        <div class="blurred-avatar" aria-hidden="true"></div>
+        <img class="blurred-avatar" src="https://i.pravatar.cc/36?img=15" alt="" aria-hidden="true">
         <div class="unread-dot" aria-label="Unread"></div>
       </li>
 
       <!-- Message -->
       <li class="notif-item" tabindex="0" role="article" aria-label="Liam sent you a message, 6 hours ago">
-        <div class="msg-avatar" aria-hidden="true">L</div>
+        <img class="msg-avatar" src="https://i.pravatar.cc/44?img=8" alt="Liam" aria-hidden="true">
         <div class="notif-content">
           <p class="notif-title">Liam sent you a message</p>
           <p class="notif-preview">"Let me know when..."</p>
@@ -441,7 +451,7 @@
           <div class="notif-meta">
             <span class="notif-time">2 days ago</span>
             <span class="trust-badge">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:var(--online-dot-size);height:var(--online-dot-size);"><polyline points="20 6 9 17 4 12"/></svg>
               Level Up
             </span>
           </div>

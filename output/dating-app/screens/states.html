@@ -22,7 +22,7 @@
 
     html {
       font-family: var(--font-family-sans);
-      background: #E8E0D8;
+      background: var(--color-bg-secondary);
       color: var(--color-text-primary);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -34,7 +34,7 @@
     }
 
     .states-page {
-      max-width: 1200px;
+      max-width: var(--states-page-max);
       margin: 0 auto;
     }
 
@@ -45,14 +45,14 @@
 
     .states-page > header h1 {
       font-family: var(--font-family-display);
-      font-size: 2rem;
-      font-weight: 600;
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-semibold);
       color: var(--color-text-primary);
       margin-bottom: var(--space-2);
     }
 
     .states-page > header p {
-      font-size: 0.9375rem;
+      font-size: var(--font-size-base);
       color: var(--color-text-tertiary);
     }
 
@@ -62,15 +62,15 @@
 
     .section-group > h2 {
       font-family: var(--font-family-display);
-      font-size: 1.5rem;
-      font-weight: 600;
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-semibold);
       color: var(--color-text-primary);
       margin-bottom: var(--space-2);
       padding-left: var(--space-2);
     }
 
     .section-group > p {
-      font-size: 0.875rem;
+      font-size: var(--font-size-sm);
       color: var(--color-text-tertiary);
       margin-bottom: var(--space-8);
       padding-left: var(--space-2);
@@ -78,7 +78,7 @@
 
     .states-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(var(--states-grid-min), 1fr));
       gap: var(--space-8);
     }
 
@@ -95,37 +95,37 @@
     }
 
     .state-label {
-      font-size: 0.8125rem;
-      font-weight: 600;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
       color: var(--color-text-secondary);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: var(--letter-spacing-wider);
       margin-bottom: var(--space-3);
       text-align: center;
     }
 
     .state-sublabel {
-      font-size: 0.75rem;
+      font-size: var(--font-size-xs);
       color: var(--color-text-tertiary);
       margin-bottom: var(--space-4);
       text-align: center;
-      font-weight: 400;
+      font-weight: var(--font-weight-regular);
     }
 
-    .phone-frame {
+    .app-shell {
       width: 100%;
-      max-width: 390px;
+      max-width: var(--app-shell-width);
       background: var(--color-bg-primary);
       border-radius: var(--radius-2xl);
-      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,0.04);
+      box-shadow: var(--shadow-lg);
       overflow: hidden;
       position: relative;
     }
 
-    .phone-frame--short { min-height: 480px; }
-    .phone-frame--medium { min-height: 600px; }
-    .phone-frame--tall { min-height: 720px; }
-    .phone-frame--auto { min-height: auto; }
+    .app-shell--short { min-height: var(--app-shell-short); }
+    .app-shell--medium { min-height: var(--app-shell-medium); }
+    .app-shell--tall { min-height: var(--app-shell-tall); }
+    .app-shell--auto { min-height: auto; }
 
     /* ===== EMPTY STATES ===== */
 
@@ -136,12 +136,12 @@
       justify-content: center;
       text-align: center;
       padding: var(--space-12) var(--space-8);
-      min-height: 480px;
+      min-height: var(--empty-state-min-height);
     }
 
     .empty-state__icon {
-      width: 96px;
-      height: 96px;
+      width: var(--space-24);
+      height: var(--space-24);
       margin-bottom: var(--space-8);
       color: var(--color-accent);
       opacity: 0.85;
@@ -149,23 +149,23 @@
 
     .empty-state__title {
       font-family: var(--font-family-display);
-      font-size: 1.375rem;
-      font-weight: 600;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
       color: var(--color-text-primary);
       margin-bottom: var(--space-3);
-      line-height: 1.3;
+      line-height: var(--line-height-snug);
     }
 
     .empty-state__subtitle {
-      font-size: 0.9375rem;
+      font-size: var(--font-size-base);
       color: var(--color-text-secondary);
-      line-height: 1.5;
-      max-width: 280px;
+      line-height: var(--line-height-normal);
+      max-width: var(--icebreaker-max-width);
       margin-bottom: var(--space-3);
     }
 
     .empty-state__meta {
-      font-size: 0.8125rem;
+      font-size: var(--font-size-sm);
       color: var(--color-text-tertiary);
       margin-bottom: var(--space-8);
     }
@@ -177,14 +177,14 @@
       background: var(--color-bg-secondary);
       padding: var(--space-2) var(--space-4);
       border-radius: var(--radius-full);
-      font-size: 0.8125rem;
+      font-size: var(--font-size-sm);
       color: var(--color-text-secondary);
       margin-bottom: var(--space-6);
     }
 
     .empty-state__secondary-info svg {
-      width: 14px;
-      height: 14px;
+      width: var(--icon-md);
+      height: var(--icon-md);
       color: var(--color-primary);
     }
 
@@ -199,11 +199,11 @@
       padding: var(--space-3) var(--space-6);
       border-radius: var(--radius-full);
       font-family: var(--font-family-sans);
-      font-size: 0.9375rem;
-      font-weight: 600;
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
       cursor: pointer;
       border: none;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
       text-decoration: none;
     }
 
@@ -212,41 +212,41 @@
 
     .btn--primary {
       background: var(--color-primary);
-      color: #FFFFFF;
-      box-shadow: 0 2px 8px rgba(184, 134, 11, 0.25);
+      color: var(--color-text-inverse);
+      box-shadow: var(--shadow-glow-primary);
     }
 
     .btn--primary:hover {
-      box-shadow: 0 4px 16px rgba(184, 134, 11, 0.35);
+      box-shadow: var(--shadow-glow-primary);
     }
 
     .btn--secondary {
       background: transparent;
       color: var(--color-primary);
-      border: 1.5px solid var(--color-accent);
+      border: var(--border-width-default) solid var(--color-accent);
     }
 
     .btn--secondary:hover {
-      background: rgba(201, 169, 110, 0.08);
+      background: var(--color-accent-subtle);
     }
 
     .btn--small {
-      min-height: 36px;
+      min-height: var(--btn-height-sm);
       padding: var(--space-2) var(--space-4);
-      font-size: 0.8125rem;
+      font-size: var(--font-size-sm);
     }
 
     .btn--ghost {
       background: transparent;
       color: var(--color-primary);
       border: none;
-      font-weight: 500;
+      font-weight: var(--font-weight-medium);
       padding: var(--space-2) var(--space-3);
-      min-height: 36px;
+      min-height: var(--btn-height-sm);
     }
 
     .btn--ghost:hover {
-      background: rgba(201, 169, 110, 0.08);
+      background: var(--color-accent-subtle);
     }
 
     /* ===== SKELETON / SHIMMER ===== */
@@ -268,17 +268,17 @@
     }
 
     .skeleton--text {
-      height: 14px;
+      height: var(--icon-md);
       border-radius: var(--radius-sm);
     }
 
     .skeleton--text-lg {
-      height: 20px;
+      height: var(--icon-xl);
       border-radius: var(--radius-sm);
     }
 
     .skeleton--text-sm {
-      height: 10px;
+      height: var(--icon-xs);
       border-radius: var(--radius-sm);
     }
 
@@ -293,7 +293,7 @@
 
     .loading-profile-card__photo {
       width: 100%;
-      aspect-ratio: 4 / 5;
+      aspect-ratio: var(--profile-card-aspect);
       border-radius: var(--radius-2xl);
       margin-bottom: var(--space-4);
     }
@@ -316,7 +316,7 @@
 
     .loading-profile-card__badge {
       width: 24%;
-      height: 24px;
+      height: var(--badge-height);
       border-radius: var(--radius-full);
     }
 
@@ -328,8 +328,8 @@
     }
 
     .loading-profile-card__action-btn {
-      width: 56px;
-      height: 56px;
+      width: var(--icon-7xl);
+      height: var(--icon-7xl);
     }
 
     /* ===== LOADING: CONVERSATION LIST ===== */
@@ -346,12 +346,12 @@
     }
 
     .loading-conv-row + .loading-conv-row {
-      border-top: 1px solid var(--color-bg-secondary);
+      border-top: var(--border-width-thin) solid var(--color-bg-secondary);
     }
 
     .loading-conv-row__avatar {
-      width: 48px;
-      height: 48px;
+      width: var(--avatar-md);
+      height: var(--avatar-md);
       flex-shrink: 0;
     }
 
@@ -363,7 +363,7 @@
     }
 
     .loading-conv-row__timestamp {
-      width: 36px;
+      width: var(--icon-5xl);
       align-self: flex-start;
       margin-top: var(--space-1);
     }
@@ -378,8 +378,8 @@
     }
 
     .loading-profile__avatar {
-      width: 128px;
-      height: 128px;
+      width: var(--avatar-2xl);
+      height: var(--avatar-2xl);
       margin-bottom: var(--space-5);
     }
 
@@ -390,7 +390,7 @@
 
     .loading-profile__btn {
       width: 100%;
-      height: 44px;
+      height: var(--btn-height-md);
       border-radius: var(--radius-full);
       margin-bottom: var(--space-8);
     }
@@ -410,7 +410,7 @@
 
     .loading-profile__prompt {
       width: 100%;
-      height: 80px;
+      height: var(--space-20);
       border-radius: var(--card-radius);
       margin-bottom: var(--space-3);
     }
@@ -422,30 +422,30 @@
       align-items: center;
       gap: var(--space-3);
       background: var(--color-bg-tertiary);
-      border-left: 3px solid var(--color-accent);
+      border-left: var(--border-width-heavy) solid var(--color-accent);
       padding: var(--space-3) var(--space-4);
       margin: var(--space-3);
       border-radius: 0 var(--radius-md) var(--radius-md) 0;
     }
 
     .error-banner__icon {
-      width: 20px;
-      height: 20px;
+      width: var(--icon-xl);
+      height: var(--icon-xl);
       color: var(--color-primary);
       flex-shrink: 0;
     }
 
     .error-banner__text {
-      font-size: 0.8125rem;
+      font-size: var(--font-size-sm);
       color: var(--color-text-secondary);
-      line-height: 1.4;
+      line-height: var(--line-height-snug);
     }
 
     .error-banner__text strong {
       display: block;
-      font-weight: 600;
+      font-weight: var(--font-weight-semibold);
       color: var(--color-text-primary);
-      margin-bottom: 2px;
+      margin-bottom: var(--space-1);
     }
 
     .error-fullpage {
@@ -455,12 +455,12 @@
       justify-content: center;
       text-align: center;
       padding: var(--space-12) var(--space-8);
-      min-height: 480px;
+      min-height: var(--empty-state-min-height);
     }
 
     .error-fullpage__icon {
-      width: 80px;
-      height: 80px;
+      width: var(--space-20);
+      height: var(--space-20);
       margin-bottom: var(--space-6);
       color: var(--color-text-tertiary);
       opacity: 0.7;
@@ -468,17 +468,17 @@
 
     .error-fullpage__title {
       font-family: var(--font-family-display);
-      font-size: 1.375rem;
-      font-weight: 600;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
       color: var(--color-text-primary);
       margin-bottom: var(--space-3);
     }
 
     .error-fullpage__subtitle {
-      font-size: 0.9375rem;
+      font-size: var(--font-size-base);
       color: var(--color-text-secondary);
-      line-height: 1.5;
-      max-width: 280px;
+      line-height: var(--line-height-normal);
+      max-width: var(--icebreaker-max-width);
       margin-bottom: var(--space-8);
     }
 
@@ -512,8 +512,8 @@
     }
 
     .error-upload-card__placeholder svg {
-      width: 48px;
-      height: 48px;
+      width: var(--space-12);
+      height: var(--space-12);
       color: var(--color-text-tertiary);
       opacity: 0.5;
     }
@@ -521,26 +521,26 @@
     .error-upload-card__overlay {
       position: absolute;
       inset: 0;
-      background: rgba(155, 35, 53, 0.12);
+      background: var(--color-error-subtle);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .error-upload-card__overlay-icon {
-      width: 48px;
-      height: 48px;
+      width: var(--space-12);
+      height: var(--space-12);
       border-radius: var(--radius-full);
-      background: rgba(155, 35, 53, 0.9);
+      background: var(--color-error);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #FFFFFF;
+      color: var(--color-text-inverse);
     }
 
     .error-upload-card__overlay-icon svg {
-      width: 24px;
-      height: 24px;
+      width: var(--icon-2xl);
+      height: var(--icon-2xl);
     }
 
     .error-upload-card__body {
@@ -548,8 +548,8 @@
     }
 
     .error-upload-card__error-text {
-      font-size: 0.875rem;
-      font-weight: 500;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
       color: var(--color-error);
       margin-bottom: var(--space-3);
     }
@@ -561,14 +561,15 @@
     }
 
     .error-upload-card__link {
-      font-size: 0.8125rem;
+      font-size: var(--font-size-sm);
       color: var(--color-text-secondary);
       text-decoration: underline;
-      text-underline-offset: 2px;
+      text-underline-offset: var(--space-0-5);
       cursor: pointer;
       background: none;
       border: none;
       font-family: var(--font-family-sans);
+      transition: color var(--transition-fast);
     }
 
     .error-upload-card__link:hover {
@@ -581,15 +582,15 @@
       align-items: center;
       gap: var(--space-2);
       background: var(--color-accent);
-      color: #FFFFFF;
+      color: var(--color-text-inverse);
       padding: var(--space-2) var(--space-4);
-      font-size: 0.8125rem;
-      font-weight: 500;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
     }
 
     .offline-top-banner svg {
-      width: 16px;
-      height: 16px;
+      width: var(--icon-base);
+      height: var(--icon-base);
       flex-shrink: 0;
     }
 
@@ -600,7 +601,7 @@
     }
 
     .mock-content__bar {
-      height: 12px;
+      height: var(--space-3);
       background: var(--color-bg-tertiary);
       border-radius: var(--radius-sm);
       margin-bottom: var(--space-3);
@@ -628,14 +629,14 @@
       }
 
       .states-page > header h1 {
-        font-size: 1.5rem;
+        font-size: var(--font-size-2xl);
       }
 
       .section-group > h2 {
-        font-size: 1.25rem;
+        font-size: var(--font-size-lg);
       }
 
-      .phone-frame {
+      .app-shell {
         max-width: 100%;
       }
     }
@@ -643,7 +644,7 @@
     /* ===== PERMISSION OVERLAY ===== */
     .permission-overlay {
       position: relative;
-      min-height: 480px;
+      min-height: var(--empty-state-min-height);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -652,19 +653,19 @@
     .permission-overlay__backdrop {
       position: absolute;
       inset: 0;
-      background: rgba(26, 26, 26, 0.5);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      background: var(--color-bg-overlay);
+      backdrop-filter: blur(var(--blur-sm));
+      -webkit-backdrop-filter: blur(var(--blur-sm));
     }
 
     .permission-overlay__card {
       position: relative;
-      z-index: 1;
+      z-index: var(--z-above);
       background: var(--color-bg-elevated);
       border-radius: var(--radius-2xl);
       padding: var(--space-8) var(--space-6);
       margin: var(--space-4);
-      max-width: 320px;
+      max-width: var(--permission-card-max-width);
       text-align: center;
       box-shadow: var(--shadow-lg);
     }
@@ -673,7 +674,7 @@
       width: 72px;
       height: 72px;
       margin: 0 auto var(--space-5);
-      background: rgba(184, 134, 11, 0.08);
+      background: var(--color-primary-subtle);
       border-radius: var(--radius-full);
       display: flex;
       align-items: center;
@@ -682,22 +683,22 @@
     }
 
     .permission-overlay__icon svg {
-      width: 36px;
-      height: 36px;
+      width: var(--icon-5xl);
+      height: var(--icon-5xl);
     }
 
     .permission-overlay__title {
       font-family: var(--font-family-display);
-      font-size: 1.25rem;
-      font-weight: 600;
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
       color: var(--color-text-primary);
       margin-bottom: var(--space-3);
     }
 
     .permission-overlay__desc {
-      font-size: 0.875rem;
+      font-size: var(--font-size-sm);
       color: var(--color-text-secondary);
-      line-height: 1.5;
+      line-height: var(--line-height-normal);
       margin-bottom: var(--space-6);
     }
 
@@ -711,9 +712,9 @@
       position: absolute;
       left: -9999px;
       top: var(--space-2);
-      z-index: 100;
+      z-index: var(--z-toast);
       background: var(--color-primary);
-      color: #fff;
+      color: var(--color-text-inverse);
       padding: var(--space-2) var(--space-4);
       border-radius: var(--radius-md);
       font-size: var(--font-size-sm);
@@ -759,7 +760,7 @@
         <article class="state-showcase">
           <p class="state-label">No Matches Yet (New User)</p>
           <p class="state-sublabel">Discovery tab — first-time user</p>
-          <div class="phone-frame phone-frame--short">
+          <div class="app-shell app-shell--short">
             <div class="empty-state" role="status" aria-label="No matches yet">
               <svg class="empty-state__icon" viewBox="0 0 96 96" fill="none" aria-hidden="true">
                 <circle cx="48" cy="48" r="44" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3" opacity="0.3"/>
@@ -783,7 +784,7 @@
         <article class="state-showcase">
           <p class="state-label">Daily Matches Exhausted</p>
           <p class="state-sublabel">All curated matches viewed for the day</p>
-          <div class="phone-frame phone-frame--short">
+          <div class="app-shell app-shell--short">
             <div class="empty-state" role="status" aria-label="Daily matches exhausted">
               <svg class="empty-state__icon" viewBox="0 0 96 96" fill="none" aria-hidden="true">
                 <circle cx="48" cy="52" r="28" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
@@ -812,7 +813,7 @@
         <article class="state-showcase">
           <p class="state-label">No Conversations</p>
           <p class="state-sublabel">Messages tab — no chats started</p>
-          <div class="phone-frame phone-frame--short">
+          <div class="app-shell app-shell--short">
             <div class="empty-state" role="status" aria-label="No conversations yet">
               <svg class="empty-state__icon" viewBox="0 0 96 96" fill="none" aria-hidden="true">
                 <rect x="16" y="20" width="56" height="40" rx="12" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -834,7 +835,7 @@
         <article class="state-showcase">
           <p class="state-label">No Likes Received</p>
           <p class="state-sublabel">Likes tab — no incoming likes</p>
-          <div class="phone-frame phone-frame--short">
+          <div class="app-shell app-shell--short">
             <div class="empty-state" role="status" aria-label="No likes received">
               <svg class="empty-state__icon" viewBox="0 0 96 96" fill="none" aria-hidden="true">
                 <path d="M48 80 C20 60 12 44 12 34 C12 22 22 14 34 14 C40 14 45 17 48 22 C51 17 56 14 62 14 C74 14 84 22 84 34 C84 44 76 60 48 80Z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
@@ -851,7 +852,7 @@
         <article class="state-showcase">
           <p class="state-label">No Search Results</p>
           <p class="state-sublabel">Filters return zero matches</p>
-          <div class="phone-frame phone-frame--short">
+          <div class="app-shell app-shell--short">
             <div class="empty-state" role="status" aria-label="No search results">
               <svg class="empty-state__icon" viewBox="0 0 96 96" fill="none" aria-hidden="true">
                 <circle cx="40" cy="40" r="22" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -884,7 +885,7 @@
         <article class="state-showcase">
           <p class="state-label">Profile Card Loading</p>
           <p class="state-sublabel">Discovery tab — fetching next profile</p>
-          <div class="phone-frame phone-frame--tall" role="status" aria-label="Loading profile card">
+          <div class="app-shell app-shell--tall" role="status" aria-label="Loading profile card">
             <span class="visually-hidden">Loading profile card</span>
             <div class="loading-profile-card">
               <div class="skeleton loading-profile-card__photo" aria-hidden="true"></div>
@@ -905,7 +906,7 @@
         <article class="state-showcase">
           <p class="state-label">Conversation List Loading</p>
           <p class="state-sublabel">Messages tab — loading chat history</p>
-          <div class="phone-frame phone-frame--medium" role="status" aria-label="Loading conversations">
+          <div class="app-shell app-shell--medium" role="status" aria-label="Loading conversations">
             <span class="visually-hidden">Loading conversations</span>
             <div class="loading-conversations">
               <div class="loading-conv-row" aria-hidden="true">
@@ -948,7 +949,7 @@
         <article class="state-showcase">
           <p class="state-label">Profile Loading</p>
           <p class="state-sublabel">Full profile view — loading user details</p>
-          <div class="phone-frame phone-frame--tall" role="status" aria-label="Loading profile">
+          <div class="app-shell app-shell--tall" role="status" aria-label="Loading profile">
             <span class="visually-hidden">Loading profile</span>
             <div class="loading-profile">
               <div class="skeleton skeleton--circle loading-profile__avatar" aria-hidden="true"></div>
@@ -985,7 +986,7 @@
         <article class="state-showcase">
           <p class="state-label">Network Offline — Inline Banner</p>
           <p class="state-sublabel">Persistent top bar over existing content</p>
-          <div class="phone-frame phone-frame--short" aria-label="Offline inline banner example">
+          <div class="app-shell app-shell--short" aria-label="Offline inline banner example">
             <div class="offline-top-banner" role="alert">
               <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M1 1L15 15M3.5 6.5A7.5 7.5 0 0 1 8 5a7.5 7.5 0 0 1 4.5 1.5M5.5 9A5 5 0 0 1 8 8a5 5 0 0 1 2.5 1M8 12.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -1019,7 +1020,7 @@
         <article class="state-showcase">
           <p class="state-label">Network Offline — Full Page</p>
           <p class="state-sublabel">Shown when app cannot load any content</p>
-          <div class="phone-frame phone-frame--short">
+          <div class="app-shell app-shell--short">
             <div class="error-fullpage" role="alert" aria-label="You are offline">
               <svg class="error-fullpage__icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
                 <path d="M40 56a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" fill="currentColor" opacity="0.5"/>
@@ -1039,7 +1040,7 @@
         <article class="state-showcase">
           <p class="state-label">Server Error</p>
           <p class="state-sublabel">500 — unexpected server failure</p>
-          <div class="phone-frame phone-frame--short">
+          <div class="app-shell app-shell--short">
             <div class="error-fullpage" role="alert" aria-label="Server error">
               <svg class="error-fullpage__icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
                 <path d="M40 72 C18 56 8 42 8 30 C8 18 18 8 28 8 C34 8 38 12 40 16 C42 12 46 8 52 8 C62 8 72 18 72 30 C72 42 62 56 40 72Z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
@@ -1057,7 +1058,7 @@
         <article class="state-showcase">
           <p class="state-label">Photo Upload Failure</p>
           <p class="state-sublabel">Inline card — file size exceeded</p>
-          <div class="phone-frame phone-frame--auto" aria-label="Photo upload error">
+          <div class="app-shell app-shell--auto" aria-label="Photo upload error">
             <div style="padding: var(--space-4) 0;">
               <div class="error-upload-card" role="alert">
                 <div class="error-upload-card__image-area">
@@ -1093,7 +1094,7 @@
         <article class="state-showcase">
           <p class="state-label">Permission Request — Camera</p>
           <p class="state-sublabel">Photo verification — camera access needed</p>
-          <div class="phone-frame phone-frame--short">
+          <div class="app-shell app-shell--short">
             <div class="permission-overlay" role="dialog" aria-modal="true" aria-label="Camera permission request">
               <div class="permission-overlay__backdrop"></div>
               <div class="permission-overlay__card">
