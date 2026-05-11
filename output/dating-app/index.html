@@ -258,6 +258,26 @@
     .open-tab-btn:hover { background: rgba(225, 29, 72, 0.14); }
     .open-tab-btn svg { width: 12px; height: 12px; }
 
+    .theme-toggle-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 120ms, color 120ms;
+    }
+    .theme-toggle-btn:hover { background: var(--elevated); }
+    .theme-toggle-btn svg { width: 16px; height: 16px; }
+    .theme-toggle-btn .icon-moon { display: none; }
+    .theme-toggle-btn.dark { background: #1E1E2E; color: #F5F0EB; border-color: #3A3530; }
+    .theme-toggle-btn.dark .icon-sun { display: none; }
+    .theme-toggle-btn.dark .icon-moon { display: block; }
+
     .mode-toggle {
       display: inline-flex;
       border: 1px solid var(--border);
@@ -445,6 +465,10 @@
         <button class="preview-nav-btn" id="btn-next" aria-label="Next screen">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
+        <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle dark/light theme" title="Toggle dark/light theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
         <div class="mode-toggle" id="mode-toggle">
           <button class="mode-toggle-btn active" data-mode="live">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -528,6 +552,7 @@
     const flatScreens = SCREENS.flatMap(g => g.items);
     let activeIndex = 0;
     let viewMode = "live";
+    let currentTheme = "light";
 
     const sidebar        = document.getElementById("sidebar");
     const iframe         = document.getElementById("preview-iframe");
@@ -620,6 +645,25 @@
       const activeBtn = sidebar.querySelector(".screen-item.active");
       if (activeBtn) activeBtn.scrollIntoView({ block: "nearest", behavior: "smooth" });
     }
+
+    const themeToggle = document.getElementById("theme-toggle");
+
+    function applyThemeToIframe() {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        if (doc && doc.documentElement) {
+          doc.documentElement.setAttribute("data-theme", currentTheme);
+        }
+      } catch (e) {}
+    }
+
+    iframe.addEventListener("load", applyThemeToIframe);
+
+    themeToggle.addEventListener("click", () => {
+      currentTheme = currentTheme === "light" ? "dark" : "light";
+      themeToggle.classList.toggle("dark", currentTheme === "dark");
+      applyThemeToIframe();
+    });
 
     btnPrev.addEventListener("click", () => selectScreen(activeIndex - 1));
     btnNext.addEventListener("click", () => selectScreen(activeIndex + 1));
