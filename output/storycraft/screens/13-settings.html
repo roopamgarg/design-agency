@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - StoryCraft</title>
+  <link rel="stylesheet" href="../system/tokens.css">
+  <link rel="stylesheet" href="../system/components.css">
+  <style>
+    .profile-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px;
+      gap: 8px;
+    }
+
+    .profile-header__name {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 8px;
+    }
+
+    .profile-header__email {
+      font-size: var(--text-body);
+      color: var(--text-secondary);
+    }
+
+    .profile-header__since {
+      font-size: var(--text-caption);
+      color: var(--text-secondary);
+    }
+
+    .settings-section {
+      margin-top: 24px;
+      padding: 0 16px;
+    }
+
+    .settings-section .section-label {
+      padding: 0;
+      margin-bottom: 8px;
+    }
+
+    .sign-out-wrapper {
+      padding: 0 16px;
+      margin-top: 32px;
+      padding-bottom: 32px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <!-- Profile Header -->
+    <header class="profile-header">
+      <div class="avatar avatar--lg" aria-label="User avatar">AK</div>
+      <h3 class="profile-header__name">Alex Kim</h3>
+      <p class="profile-header__email">alex@example.com</p>
+      <p class="profile-header__since">Member since March 2026</p>
+    </header>
+
+    <!-- Practice Section -->
+    <section class="settings-section" aria-labelledby="practice-label">
+      <h2 id="practice-label" class="section-label">Practice</h2>
+      <div class="grouped-list" role="list">
+        <div class="grouped-list__item" role="listitem">
+          <span class="grouped-list__item-label">Daily Reminder</span>
+          <div class="toggle toggle--active" role="switch" aria-checked="true" aria-label="Daily Reminder" tabindex="0">
+            <span class="toggle__knob"></span>
+          </div>
+        </div>
+        <div class="grouped-list__item" role="listitem">
+          <span class="grouped-list__item-label">Reminder Time</span>
+          <div class="grouped-list__item-right">
+            <span class="grouped-list__item-value">09:00 AM</span>
+          </div>
+        </div>
+        <div class="grouped-list__item" role="listitem">
+          <span class="grouped-list__item-label">Recording Duration</span>
+          <div class="grouped-list__item-right">
+            <span class="grouped-list__item-value">2 min</span>
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="grouped-list__item" role="listitem">
+          <span class="grouped-list__item-label">Default Track</span>
+          <div class="grouped-list__item-right">
+            <span class="grouped-list__item-value">Beginner</span>
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Account Section -->
+    <section class="settings-section" aria-labelledby="account-label">
+      <h2 id="account-label" class="section-label">Account</h2>
+      <div class="grouped-list" role="list">
+        <div class="grouped-list__item" role="listitem">
+          <div class="grouped-list__item-left">
+            <span class="grouped-list__item-label">Email Address</span>
+            <span class="grouped-list__item-subtitle">alex@example.com</span>
+          </div>
+        </div>
+        <div class="grouped-list__item" role="listitem">
+          <span class="grouped-list__item-label">Change Password</span>
+          <div class="grouped-list__item-right">
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="grouped-list__item" role="listitem">
+          <div class="grouped-list__item-left">
+            <span class="grouped-list__item-label">Linked Accounts</span>
+            <span class="grouped-list__item-subtitle">Google, Apple</span>
+          </div>
+          <div class="grouped-list__item-right">
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="grouped-list__item" role="listitem">
+          <span class="grouped-list__item-label">Subscription</span>
+          <div class="grouped-list__item-right">
+            <span class="grouped-list__item-value grouped-list__item-value--primary">Premium</span>
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="grouped-list__item" role="listitem">
+          <span class="grouped-list__item-label">Privacy</span>
+          <div class="grouped-list__item-right">
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="grouped-list__item" role="listitem">
+          <span class="grouped-list__item-label">Export My Data</span>
+          <div class="grouped-list__item-right">
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="settings-section" aria-labelledby="about-label">
+      <h2 id="about-label" class="section-label">About</h2>
+      <div class="grouped-list" role="list">
+        <div class="grouped-list__item" role="listitem">
+          <span class="grouped-list__item-label">Help &amp; Support</span>
+          <div class="grouped-list__item-right">
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="grouped-list__item" role="listitem">
+          <span class="grouped-list__item-label" style="color: var(--primary-base);">Terms of Service</span>
+        </div>
+        <div class="grouped-list__item" role="listitem">
+          <span class="grouped-list__item-label" style="color: var(--primary-base);">Privacy Policy</span>
+        </div>
+        <div class="grouped-list__item" role="listitem">
+          <span class="grouped-list__item-label">Version</span>
+          <div class="grouped-list__item-right">
+            <span class="grouped-list__item-value">1.0.0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sign Out -->
+    <div class="sign-out-wrapper">
+      <button class="btn btn--danger-outline btn--full" type="button">Sign Out</button>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard - StoryCraft</title>
+  <link rel="stylesheet" href="../system/tokens.css">
+  <link rel="stylesheet" href="../system/components.css">
+  <style>
+    .filter-tabs {
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .user-rank-card {
+      background: rgba(79, 70, 229, 0.06);
+      border: 1px solid var(--primary-light);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin: 0 16px 16px;
+    }
+
+    .user-rank-card__label {
+      font-size: var(--text-caption);
+      color: var(--primary-base);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .user-rank-card__row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-rank-card__rank {
+      font-size: var(--text-h3);
+      font-weight: 700;
+      color: var(--primary-base);
+    }
+
+    .user-rank-card__name {
+      font-size: var(--text-body);
+      font-weight: 500;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .user-rank-card__score {
+      font-size: var(--text-body-lg);
+      font-weight: 700;
+      color: var(--primary-base);
+    }
+
+    .rank-list {
+      margin: 0 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .rank-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 56px;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--bg-elevated);
+    }
+
+    .rank-row:last-child {
+      border-bottom: none;
+    }
+
+    .rank-row--highlighted {
+      background: rgba(79, 70, 229, 0.06);
+      border-left: 3px solid var(--primary-base);
+      padding-left: 13px;
+    }
+
+    .rank-row__position {
+      width: 28px;
+      font-size: var(--text-body);
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .rank-row__position--medal {
+      font-size: 18px;
+    }
+
+    .rank-row__name {
+      font-size: var(--text-body);
+      font-weight: 500;
+      color: var(--text-primary);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rank-row__score {
+      font-size: var(--text-body);
+      font-weight: 700;
+      color: var(--primary-base);
+      flex-shrink: 0;
+    }
+
+    .rank-row__play {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-elevated);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--text-secondary);
+    }
+
+    .rank-row__play:hover {
+      background: var(--primary-light);
+      color: white;
+    }
+
+    .load-more-wrapper {
+      padding: 24px 16px 32px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <!-- Navigation -->
+    <nav class="nav-bar" aria-label="Page navigation">
+      <button class="nav-bar__btn" aria-label="Go back">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 class="nav-bar__title">Leaderboard</h1>
+      <div class="nav-bar__spacer"></div>
+    </nav>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+      <div class="segmented-control" role="tablist" aria-label="Leaderboard filter">
+        <button class="segmented-control__btn segmented-control__btn--active" role="tab" aria-selected="true">This Week</button>
+        <button class="segmented-control__btn" role="tab" aria-selected="false">By Track</button>
+        <button class="segmented-control__btn" role="tab" aria-selected="false">All Time</button>
+      </div>
+    </div>
+
+    <!-- User Rank Highlight -->
+    <div class="user-rank-card" aria-label="Your rank">
+      <div class="user-rank-card__label">Your Rank</div>
+      <div class="user-rank-card__row">
+        <span class="user-rank-card__rank">#12</span>
+        <div class="avatar avatar--md">AK</div>
+        <span class="user-rank-card__name">You</span>
+        <span class="user-rank-card__score">84</span>
+      </div>
+    </div>
+
+    <!-- Rank List -->
+    <div class="rank-list" role="list" aria-label="Leaderboard rankings">
+      <!-- 1st -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position rank-row__position--medal" aria-label="1st place">🥇</span>
+        <div class="avatar avatar--md" style="background: #F59E0B;">SM</div>
+        <span class="rank-row__name">Sarah Mitchell</span>
+        <span class="rank-row__score">142</span>
+        <button class="rank-row__play" aria-label="Play Sarah Mitchell's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 2nd -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position rank-row__position--medal" aria-label="2nd place">🥈</span>
+        <div class="avatar avatar--md" style="background: #10B981;">JP</div>
+        <span class="rank-row__name">James Park</span>
+        <span class="rank-row__score">136</span>
+        <button class="rank-row__play" aria-label="Play James Park's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 3rd -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position rank-row__position--medal" aria-label="3rd place">🥉</span>
+        <div class="avatar avatar--md" style="background: #EF4444;">MG</div>
+        <span class="rank-row__name">Maria Garcia</span>
+        <span class="rank-row__score">128</span>
+        <button class="rank-row__play" aria-label="Play Maria Garcia's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 4th -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position">4</span>
+        <div class="avatar avatar--md" style="background: #6366F1;">DC</div>
+        <span class="rank-row__name">David Chen</span>
+        <span class="rank-row__score">121</span>
+        <button class="rank-row__play" aria-label="Play David Chen's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 5th -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position">5</span>
+        <div class="avatar avatar--md" style="background: #EC4899;">AW</div>
+        <span class="rank-row__name">Aisha Williams</span>
+        <span class="rank-row__score">115</span>
+        <button class="rank-row__play" aria-label="Play Aisha Williams's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 6th -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position">6</span>
+        <div class="avatar avatar--md" style="background: #14B8A6;">TN</div>
+        <span class="rank-row__name">Tyler Nguyen</span>
+        <span class="rank-row__score">110</span>
+        <button class="rank-row__play" aria-label="Play Tyler Nguyen's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 7th -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position">7</span>
+        <div class="avatar avatar--md" style="background: #8B5CF6;">RL</div>
+        <span class="rank-row__name">Rachel Lee</span>
+        <span class="rank-row__score">107</span>
+        <button class="rank-row__play" aria-label="Play Rachel Lee's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 8th -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position">8</span>
+        <div class="avatar avatar--md" style="background: #F97316;">MB</div>
+        <span class="rank-row__name">Marcus Brown</span>
+        <span class="rank-row__score">103</span>
+        <button class="rank-row__play" aria-label="Play Marcus Brown's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 9th -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position">9</span>
+        <div class="avatar avatar--md" style="background: #06B6D4;">EK</div>
+        <span class="rank-row__name">Emma Kim</span>
+        <span class="rank-row__score">98</span>
+        <button class="rank-row__play" aria-label="Play Emma Kim's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 10th -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position">10</span>
+        <div class="avatar avatar--md" style="background: #84CC16;">OT</div>
+        <span class="rank-row__name">Omar Torres</span>
+        <span class="rank-row__score">95</span>
+        <button class="rank-row__play" aria-label="Play Omar Torres's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 11th -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position">11</span>
+        <div class="avatar avatar--md" style="background: #D946EF;">LJ</div>
+        <span class="rank-row__name">Lisa Johnson</span>
+        <span class="rank-row__score">91</span>
+        <button class="rank-row__play" aria-label="Play Lisa Johnson's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 12th (User - highlighted) -->
+      <div class="rank-row rank-row--highlighted" role="listitem" aria-current="true">
+        <span class="rank-row__position">12</span>
+        <div class="avatar avatar--md">AK</div>
+        <span class="rank-row__name">You</span>
+        <span class="rank-row__score">84</span>
+        <button class="rank-row__play" aria-label="Play your recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 13th -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position">13</span>
+        <div class="avatar avatar--md" style="background: #F43F5E;">KP</div>
+        <span class="rank-row__name">Kevin Patel</span>
+        <span class="rank-row__score">79</span>
+        <button class="rank-row__play" aria-label="Play Kevin Patel's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 14th -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position">14</span>
+        <div class="avatar avatar--md" style="background: #0EA5E9;">NR</div>
+        <span class="rank-row__name">Nina Rodriguez</span>
+        <span class="rank-row__score">74</span>
+        <button class="rank-row__play" aria-label="Play Nina Rodriguez's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <!-- 15th -->
+      <div class="rank-row" role="listitem">
+        <span class="rank-row__position">15</span>
+        <div class="avatar avatar--md" style="background: #A855F7;">SW</div>
+        <span class="rank-row__name">Sam Walker</span>
+        <span class="rank-row__score">68</span>
+        <button class="rank-row__play" aria-label="Play Sam Walker's recording">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Load More -->
+    <div class="load-more-wrapper">
+      <button class="btn btn--outline btn--full">Load More</button>
+    </div>
+  </div>
+</body>
+</html>

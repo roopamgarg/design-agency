@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscription Plans - StoryCraft</title>
+  <link rel="stylesheet" href="../system/tokens.css">
+  <link rel="stylesheet" href="../system/components.css">
+  <style>
+    .plans-header {
+      text-align: center;
+      padding: 24px 16px 0;
+    }
+
+    .plans-header h2 {
+      font-size: var(--text-h2);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .billing-toggle {
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .plans-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 0 16px;
+    }
+
+    @media (min-width: 768px) {
+      .plans-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      .page-container {
+        max-width: 100%;
+      }
+    }
+
+    .plan-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      padding: 32px 24px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .plan-card--highlighted {
+      border: 2px solid var(--primary-base);
+      box-shadow: var(--shadow-lg);
+      padding: 32px;
+    }
+
+    .plan-card__badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary-base);
+      color: white;
+      font-size: var(--text-caption);
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: var(--radius-pill);
+      white-space: nowrap;
+    }
+
+    .plan-card__name {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .plan-card__price {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 24px;
+    }
+
+    .plan-card__price-amount {
+      font-size: var(--text-h1);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .plan-card__price-period {
+      font-size: var(--text-body);
+      color: var(--text-secondary);
+    }
+
+    .plan-card__features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex: 1;
+    }
+
+    .plan-card__feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: var(--text-body);
+      color: var(--text-primary);
+    }
+
+    .plan-card__feature::before {
+      content: "✅";
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .compare-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 24px 16px 32px;
+      color: var(--primary-base);
+      font-size: var(--text-body);
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .compare-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <!-- Navigation -->
+    <nav class="nav-bar" aria-label="Page navigation">
+      <button class="nav-bar__btn" aria-label="Go back">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 class="nav-bar__title">Plans</h1>
+      <div class="nav-bar__spacer"></div>
+    </nav>
+
+    <!-- Header -->
+    <div class="plans-header">
+      <h2>Choose Your Plan</h2>
+    </div>
+
+    <!-- Billing Toggle -->
+    <div class="billing-toggle">
+      <div class="segmented-control" role="radiogroup" aria-label="Billing period">
+        <button class="segmented-control__btn segmented-control__btn--active" role="radio" aria-checked="true">Monthly</button>
+        <button class="segmented-control__btn" role="radio" aria-checked="false">Yearly (save 20%)</button>
+      </div>
+    </div>
+
+    <!-- Plan Cards -->
+    <div class="plans-grid" role="list">
+      <!-- Free Plan -->
+      <article class="plan-card" role="listitem" aria-label="Free plan">
+        <h3 class="plan-card__name">Free</h3>
+        <div class="plan-card__price">
+          <span class="plan-card__price-amount">$0</span>
+          <span class="plan-card__price-period">/month</span>
+        </div>
+        <ul class="plan-card__features">
+          <li class="plan-card__feature">1 recording/day</li>
+          <li class="plan-card__feature">Basic feedback</li>
+          <li class="plan-card__feature">1 learning track</li>
+          <li class="plan-card__feature">Community access</li>
+        </ul>
+        <button class="btn btn--disabled btn--full" disabled aria-label="Current plan">Current Plan</button>
+      </article>
+
+      <!-- Premium Plan -->
+      <article class="plan-card plan-card--highlighted" role="listitem" aria-label="Premium plan">
+        <span class="plan-card__badge">Most Popular</span>
+        <h3 class="plan-card__name">Premium</h3>
+        <div class="plan-card__price">
+          <span class="plan-card__price-amount">$9.99</span>
+          <span class="plan-card__price-period">/month</span>
+        </div>
+        <ul class="plan-card__features">
+          <li class="plan-card__feature">Unlimited recordings</li>
+          <li class="plan-card__feature">Advanced AI feedback</li>
+          <li class="plan-card__feature">All learning tracks</li>
+          <li class="plan-card__feature">Progress analytics</li>
+          <li class="plan-card__feature">Community challenges</li>
+          <li class="plan-card__feature">Priority support</li>
+        </ul>
+        <button class="btn btn--primary btn--full">Upgrade to Premium</button>
+      </article>
+
+      <!-- Enterprise Plan -->
+      <article class="plan-card" role="listitem" aria-label="Enterprise plan">
+        <h3 class="plan-card__name">Enterprise</h3>
+        <div class="plan-card__price">
+          <span class="plan-card__price-amount">$29.99</span>
+          <span class="plan-card__price-period">/month</span>
+        </div>
+        <ul class="plan-card__features">
+          <li class="plan-card__feature">Everything in Premium</li>
+          <li class="plan-card__feature">Team management</li>
+          <li class="plan-card__feature">Custom tracks</li>
+          <li class="plan-card__feature">API access</li>
+          <li class="plan-card__feature">Dedicated support</li>
+        </ul>
+        <button class="btn btn--secondary btn--full">Contact Sales</button>
+      </article>
+    </div>
+
+    <!-- Compare Link -->
+    <a href="#" class="compare-link" aria-expanded="false">
+      Compare all features
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StoryCraft — UI Design Preview</title>
+  <link rel="stylesheet" href="system/tokens.css">
+  <link rel="stylesheet" href="system/components.css">
+  <style>
+    .index-page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    .index-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .index-header h1 {
+      font-family: var(--font-story);
+      font-size: var(--text-h1);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .index-header p {
+      font-size: var(--text-body-lg);
+      color: var(--text-secondary);
+    }
+
+    .screen-group {
+      margin-bottom: 32px;
+    }
+
+    .screen-group h2 {
+      font-size: var(--text-body-lg);
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--bg-elevated);
+    }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    @media (min-width: 600px) {
+      .screen-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .screen-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: all 150ms ease;
+    }
+
+    .screen-link:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .screen-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary-base);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .screen-info { flex: 1; }
+
+    .screen-name {
+      font-weight: 500;
+      font-size: var(--text-body);
+      line-height: 1.3;
+    }
+
+    .screen-desc {
+      font-size: var(--text-caption);
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .design-tokens {
+      margin-top: 48px;
+      padding: 24px;
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .design-tokens h2 {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 8px;
+    }
+
+    .color-swatch {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .color-swatch-block {
+      height: 48px;
+    }
+
+    .color-swatch-label {
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-card);
+    }
+  </style>
+</head>
+<body>
+  <div class="index-page">
+    <header class="index-header">
+      <h1>StoryCraft</h1>
+      <p>UI Design Preview — 16 Screens</p>
+    </header>
+
+    <section class="screen-group">
+      <h2>Onboarding</h2>
+      <div class="screen-grid">
+        <a href="screens/01-onboarding-value.html" class="screen-link">
+          <span class="screen-number">1</span>
+          <div class="screen-info">
+            <div class="screen-name">Value Proposition</div>
+            <div class="screen-desc">Find Your Voice — first impression</div>
+          </div>
+        </a>
+        <a href="screens/02-onboarding-mic.html" class="screen-link">
+          <span class="screen-number">2</span>
+          <div class="screen-info">
+            <div class="screen-name">Mic Permission</div>
+            <div class="screen-desc">Let's Hear You — mic test</div>
+          </div>
+        </a>
+        <a href="screens/03-onboarding-tracks.html" class="screen-link">
+          <span class="screen-number">3</span>
+          <div class="screen-info">
+            <div class="screen-name">Track Selection</div>
+            <div class="screen-desc">What's Your Story? — choose a track</div>
+          </div>
+        </a>
+        <a href="screens/04-auth.html" class="screen-link">
+          <span class="screen-number">4</span>
+          <div class="screen-info">
+            <div class="screen-name">Login / Sign Up</div>
+            <div class="screen-desc">Auth with social + email</div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="screen-group">
+      <h2>Core Experience</h2>
+      <div class="screen-grid">
+        <a href="screens/05-home.html" class="screen-link">
+          <span class="screen-number">5</span>
+          <div class="screen-info">
+            <div class="screen-name">Home / Daily Prompt</div>
+            <div class="screen-desc">Daily habit entry point</div>
+          </div>
+        </a>
+        <a href="screens/06-recording-studio.html" class="screen-link">
+          <span class="screen-number">6</span>
+          <div class="screen-info">
+            <div class="screen-name">Recording Studio</div>
+            <div class="screen-desc">Distraction-free recording</div>
+          </div>
+        </a>
+        <a href="screens/07-analysis-feedback.html" class="screen-link">
+          <span class="screen-number">7</span>
+          <div class="screen-info">
+            <div class="screen-name">Analysis &amp; Feedback</div>
+            <div class="screen-desc">AI-generated performance review</div>
+          </div>
+        </a>
+        <a href="screens/08-progress-dashboard.html" class="screen-link">
+          <span class="screen-number">8</span>
+          <div class="screen-info">
+            <div class="screen-name">Progress Dashboard</div>
+            <div class="screen-desc">Heatmap, trends, stats</div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="screen-group">
+      <h2>Learning</h2>
+      <div class="screen-grid">
+        <a href="screens/09-learning-tracks.html" class="screen-link">
+          <span class="screen-number">9</span>
+          <div class="screen-info">
+            <div class="screen-name">Learning Tracks</div>
+            <div class="screen-desc">Browse storytelling courses</div>
+          </div>
+        </a>
+        <a href="screens/10-track-detail.html" class="screen-link">
+          <span class="screen-number">10</span>
+          <div class="screen-info">
+            <div class="screen-name">Track Detail</div>
+            <div class="screen-desc">Lesson list + progress</div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="screen-group">
+      <h2>Community</h2>
+      <div class="screen-grid">
+        <a href="screens/11-community-hub.html" class="screen-link">
+          <span class="screen-number">11</span>
+          <div class="screen-info">
+            <div class="screen-name">Community Hub</div>
+            <div class="screen-desc">Challenges, leaderboard, entries</div>
+          </div>
+        </a>
+        <a href="screens/15-challenge-detail.html" class="screen-link">
+          <span class="screen-number">15</span>
+          <div class="screen-info">
+            <div class="screen-name">Challenge Detail</div>
+            <div class="screen-desc">Full challenge view + entries</div>
+          </div>
+        </a>
+        <a href="screens/16-leaderboard.html" class="screen-link">
+          <span class="screen-number">16</span>
+          <div class="screen-info">
+            <div class="screen-name">Leaderboard</div>
+            <div class="screen-desc">Full ranked participant list</div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="screen-group">
+      <h2>Playback &amp; Settings</h2>
+      <div class="screen-grid">
+        <a href="screens/12-recording-playback.html" class="screen-link">
+          <span class="screen-number">12</span>
+          <div class="screen-info">
+            <div class="screen-name">Recording Playback</div>
+            <div class="screen-desc">Review + Day 1 vs Now comparison</div>
+          </div>
+        </a>
+        <a href="screens/13-settings.html" class="screen-link">
+          <span class="screen-number">13</span>
+          <div class="screen-info">
+            <div class="screen-name">Settings / Profile</div>
+            <div class="screen-desc">Account, preferences, practice</div>
+          </div>
+        </a>
+        <a href="screens/14-subscription-tiers.html" class="screen-link">
+          <span class="screen-number">14</span>
+          <div class="screen-info">
+            <div class="screen-name">Subscription Tiers</div>
+            <div class="screen-desc">Free / Premium / Enterprise</div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="design-tokens">
+      <h2>Design Tokens</h2>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #4F46E5;"></div>
+          <div class="color-swatch-label">Primary #4F46E5</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #3730A3;"></div>
+          <div class="color-swatch-label">Dark #3730A3</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #818CF8;"></div>
+          <div class="color-swatch-label">Light #818CF8</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #EF4444;"></div>
+          <div class="color-swatch-label">Record #EF4444</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #10B981;"></div>
+          <div class="color-swatch-label">Positive #10B981</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #F59E0B;"></div>
+          <div class="color-swatch-label">Warning #F59E0B</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #F43F5E;"></div>
+          <div class="color-swatch-label">Critical #F43F5E</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #0F172A;"></div>
+          <div class="color-swatch-label">Text #0F172A</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #475569;"></div>
+          <div class="color-swatch-label">Secondary #475569</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background: #F8FAFC; border: 1px solid #E2E8F0;"></div>
+          <div class="color-swatch-label">Background #F8FAFC</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

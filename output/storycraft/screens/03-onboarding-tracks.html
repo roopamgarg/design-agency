@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StoryCraft — Choose Your Track</title>
+  <link rel="stylesheet" href="../system/tokens.css">
+  <link rel="stylesheet" href="../system/components.css">
+  <style>
+    .onboarding-page {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-24);
+    }
+
+    .onboarding-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 520px;
+      width: 100%;
+      gap: var(--spacing-32);
+    }
+
+    .headline-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-12);
+    }
+
+    .headline-group p {
+      font-size: var(--text-body-lg-size);
+      line-height: var(--text-body-lg-lh);
+      color: var(--text-secondary);
+    }
+
+    .tracks-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-12);
+      width: 100%;
+    }
+
+    @media (max-width: 420px) {
+      .tracks-grid { grid-template-columns: 1fr; }
+    }
+
+    .track-card {
+      background: var(--surface-card);
+      border: 2px solid transparent;
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-16);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-8);
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+
+    .track-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+
+    .track-card:focus-visible {
+      outline: 2px solid var(--primary-light);
+      outline-offset: 2px;
+    }
+
+    .track-card[aria-checked="true"] {
+      border-color: var(--primary-base);
+      background: var(--primary-tint-5);
+    }
+
+    .track-card[aria-checked="true"]::after {
+      content: "✓";
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--primary-base);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .track-emoji {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .track-name {
+      font-size: var(--text-body-size);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .track-desc {
+      font-size: var(--text-caption-size);
+      color: var(--text-secondary);
+      line-height: var(--text-caption-lh);
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-16);
+      width: 100%;
+    }
+
+    .actions .btn-primary {
+      min-width: 200px;
+    }
+  </style>
+</head>
+<body>
+  <main class="onboarding-page" role="main" aria-label="Onboarding — Track Selection">
+    <div class="onboarding-content">
+      <div class="headline-group">
+        <h1 class="h2">What's Your Story?</h1>
+        <p>Pick a track to start. You can always explore others later.</p>
+      </div>
+
+      <div class="tracks-grid" role="radiogroup" aria-label="Storytelling tracks">
+        <div class="track-card" role="radio" aria-checked="true" tabindex="0" data-track="beginner">
+          <span class="track-emoji" aria-hidden="true">🌱</span>
+          <span class="track-name">Beginner</span>
+          <span class="track-desc">Start from scratch</span>
+        </div>
+
+        <div class="track-card" role="radio" aria-checked="false" tabindex="0" data-track="creator">
+          <span class="track-emoji" aria-hidden="true">🎬</span>
+          <span class="track-name">Content Creator</span>
+          <span class="track-desc">Engage your audience</span>
+        </div>
+
+        <div class="track-card" role="radio" aria-checked="false" tabindex="0" data-track="founder">
+          <span class="track-emoji" aria-hidden="true">🚀</span>
+          <span class="track-name">Founder Pitch</span>
+          <span class="track-desc">Tell your startup story</span>
+        </div>
+
+        <div class="track-card" role="radio" aria-checked="false" tabindex="0" data-track="interview">
+          <span class="track-emoji" aria-hidden="true">💼</span>
+          <span class="track-name">Job Interview</span>
+          <span class="track-desc">Nail the STAR method</span>
+        </div>
+
+        <div class="track-card" role="radio" aria-checked="false" tabindex="0" data-track="leadership">
+          <span class="track-emoji" aria-hidden="true">🎯</span>
+          <span class="track-name">Leadership</span>
+          <span class="track-desc">Inspire your team</span>
+        </div>
+
+        <div class="track-card" role="radio" aria-checked="false" tabindex="0" data-track="social">
+          <span class="track-emoji" aria-hidden="true">💬</span>
+          <span class="track-name">Social &amp; Dating</span>
+          <span class="track-desc">Be more interesting</span>
+        </div>
+      </div>
+
+      <nav class="progress-dots" aria-label="Onboarding progress">
+        <span class="progress-dot" aria-label="Step 1 of 3"></span>
+        <span class="progress-dot" aria-label="Step 2 of 3"></span>
+        <span class="progress-dot active" aria-label="Step 3 of 3, current"></span>
+      </nav>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="continue-btn" type="button" aria-label="Continue to app">Let's Go!</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const cards = document.querySelectorAll('.track-card');
+    const continueBtn = document.getElementById('continue-btn');
+
+    function selectTrack(card) {
+      cards.forEach(c => c.setAttribute('aria-checked', 'false'));
+      card.setAttribute('aria-checked', 'true');
+      continueBtn.disabled = false;
+    }
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => selectTrack(card));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectTrack(card);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

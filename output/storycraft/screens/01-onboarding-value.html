@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StoryCraft — Find Your Voice</title>
+  <link rel="stylesheet" href="../system/tokens.css">
+  <link rel="stylesheet" href="../system/components.css">
+  <style>
+    .onboarding-page {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-24);
+    }
+
+    .onboarding-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 420px;
+      width: 100%;
+      gap: var(--spacing-32);
+    }
+
+    .illustration {
+      width: 240px;
+      height: 240px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(145deg, var(--primary-tint-10), rgba(129, 140, 248, 0.15));
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 96px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .headline-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-12);
+    }
+
+    .headline-group h1 {
+      font-family: var(--font-story);
+      font-size: var(--text-h1-size);
+      font-weight: var(--text-h1-weight);
+      line-height: var(--text-h1-lh);
+      letter-spacing: var(--text-h1-ls);
+      color: var(--text-primary);
+    }
+
+    .headline-group p {
+      font-size: var(--text-body-lg-size);
+      line-height: var(--text-body-lg-lh);
+      color: var(--text-secondary);
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-16);
+      width: 100%;
+    }
+
+    .actions .btn-primary {
+      min-width: 200px;
+    }
+
+    .skip-link {
+      background: none;
+      border: none;
+      color: var(--text-tertiary);
+      font-family: var(--font-ui);
+      font-size: var(--text-caption-size);
+      font-weight: 500;
+      cursor: pointer;
+      padding: var(--spacing-4) var(--spacing-8);
+      transition: color var(--transition-fast);
+    }
+
+    .skip-link:hover {
+      color: var(--text-secondary);
+    }
+
+    .skip-link:focus-visible {
+      outline: 2px solid var(--primary-light);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+  </style>
+</head>
+<body>
+  <main class="onboarding-page" role="main" aria-label="Onboarding — Value Proposition">
+    <div class="onboarding-content">
+      <div class="illustration" role="img" aria-label="Microphone illustration representing storytelling">
+        🎙️
+      </div>
+
+      <div class="headline-group">
+        <h1>Find Your Voice</h1>
+        <p>Practice storytelling daily. Get real feedback. Watch yourself grow.</p>
+      </div>
+
+      <nav class="progress-dots" aria-label="Onboarding progress">
+        <span class="progress-dot active" aria-label="Step 1 of 3, current"></span>
+        <span class="progress-dot" aria-label="Step 2 of 3"></span>
+        <span class="progress-dot" aria-label="Step 3 of 3"></span>
+      </nav>
+
+      <div class="actions">
+        <button class="btn btn-primary" type="button" aria-label="Get started with StoryCraft">Get Started</button>
+        <button class="skip-link" type="button" aria-label="Skip onboarding">Skip for now</button>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

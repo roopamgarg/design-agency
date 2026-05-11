@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Challenge Detail - StoryCraft</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .challenge-header {
+      padding: 24px 16px;
+    }
+
+    .challenge-header__title {
+      font-size: var(--text-h2);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .challenge-header__prompt {
+      font-family: var(--font-story);
+      font-size: var(--text-body-lg);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+
+    .challenge-header__rules-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--primary-base);
+      font-size: var(--text-body);
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .challenge-header__rules-link:hover {
+      text-decoration: underline;
+    }
+
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-lg);
+      padding: 12px 16px;
+      margin: 0 16px;
+    }
+
+    .stats-bar__item {
+      font-size: var(--text-body);
+      color: var(--text-secondary);
+    }
+
+    .stats-bar__item--bold {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .record-btn-wrapper {
+      padding: 24px 16px;
+    }
+
+    .entries-section {
+      padding: 0 16px;
+      margin-top: 32px;
+    }
+
+    .entries-section__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .entries-section__title {
+      font-size: var(--text-h3);
+      font-weight: 600;
+    }
+
+    .entries-section__sort {
+      font-family: var(--font-ui);
+      font-size: var(--text-body);
+      color: var(--text-secondary);
+      border: 1px solid var(--bg-elevated);
+      border-radius: var(--radius-md);
+      padding: 6px 10px;
+      background: var(--bg-card);
+      cursor: pointer;
+    }
+
+    .entry-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      margin-top: 12px;
+    }
+
+    .entry-card__author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .entry-card__author-name {
+      font-size: var(--text-body);
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .entry-card__author-time {
+      font-size: var(--text-caption);
+      color: var(--text-tertiary);
+    }
+
+    .mini-player {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      margin-bottom: 12px;
+    }
+
+    .mini-player__play {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary-base);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .mini-player__play svg {
+      color: white;
+    }
+
+    .mini-player__waveform {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      height: 24px;
+    }
+
+    .mini-player__bar {
+      width: 3px;
+      border-radius: 2px;
+      background: var(--primary-light);
+      opacity: 0.6;
+    }
+
+    .mini-player__duration {
+      font-family: var(--font-mono);
+      font-size: var(--text-caption);
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .entry-card__voting {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .entry-card__votes {
+      font-size: var(--text-body);
+      color: var(--text-secondary);
+    }
+
+    .vote-btn {
+      font-family: var(--font-ui);
+      font-size: var(--text-caption);
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--primary-light);
+      background: transparent;
+      color: var(--primary-base);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .vote-btn:hover {
+      background: rgba(79, 70, 229, 0.04);
+    }
+
+    .vote-btn--voted {
+      background: var(--primary-base);
+      color: white;
+      border-color: var(--primary-base);
+    }
+
+    .entries-bottom-spacer {
+      height: 32px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <!-- Navigation -->
+    <nav class="nav-bar" aria-label="Page navigation">
+      <button class="nav-bar__btn" aria-label="Go back">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 class="nav-bar__title">Challenge</h1>
+      <button class="nav-bar__btn" aria-label="Share">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 7a3 3 0 100-6 3 3 0 000 6zM5 13a3 3 0 100-6 3 3 0 000 6zM15 19a3 3 0 100-6 3 3 0 000 6zM7.59 11.51l4.83 2.98M12.41 5.51L7.59 8.49" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </nav>
+
+    <!-- Challenge Header -->
+    <header class="challenge-header">
+      <h2 class="challenge-header__title">The Moment That Changed Everything</h2>
+      <p class="challenge-header__prompt">Tell us about a single moment that fundamentally altered the course of your life.</p>
+      <a href="#" class="challenge-header__rules-link" aria-expanded="false">
+        Challenge Rules
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar" aria-label="Challenge statistics">
+      <span class="stats-bar__item stats-bar__item--bold">⏱ 3 days left</span>
+      <span class="stats-bar__item">247 entries</span>
+      <span class="badge badge--positive">Active</span>
+    </div>
+
+    <!-- Record Button -->
+    <div class="record-btn-wrapper">
+      <button class="btn btn--primary btn--full" style="box-shadow: var(--shadow-md);">Record Your Entry</button>
+    </div>
+
+    <!-- Entries Section -->
+    <section class="entries-section" aria-label="Challenge entries">
+      <div class="entries-section__header">
+        <h3 class="entries-section__title">Entries</h3>
+        <select class="entries-section__sort" aria-label="Sort entries">
+          <option>Most Votes</option>
+          <option>Most Recent</option>
+          <option>Oldest</option>
+        </select>
+      </div>
+
+      <!-- Entry 1 -->
+      <article class="entry-card" aria-label="Entry by Sarah Mitchell">
+        <div class="entry-card__author">
+          <div class="avatar avatar--sm" style="background: #F59E0B;">SM</div>
+          <div>
+            <div class="entry-card__author-name">Sarah Mitchell</div>
+            <div class="entry-card__author-time">2 hours ago</div>
+          </div>
+        </div>
+        <div class="mini-player" role="group" aria-label="Audio player">
+          <button class="mini-player__play" aria-label="Play recording">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+          </button>
+          <div class="mini-player__waveform" aria-hidden="true">
+            <span class="mini-player__bar" style="height: 8px;"></span>
+            <span class="mini-player__bar" style="height: 14px;"></span>
+            <span class="mini-player__bar" style="height: 20px;"></span>
+            <span class="mini-player__bar" style="height: 12px;"></span>
+            <span class="mini-player__bar" style="height: 18px;"></span>
+            <span class="mini-player__bar" style="height: 24px;"></span>
+            <span class="mini-player__bar" style="height: 16px;"></span>
+            <span class="mini-player__bar" style="height: 10px;"></span>
+            <span class="mini-player__bar" style="height: 20px;"></span>
+            <span class="mini-player__bar" style="height: 14px;"></span>
+            <span class="mini-player__bar" style="height: 8px;"></span>
+            <span class="mini-player__bar" style="height: 16px;"></span>
+            <span class="mini-player__bar" style="height: 22px;"></span>
+            <span class="mini-player__bar" style="height: 12px;"></span>
+            <span class="mini-player__bar" style="height: 6px;"></span>
+          </div>
+          <span class="mini-player__duration">1:42</span>
+        </div>
+        <div class="entry-card__voting">
+          <span class="entry-card__votes">34 votes</span>
+          <button class="vote-btn" aria-pressed="false">Vote</button>
+        </div>
+      </article>
+
+      <!-- Entry 2 -->
+      <article class="entry-card" aria-label="Entry by James Park">
+        <div class="entry-card__author">
+          <div class="avatar avatar--sm" style="background: #10B981;">JP</div>
+          <div>
+            <div class="entry-card__author-name">James Park</div>
+            <div class="entry-card__author-time">5 hours ago</div>
+          </div>
+        </div>
+        <div class="mini-player" role="group" aria-label="Audio player">
+          <button class="mini-player__play" aria-label="Play recording">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+          </button>
+          <div class="mini-player__waveform" aria-hidden="true">
+            <span class="mini-player__bar" style="height: 12px;"></span>
+            <span class="mini-player__bar" style="height: 18px;"></span>
+            <span class="mini-player__bar" style="height: 10px;"></span>
+            <span class="mini-player__bar" style="height: 22px;"></span>
+            <span class="mini-player__bar" style="height: 16px;"></span>
+            <span class="mini-player__bar" style="height: 8px;"></span>
+            <span class="mini-player__bar" style="height: 20px;"></span>
+            <span class="mini-player__bar" style="height: 14px;"></span>
+            <span class="mini-player__bar" style="height: 24px;"></span>
+            <span class="mini-player__bar" style="height: 10px;"></span>
+            <span class="mini-player__bar" style="height: 16px;"></span>
+            <span class="mini-player__bar" style="height: 12px;"></span>
+            <span class="mini-player__bar" style="height: 18px;"></span>
+            <span class="mini-player__bar" style="height: 8px;"></span>
+            <span class="mini-player__bar" style="height: 14px;"></span>
+          </div>
+          <span class="mini-player__duration">2:05</span>
+        </div>
+        <div class="entry-card__voting">
+          <span class="entry-card__votes">28 votes</span>
+          <button class="vote-btn" aria-pressed="false">Vote</button>
+        </div>
+      </article>
+
+      <!-- Entry 3 (Voted) -->
+      <article class="entry-card" aria-label="Entry by Maria Garcia">
+        <div class="entry-card__author">
+          <div class="avatar avatar--sm" style="background: #EF4444;">MG</div>
+          <div>
+            <div class="entry-card__author-name">Maria Garcia</div>
+            <div class="entry-card__author-time">8 hours ago</div>
+          </div>
+        </div>
+        <div class="mini-player" role="group" aria-label="Audio player">
+          <button class="mini-player__play" aria-label="Play recording">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+          </button>
+          <div class="mini-player__waveform" aria-hidden="true">
+            <span class="mini-player__bar" style="height: 16px;"></span>
+            <span class="mini-player__bar" style="height: 10px;"></span>
+            <span class="mini-player__bar" style="height: 20px;"></span>
+            <span class="mini-player__bar" style="height: 24px;"></span>
+            <span class="mini-player__bar" style="height: 12px;"></span>
+            <span class="mini-player__bar" style="height: 18px;"></span>
+            <span class="mini-player__bar" style="height: 8px;"></span>
+            <span class="mini-player__bar" style="height: 14px;"></span>
+            <span class="mini-player__bar" style="height: 22px;"></span>
+            <span class="mini-player__bar" style="height: 16px;"></span>
+            <span class="mini-player__bar" style="height: 10px;"></span>
+            <span class="mini-player__bar" style="height: 20px;"></span>
+            <span class="mini-player__bar" style="height: 14px;"></span>
+            <span class="mini-player__bar" style="height: 8px;"></span>
+            <span class="mini-player__bar" style="height: 12px;"></span>
+          </div>
+          <span class="mini-player__duration">1:58</span>
+        </div>
+        <div class="entry-card__voting">
+          <span class="entry-card__votes">22 votes</span>
+          <button class="vote-btn vote-btn--voted" aria-pressed="true">Voted ✓</button>
+        </div>
+      </article>
+
+      <!-- Entry 4 -->
+      <article class="entry-card" aria-label="Entry by David Chen">
+        <div class="entry-card__author">
+          <div class="avatar avatar--sm" style="background: #6366F1;">DC</div>
+          <div>
+            <div class="entry-card__author-name">David Chen</div>
+            <div class="entry-card__author-time">12 hours ago</div>
+          </div>
+        </div>
+        <div class="mini-player" role="group" aria-label="Audio player">
+          <button class="mini-player__play" aria-label="Play recording">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+          </button>
+          <div class="mini-player__waveform" aria-hidden="true">
+            <span class="mini-player__bar" style="height: 6px;"></span>
+            <span class="mini-player__bar" style="height: 12px;"></span>
+            <span class="mini-player__bar" style="height: 18px;"></span>
+            <span class="mini-player__bar" style="height: 22px;"></span>
+            <span class="mini-player__bar" style="height: 14px;"></span>
+            <span class="mini-player__bar" style="height: 10px;"></span>
+            <span class="mini-player__bar" style="height: 20px;"></span>
+            <span class="mini-player__bar" style="height: 16px;"></span>
+            <span class="mini-player__bar" style="height: 8px;"></span>
+            <span class="mini-player__bar" style="height: 14px;"></span>
+            <span class="mini-player__bar" style="height: 24px;"></span>
+            <span class="mini-player__bar" style="height: 18px;"></span>
+            <span class="mini-player__bar" style="height: 10px;"></span>
+            <span class="mini-player__bar" style="height: 16px;"></span>
+            <span class="mini-player__bar" style="height: 12px;"></span>
+          </div>
+          <span class="mini-player__duration">1:30</span>
+        </div>
+        <div class="entry-card__voting">
+          <span class="entry-card__votes">19 votes</span>
+          <button class="vote-btn" aria-pressed="false">Vote</button>
+        </div>
+      </article>
+
+      <!-- Entry 5 -->
+      <article class="entry-card" aria-label="Entry by Aisha Williams">
+        <div class="entry-card__author">
+          <div class="avatar avatar--sm" style="background: #EC4899;">AW</div>
+          <div>
+            <div class="entry-card__author-name">Aisha Williams</div>
+            <div class="entry-card__author-time">1 day ago</div>
+          </div>
+        </div>
+        <div class="mini-player" role="group" aria-label="Audio player">
+          <button class="mini-player__play" aria-label="Play recording">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 1.5l8 4.5-8 4.5V1.5z" fill="currentColor"/></svg>
+          </button>
+          <div class="mini-player__waveform" aria-hidden="true">
+            <span class="mini-player__bar" style="height: 14px;"></span>
+            <span class="mini-player__bar" style="height: 20px;"></span>
+            <span class="mini-player__bar" style="height: 8px;"></span>
+            <span class="mini-player__bar" style="height: 16px;"></span>
+            <span class="mini-player__bar" style="height: 24px;"></span>
+            <span class="mini-player__bar" style="height: 12px;"></span>
+            <span class="mini-player__bar" style="height: 18px;"></span>
+            <span class="mini-player__bar" style="height: 10px;"></span>
+            <span class="mini-player__bar" style="height: 22px;"></span>
+            <span class="mini-player__bar" style="height: 14px;"></span>
+            <span class="mini-player__bar" style="height: 8px;"></span>
+            <span class="mini-player__bar" style="height: 16px;"></span>
+            <span class="mini-player__bar" style="height: 20px;"></span>
+            <span class="mini-player__bar" style="height: 12px;"></span>
+            <span class="mini-player__bar" style="height: 10px;"></span>
+          </div>
+          <span class="mini-player__duration">2:15</span>
+        </div>
+        <div class="entry-card__voting">
+          <span class="entry-card__votes">15 votes</span>
+          <button class="vote-btn" aria-pressed="false">Vote</button>
+        </div>
+      </article>
+    </section>
+
+    <div class="entries-bottom-spacer"></div>
+  </div>
+</body>
+</html>

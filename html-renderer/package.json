@@ -1,0 +1,13 @@
+{
+  "name": "html-renderer",
+  "version": "1.0.0",
+  "description": "Translates agnostic design schemas into self-contained HTML files",
+  "main": "integration/html-translator.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StoryCraft — Progress Dashboard</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .page-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-bold);
+      margin-bottom: var(--space-6);
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .stat-card {
+      background: var(--color-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+
+    .stat-card__value {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      color: var(--color-text-primary);
+    }
+
+    .stat-card__label {
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+      margin-top: var(--space-1);
+    }
+
+    .heatmap-card {
+      background: var(--color-card);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--space-6);
+      overflow-x: auto;
+    }
+
+    .heatmap-grid {
+      display: grid;
+      grid-template-rows: repeat(7, 12px);
+      grid-auto-flow: column;
+      grid-auto-columns: 12px;
+      gap: 4px;
+      margin-bottom: var(--space-4);
+    }
+
+    .heatmap-cell {
+      width: 12px;
+      height: 12px;
+      border-radius: var(--radius-sm);
+      background: var(--color-elevated);
+    }
+
+    .heatmap-cell--l1 { background: #C7D2FE; }
+    .heatmap-cell--l2 { background: #818CF8; }
+    .heatmap-cell--l3 { background: #4F46E5; }
+
+    .heatmap-legend {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+    }
+
+    .heatmap-legend__swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .trends-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    @media (min-width: 768px) {
+      .trends-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .trend-card {
+      background: var(--color-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .trend-card__title {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-3);
+      color: var(--color-text-secondary);
+    }
+
+    .trend-card svg {
+      width: 100%;
+      height: 60px;
+    }
+
+    .section-header {
+      font-size: var(--text-lg);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-4);
+    }
+
+    .recording-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .recording-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      background: var(--color-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .recording-item__info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .recording-item__title {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .recording-item__date {
+      font-size: var(--text-xs);
+      color: var(--color-text-tertiary);
+      margin-top: 2px;
+    }
+
+    .recording-item__score {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-pill);
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      background: var(--color-primary-tint);
+      color: var(--color-primary-dark);
+      flex-shrink: 0;
+    }
+
+    .recording-item__play {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--color-elevated);
+      color: var(--color-primary);
+      font-size: var(--text-base);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background-color 0.2s;
+    }
+
+    .recording-item__play:hover {
+      background: var(--color-border);
+    }
+
+    @media (max-width: 400px) {
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-container" role="main">
+    <h2 class="page-title">Your Progress</h2>
+
+    <div class="stats-row" role="list" aria-label="Statistics overview">
+      <div class="stat-card" role="listitem">
+        <div class="stat-card__value">42</div>
+        <div class="stat-card__label">Total Sessions</div>
+      </div>
+      <div class="stat-card" role="listitem">
+        <div class="stat-card__value">7 days</div>
+        <div class="stat-card__label">Current Streak</div>
+      </div>
+      <div class="stat-card" role="listitem">
+        <div class="stat-card__value">92/100</div>
+        <div class="stat-card__label">Best Score</div>
+      </div>
+    </div>
+
+    <section class="heatmap-card" aria-label="Activity heatmap">
+      <div class="heatmap-grid" id="heatmap" role="img" aria-label="Recording activity over the past year"></div>
+      <div class="heatmap-legend">
+        <span>Less</span>
+        <span class="heatmap-legend__swatch" style="background: var(--color-elevated);"></span>
+        <span class="heatmap-legend__swatch" style="background: #C7D2FE;"></span>
+        <span class="heatmap-legend__swatch" style="background: #818CF8;"></span>
+        <span class="heatmap-legend__swatch" style="background: #4F46E5;"></span>
+        <span>More</span>
+      </div>
+    </section>
+
+    <div class="trends-row">
+      <div class="trend-card">
+        <p class="trend-card__title">Filler Words Trend</p>
+        <svg viewBox="0 0 200 60" fill="none" aria-label="Filler words decreasing over time">
+          <polyline points="10,10 40,15 70,25 100,20 130,30 160,40 190,50" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="trend-card">
+        <p class="trend-card__title">Pacing Score Trend</p>
+        <svg viewBox="0 0 200 60" fill="none" aria-label="Pacing score increasing over time">
+          <polyline points="10,50 40,45 70,38 100,35 130,25 160,18 190,10" stroke="#4F46E5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+    </div>
+
+    <h3 class="section-header">Recent Recordings</h3>
+
+    <div class="recording-list" role="list" aria-label="Recent recordings">
+      <div class="recording-item" role="listitem">
+        <div class="recording-item__info">
+          <p class="recording-item__title">Tell about a time you overcame a fear</p>
+          <p class="recording-item__date">Today, 9:15 AM</p>
+        </div>
+        <span class="recording-item__score">78</span>
+        <button class="recording-item__play" aria-label="Play recording">▶</button>
+      </div>
+      <div class="recording-item" role="listitem">
+        <div class="recording-item__info">
+          <p class="recording-item__title">Describe your favorite childhood memory</p>
+          <p class="recording-item__date">Yesterday, 8:30 AM</p>
+        </div>
+        <span class="recording-item__score">85</span>
+        <button class="recording-item__play" aria-label="Play recording">▶</button>
+      </div>
+      <div class="recording-item" role="listitem">
+        <div class="recording-item__info">
+          <p class="recording-item__title">What would you tell your younger self?</p>
+          <p class="recording-item__date">May 9, 7:45 AM</p>
+        </div>
+        <span class="recording-item__score">72</span>
+        <button class="recording-item__play" aria-label="Play recording">▶</button>
+      </div>
+      <div class="recording-item" role="listitem">
+        <div class="recording-item__info">
+          <p class="recording-item__title">A lesson you learned the hard way</p>
+          <p class="recording-item__date">May 8, 9:00 AM</p>
+        </div>
+        <span class="recording-item__score">81</span>
+        <button class="recording-item__play" aria-label="Play recording">▶</button>
+      </div>
+      <div class="recording-item" role="listitem">
+        <div class="recording-item__info">
+          <p class="recording-item__title">Free recording — morning thoughts</p>
+          <p class="recording-item__date">May 7, 10:20 AM</p>
+        </div>
+        <span class="recording-item__score">92</span>
+        <button class="recording-item__play" aria-label="Play recording">▶</button>
+      </div>
+    </div>
+  </main>
+
+  <nav class="tab-bar" aria-label="Main navigation">
+    <a href="05-home.html" class="tab-bar__item">
+      <span class="tab-bar__icon" aria-hidden="true">🏠</span>
+      <span>Home</span>
+    </a>
+    <a href="#" class="tab-bar__item">
+      <span class="tab-bar__icon" aria-hidden="true">📚</span>
+      <span>Tracks</span>
+    </a>
+    <a href="06-recording-studio.html" class="tab-bar__item tab-bar__item--record" aria-label="Record">
+      <span class="record-fab" style="width:48px;height:48px;font-size:1.2rem;" aria-hidden="true">🎙</span>
+      <span>Record</span>
+    </a>
+    <a href="08-progress-dashboard.html" class="tab-bar__item tab-bar__item--active" aria-current="page">
+      <span class="tab-bar__icon" aria-hidden="true">📈</span>
+      <span>Progress</span>
+    </a>
+    <a href="#" class="tab-bar__item">
+      <span class="tab-bar__icon" aria-hidden="true">👥</span>
+      <span>Community</span>
+    </a>
+  </nav>
+
+  <script>
+    (function() {
+      const grid = document.getElementById('heatmap');
+      const levels = ['', 'heatmap-cell--l1', 'heatmap-cell--l2', 'heatmap-cell--l3'];
+      for (let col = 0; col < 52; col++) {
+        for (let row = 0; row < 7; row++) {
+          const cell = document.createElement('div');
+          cell.className = 'heatmap-cell';
+          const rand = Math.random();
+          if (rand > 0.7) cell.classList.add(levels[1]);
+          if (rand > 0.85) cell.classList.add(levels[2]);
+          if (rand > 0.95) cell.classList.add(levels[3]);
+          grid.appendChild(cell);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

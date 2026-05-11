@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StoryCraft — Analysis & Feedback</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .summary-card {
+      text-align: center;
+      margin-bottom: var(--space-6);
+    }
+
+    .summary-card h2 {
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-bold);
+      margin-bottom: var(--space-6);
+    }
+
+    .circular-progress {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      margin: 0 auto var(--space-6);
+    }
+
+    .circular-progress svg {
+      transform: rotate(-90deg);
+      width: 96px;
+      height: 96px;
+    }
+
+    .circular-progress__track {
+      fill: none;
+      stroke: var(--color-elevated);
+      stroke-width: 8;
+    }
+
+    .circular-progress__fill {
+      fill: none;
+      stroke: var(--color-primary);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 251.3;
+      stroke-dashoffset: 55.3;
+      transition: stroke-dashoffset 1s ease;
+    }
+
+    .circular-progress__value {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      color: var(--color-text-primary);
+    }
+
+    .sub-scores {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+    }
+
+    .sub-score {
+      text-align: center;
+    }
+
+    .sub-score__value {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      color: var(--color-text-primary);
+    }
+
+    .sub-score__label {
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+      margin-top: var(--space-1);
+    }
+
+    .section-header {
+      font-size: var(--text-lg);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-4);
+      margin-top: var(--space-6);
+    }
+
+    .feedback-card__title {
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-1);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .feedback-card__body {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+
+    .feedback-card__tip {
+      font-size: var(--text-xs);
+      color: var(--color-primary);
+      font-weight: var(--weight-medium);
+      margin-top: var(--space-2);
+    }
+
+    .action-buttons {
+      position: sticky;
+      bottom: calc(var(--tab-bar-height) + var(--space-4));
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      padding: var(--space-4) 0;
+      background: linear-gradient(transparent, var(--color-bg) 20%);
+      padding-top: var(--space-8);
+    }
+
+    .share-link {
+      display: block;
+      text-align: center;
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      text-decoration: none;
+      margin-top: var(--space-3);
+      font-weight: var(--weight-medium);
+    }
+
+    .share-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 400px) {
+      .sub-scores {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-container" role="main">
+    <section class="card summary-card" aria-labelledby="summary-heading">
+      <h2 id="summary-heading">Great Effort! 🌟</h2>
+
+      <div class="circular-progress" role="img" aria-label="Overall score 78 out of 100">
+        <svg viewBox="0 0 96 96" aria-hidden="true">
+          <circle class="circular-progress__track" cx="48" cy="48" r="40"></circle>
+          <circle class="circular-progress__fill" cx="48" cy="48" r="40"></circle>
+        </svg>
+        <span class="circular-progress__value">78</span>
+      </div>
+
+      <div class="sub-scores" role="list" aria-label="Sub-scores">
+        <div class="sub-score" role="listitem">
+          <div class="sub-score__value">82</div>
+          <div class="sub-score__label">Pacing</div>
+        </div>
+        <div class="sub-score" role="listitem">
+          <div class="sub-score__value">75</div>
+          <div class="sub-score__label">Clarity</div>
+        </div>
+        <div class="sub-score" role="listitem">
+          <div class="sub-score__value">4</div>
+          <div class="sub-score__label">Filler Words</div>
+        </div>
+        <div class="sub-score" role="listitem">
+          <div class="sub-score__value">71</div>
+          <div class="sub-score__label">Emotion</div>
+        </div>
+      </div>
+    </section>
+
+    <h3 class="section-header">What We Noticed</h3>
+
+    <div class="feedback-card feedback-card--positive" role="article">
+      <p class="feedback-card__title"><span aria-hidden="true">✓</span> Nice Pacing!</p>
+      <p class="feedback-card__body">You maintained a steady rhythm throughout your story, giving listeners time to absorb each point before moving on.</p>
+    </div>
+
+    <div class="feedback-card feedback-card--warning" role="article">
+      <p class="feedback-card__title"><span aria-hidden="true">⚠</span> Watch the 'Ums'</p>
+      <p class="feedback-card__body">We counted 4 filler words in your recording. Try pausing silently instead — it actually makes you sound more confident.</p>
+      <p class="feedback-card__tip">Pro tip: Practice with a 2-second silent pause whenever you feel an "um" coming.</p>
+    </div>
+
+    <div class="feedback-card feedback-card--critical" role="article">
+      <p class="feedback-card__title"><span aria-hidden="true">↑</span> Add More Emotion</p>
+      <p class="feedback-card__body">Your story had great content, but varying your tone and energy could make it much more engaging. Try emphasizing key moments.</p>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn--secondary">Try Again — You've Got This!</button>
+      <button class="btn btn--primary">Done for Today</button>
+      <a href="#" class="share-link">Share your progress</a>
+    </div>
+  </main>
+
+  <nav class="tab-bar" aria-label="Main navigation">
+    <a href="05-home.html" class="tab-bar__item">
+      <span class="tab-bar__icon" aria-hidden="true">🏠</span>
+      <span>Home</span>
+    </a>
+    <a href="#" class="tab-bar__item">
+      <span class="tab-bar__icon" aria-hidden="true">📚</span>
+      <span>Tracks</span>
+    </a>
+    <a href="06-recording-studio.html" class="tab-bar__item tab-bar__item--record" aria-label="Record">
+      <span class="record-fab" style="width:48px;height:48px;font-size:1.2rem;" aria-hidden="true">🎙</span>
+      <span>Record</span>
+    </a>
+    <a href="08-progress-dashboard.html" class="tab-bar__item">
+      <span class="tab-bar__icon" aria-hidden="true">📈</span>
+      <span>Progress</span>
+    </a>
+    <a href="#" class="tab-bar__item">
+      <span class="tab-bar__icon" aria-hidden="true">👥</span>
+      <span>Community</span>
+    </a>
+  </nav>
+</body>
+</html>

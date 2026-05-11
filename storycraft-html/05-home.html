@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StoryCraft — Home</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .greeting {
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-2);
+    }
+
+    .streak-badge {
+      margin-bottom: var(--space-6);
+    }
+
+    .prompt-card {
+      margin-bottom: var(--space-6);
+    }
+
+    .prompt-card__label {
+      color: var(--color-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .prompt-card__text {
+      margin-bottom: var(--space-3);
+    }
+
+    .prompt-card__meta {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-2);
+    }
+
+    .prompt-card__hint {
+      font-size: var(--text-sm);
+      color: var(--color-text-tertiary);
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: var(--space-3);
+      overflow-x: auto;
+      padding-bottom: var(--space-2);
+      margin-bottom: var(--space-8);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .quick-actions .chip {
+      flex-shrink: 0;
+    }
+
+    .fab-container {
+      position: fixed;
+      bottom: calc(var(--tab-bar-height) + var(--space-4));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 101;
+    }
+
+    @media (min-width: 768px) {
+      .quick-actions {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-container" role="main">
+    <header aria-label="Greeting">
+      <h3 class="greeting">Good morning, Alex! 🎙️</h3>
+      <span class="badge-pill streak-badge" aria-label="7 day streak">🔥 7-day streak</span>
+    </header>
+
+    <section class="card prompt-card" aria-labelledby="daily-prompt-label">
+      <p class="text-caption prompt-card__label" id="daily-prompt-label">Today's Prompt</p>
+      <p class="text-body-large prompt-card__text">Tell about a time you overcame a fear. What did you learn?</p>
+      <p class="prompt-card__meta">2–3 min · Beginner track</p>
+      <p class="prompt-card__hint">Tap to start recording</p>
+    </section>
+
+    <section aria-label="Quick actions">
+      <div class="quick-actions" role="list">
+        <a href="#" class="chip" role="listitem">
+          <span aria-hidden="true">🎤</span> Free Record
+        </a>
+        <a href="#" class="chip" role="listitem">
+          <span aria-hidden="true">📚</span> Browse Tracks
+        </a>
+        <a href="#" class="chip" role="listitem">
+          <span aria-hidden="true">🏆</span> Weekly Challenge
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <button class="record-fab fab-container" aria-label="Start recording">
+    <span aria-hidden="true">🎙</span>
+  </button>
+
+  <nav class="tab-bar" aria-label="Main navigation">
+    <a href="05-home.html" class="tab-bar__item tab-bar__item--active" aria-current="page">
+      <span class="tab-bar__icon" aria-hidden="true">🏠</span>
+      <span>Home</span>
+    </a>
+    <a href="#" class="tab-bar__item">
+      <span class="tab-bar__icon" aria-hidden="true">📚</span>
+      <span>Tracks</span>
+    </a>
+    <a href="06-recording-studio.html" class="tab-bar__item tab-bar__item--record" aria-label="Record">
+      <span class="record-fab" style="width:48px;height:48px;font-size:1.2rem;" aria-hidden="true">🎙</span>
+      <span>Record</span>
+    </a>
+    <a href="08-progress-dashboard.html" class="tab-bar__item">
+      <span class="tab-bar__icon" aria-hidden="true">📈</span>
+      <span>Progress</span>
+    </a>
+    <a href="#" class="tab-bar__item">
+      <span class="tab-bar__icon" aria-hidden="true">👥</span>
+      <span>Community</span>
+    </a>
+  </nav>
+</body>
+</html>
