@@ -1,0 +1,12 @@
+{
+  "name": "design-screenshot-tools",
+  "version": "1.0.0",
+  "description": "Screenshot pipeline for design HTML files using Playwright",
+  "main": "capture-screenshots.js",
+  "scripts": {
+    "capture": "node capture-screenshots.js"
+  },
+  "dependencies": {
+    "playwright": "^1.52.0"
+  }
+}
