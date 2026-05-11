@@ -4,345 +4,469 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>StoryCraft — UI Design Preview</title>
-  <link rel="stylesheet" href="system/tokens.css">
-  <link rel="stylesheet" href="system/components.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    .index-page {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 48px 24px;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --elevated: #F1F5F9;
+      --text-1: #0F172A;
+      --text-2: #475569;
+      --text-3: #94A3B8;
+      --border: #E2E8F0;
+      --accent: #4F46E5;
+      --accent-light: rgba(79, 70, 229, 0.08);
+      --shadow-sm: 0 1px 2px rgba(15,23,42,0.06);
+      --shadow-md: 0 4px 12px rgba(15,23,42,0.08);
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --sidebar-w: 320px;
+      --toolbar-h: 48px;
     }
 
-    .index-header {
-      text-align: center;
-      margin-bottom: 48px;
+    html, body { height: 100%; }
+
+    body {
+      font-family: var(--font-ui);
+      color: var(--text-1);
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
-    .index-header h1 {
-      font-family: var(--font-story);
-      font-size: var(--text-h1);
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 8px;
-    }
-
-    .index-header p {
-      font-size: var(--text-body-lg);
-      color: var(--text-secondary);
-    }
-
-    .screen-group {
-      margin-bottom: 32px;
-    }
-
-    .screen-group h2 {
-      font-size: var(--text-body-lg);
-      font-weight: 600;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--bg-elevated);
-    }
-
-    .screen-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
-
-    @media (min-width: 600px) {
-      .screen-grid { grid-template-columns: 1fr 1fr; }
-    }
-
-    .screen-link {
+    /* --- Top bar --- */
+    .top-bar {
+      height: var(--toolbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
+      padding: 0 16px;
       gap: 12px;
-      padding: 14px 16px;
-      background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-      text-decoration: none;
-      color: var(--text-primary);
-      transition: all 150ms ease;
+      flex-shrink: 0;
+      z-index: 20;
     }
 
-    .screen-link:hover {
-      box-shadow: var(--shadow-md);
-      transform: translateY(-1px);
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-2);
       text-decoration: none;
-      color: var(--text-primary);
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      transition: background 150ms;
+    }
+    .back-link:hover { background: var(--elevated); text-decoration: none; }
+    .back-link svg { width: 14px; height: 14px; }
+
+    .top-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
     }
 
-    .screen-number {
-      width: 32px;
-      height: 32px;
+    .project-title {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-1);
+      letter-spacing: -0.01em;
+    }
+
+    .top-bar-spacer { flex: 1; }
+
+    .screen-counter {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-3);
+    }
+
+    /* --- Layout shell --- */
+    .shell {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* --- Sidebar --- */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-section {
+      padding: 16px 12px 8px;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+      padding: 0 8px;
+      margin-bottom: 6px;
+    }
+
+    .screen-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background 120ms;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      color: var(--text-1);
+    }
+    .screen-item:hover { background: var(--elevated); }
+    .screen-item.active {
+      background: var(--accent-light);
+    }
+    .screen-item.active .screen-item-num {
+      background: var(--accent);
+    }
+
+    .screen-item-num {
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      background: var(--primary-base);
-      color: #FFFFFF;
-      font-size: 13px;
+      background: var(--elevated);
+      color: var(--text-2);
+      font-size: 0.6875rem;
       font-weight: 600;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      transition: background 120ms, color 120ms;
+    }
+    .screen-item.active .screen-item-num { color: #fff; }
+
+    .screen-item-text {
+      flex: 1;
+      min-width: 0;
     }
 
-    .screen-info { flex: 1; }
-
-    .screen-name {
+    .screen-item-name {
+      font-size: 0.8125rem;
       font-weight: 500;
-      font-size: var(--text-body);
       line-height: 1.3;
-    }
-
-    .screen-desc {
-      font-size: var(--text-caption);
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
-
-    .design-tokens {
-      margin-top: 48px;
-      padding: 24px;
-      background: var(--bg-card);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .design-tokens h2 {
-      font-size: var(--text-h3);
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
-
-    .color-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 8px;
-    }
-
-    .color-swatch {
-      border-radius: var(--radius-md);
+      white-space: nowrap;
       overflow: hidden;
-      box-shadow: var(--shadow-sm);
+      text-overflow: ellipsis;
     }
 
-    .color-swatch-block {
-      height: 48px;
+    .screen-item-desc {
+      font-size: 0.6875rem;
+      color: var(--text-3);
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .color-swatch-label {
-      padding: 6px 8px;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      background: var(--bg-card);
+    /* --- Preview panel --- */
+    .preview-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--elevated);
+    }
+
+    .preview-toolbar {
+      height: var(--toolbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .preview-nav-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 120ms;
+    }
+    .preview-nav-btn:hover:not(:disabled) { background: var(--elevated); }
+    .preview-nav-btn:disabled { opacity: 0.35; cursor: default; }
+    .preview-nav-btn svg { width: 14px; height: 14px; }
+
+    .preview-screen-name {
+      flex: 1;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-1);
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .open-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-light);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 120ms;
+      white-space: nowrap;
+    }
+    .open-tab-btn:hover { background: rgba(79, 70, 229, 0.14); }
+    .open-tab-btn svg { width: 12px; height: 12px; }
+
+    .preview-frame-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .device-frame {
+      width: 100%;
+      max-width: 420px;
+      height: 100%;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border);
+    }
+
+    .device-frame iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #fff;
+    }
+
+    /* --- Responsive: stack on narrow screens --- */
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 100%; }
+
+      .shell { flex-direction: column; }
+
+      .sidebar {
+        width: 100%;
+        max-height: 40vh;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .sidebar.collapsed { display: none; }
+
+      .preview-frame-wrap { padding: 12px; }
+      .device-frame { max-width: 100%; border-radius: var(--radius-md); }
+
+      .toggle-sidebar-btn { display: flex; }
+    }
+
+    .toggle-sidebar-btn {
+      display: none;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-2);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+    .toggle-sidebar-btn svg { width: 16px; height: 16px; }
+
+    @media (max-width: 768px) {
+      .toggle-sidebar-btn { display: flex; }
     }
   </style>
 </head>
 <body>
-  <div class="index-page">
-    <nav style="margin-bottom:24px;">
-      <a href="../../index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:0.875rem;font-weight:500;color:var(--text-secondary);text-decoration:none;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        All Projects
-      </a>
-    </nav>
-    <header class="index-header">
-      <h1>StoryCraft</h1>
-      <p>UI Design Preview — 16 Screens</p>
-    </header>
-
-    <section class="screen-group">
-      <h2>Onboarding</h2>
-      <div class="screen-grid">
-        <a href="screens/01-onboarding-value.html" class="screen-link">
-          <span class="screen-number">1</span>
-          <div class="screen-info">
-            <div class="screen-name">Value Proposition</div>
-            <div class="screen-desc">Find Your Voice — first impression</div>
-          </div>
-        </a>
-        <a href="screens/02-onboarding-mic.html" class="screen-link">
-          <span class="screen-number">2</span>
-          <div class="screen-info">
-            <div class="screen-name">Mic Permission</div>
-            <div class="screen-desc">Let's Hear You — mic test</div>
-          </div>
-        </a>
-        <a href="screens/03-onboarding-tracks.html" class="screen-link">
-          <span class="screen-number">3</span>
-          <div class="screen-info">
-            <div class="screen-name">Track Selection</div>
-            <div class="screen-desc">What's Your Story? — choose a track</div>
-          </div>
-        </a>
-        <a href="screens/04-auth.html" class="screen-link">
-          <span class="screen-number">4</span>
-          <div class="screen-info">
-            <div class="screen-name">Login / Sign Up</div>
-            <div class="screen-desc">Auth with social + email</div>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <section class="screen-group">
-      <h2>Core Experience</h2>
-      <div class="screen-grid">
-        <a href="screens/05-home.html" class="screen-link">
-          <span class="screen-number">5</span>
-          <div class="screen-info">
-            <div class="screen-name">Home / Daily Prompt</div>
-            <div class="screen-desc">Daily habit entry point</div>
-          </div>
-        </a>
-        <a href="screens/06-recording-studio.html" class="screen-link">
-          <span class="screen-number">6</span>
-          <div class="screen-info">
-            <div class="screen-name">Recording Studio</div>
-            <div class="screen-desc">Distraction-free recording</div>
-          </div>
-        </a>
-        <a href="screens/07-analysis-feedback.html" class="screen-link">
-          <span class="screen-number">7</span>
-          <div class="screen-info">
-            <div class="screen-name">Analysis &amp; Feedback</div>
-            <div class="screen-desc">AI-generated performance review</div>
-          </div>
-        </a>
-        <a href="screens/08-progress-dashboard.html" class="screen-link">
-          <span class="screen-number">8</span>
-          <div class="screen-info">
-            <div class="screen-name">Progress Dashboard</div>
-            <div class="screen-desc">Heatmap, trends, stats</div>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <section class="screen-group">
-      <h2>Learning</h2>
-      <div class="screen-grid">
-        <a href="screens/09-learning-tracks.html" class="screen-link">
-          <span class="screen-number">9</span>
-          <div class="screen-info">
-            <div class="screen-name">Learning Tracks</div>
-            <div class="screen-desc">Browse storytelling courses</div>
-          </div>
-        </a>
-        <a href="screens/10-track-detail.html" class="screen-link">
-          <span class="screen-number">10</span>
-          <div class="screen-info">
-            <div class="screen-name">Track Detail</div>
-            <div class="screen-desc">Lesson list + progress</div>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <section class="screen-group">
-      <h2>Community</h2>
-      <div class="screen-grid">
-        <a href="screens/11-community-hub.html" class="screen-link">
-          <span class="screen-number">11</span>
-          <div class="screen-info">
-            <div class="screen-name">Community Hub</div>
-            <div class="screen-desc">Challenges, leaderboard, entries</div>
-          </div>
-        </a>
-        <a href="screens/15-challenge-detail.html" class="screen-link">
-          <span class="screen-number">15</span>
-          <div class="screen-info">
-            <div class="screen-name">Challenge Detail</div>
-            <div class="screen-desc">Full challenge view + entries</div>
-          </div>
-        </a>
-        <a href="screens/16-leaderboard.html" class="screen-link">
-          <span class="screen-number">16</span>
-          <div class="screen-info">
-            <div class="screen-name">Leaderboard</div>
-            <div class="screen-desc">Full ranked participant list</div>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <section class="screen-group">
-      <h2>Playback &amp; Settings</h2>
-      <div class="screen-grid">
-        <a href="screens/12-recording-playback.html" class="screen-link">
-          <span class="screen-number">12</span>
-          <div class="screen-info">
-            <div class="screen-name">Recording Playback</div>
-            <div class="screen-desc">Review + Day 1 vs Now comparison</div>
-          </div>
-        </a>
-        <a href="screens/13-settings.html" class="screen-link">
-          <span class="screen-number">13</span>
-          <div class="screen-info">
-            <div class="screen-name">Settings / Profile</div>
-            <div class="screen-desc">Account, preferences, practice</div>
-          </div>
-        </a>
-        <a href="screens/14-subscription-tiers.html" class="screen-link">
-          <span class="screen-number">14</span>
-          <div class="screen-info">
-            <div class="screen-name">Subscription Tiers</div>
-            <div class="screen-desc">Free / Premium / Enterprise</div>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <section class="design-tokens">
-      <h2>Design Tokens</h2>
-      <div class="color-grid">
-        <div class="color-swatch">
-          <div class="color-swatch-block" style="background: #4F46E5;"></div>
-          <div class="color-swatch-label">Primary #4F46E5</div>
-        </div>
-        <div class="color-swatch">
-          <div class="color-swatch-block" style="background: #3730A3;"></div>
-          <div class="color-swatch-label">Dark #3730A3</div>
-        </div>
-        <div class="color-swatch">
-          <div class="color-swatch-block" style="background: #818CF8;"></div>
-          <div class="color-swatch-label">Light #818CF8</div>
-        </div>
-        <div class="color-swatch">
-          <div class="color-swatch-block" style="background: #EF4444;"></div>
-          <div class="color-swatch-label">Record #EF4444</div>
-        </div>
-        <div class="color-swatch">
-          <div class="color-swatch-block" style="background: #10B981;"></div>
-          <div class="color-swatch-label">Positive #10B981</div>
-        </div>
-        <div class="color-swatch">
-          <div class="color-swatch-block" style="background: #F59E0B;"></div>
-          <div class="color-swatch-label">Warning #F59E0B</div>
-        </div>
-        <div class="color-swatch">
-          <div class="color-swatch-block" style="background: #F43F5E;"></div>
-          <div class="color-swatch-label">Critical #F43F5E</div>
-        </div>
-        <div class="color-swatch">
-          <div class="color-swatch-block" style="background: #0F172A;"></div>
-          <div class="color-swatch-label">Text #0F172A</div>
-        </div>
-        <div class="color-swatch">
-          <div class="color-swatch-block" style="background: #475569;"></div>
-          <div class="color-swatch-label">Secondary #475569</div>
-        </div>
-        <div class="color-swatch">
-          <div class="color-swatch-block" style="background: #F8FAFC; border: 1px solid #E2E8F0;"></div>
-          <div class="color-swatch-label">Background #F8FAFC</div>
-        </div>
-      </div>
-    </section>
+  <div class="top-bar">
+    <a href="../../index.html" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      All Projects
+    </a>
+    <div class="top-divider"></div>
+    <span class="project-title">StoryCraft</span>
+    <span class="top-bar-spacer"></span>
+    <span class="screen-counter">16 screens</span>
   </div>
+
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <!-- Populated by JS -->
+    </aside>
+
+    <div class="preview-panel">
+      <div class="preview-toolbar">
+        <button class="toggle-sidebar-btn" id="toggle-sidebar" aria-label="Toggle screen list">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <button class="preview-nav-btn" id="btn-prev" aria-label="Previous screen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="preview-screen-name" id="preview-title">—</span>
+        <button class="preview-nav-btn" id="btn-next" aria-label="Next screen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button class="open-tab-btn" id="btn-open-tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Open in new tab
+        </button>
+      </div>
+
+      <div class="preview-frame-wrap">
+        <div class="device-frame">
+          <iframe id="preview-iframe" title="Screen preview"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SCREENS = [
+      { group: "Onboarding", items: [
+        { num: 1,  file: "screens/01-onboarding-value.html", name: "Value Proposition", desc: "Find Your Voice — first impression" },
+        { num: 2,  file: "screens/02-onboarding-mic.html",   name: "Mic Permission",     desc: "Let's Hear You — mic test" },
+        { num: 3,  file: "screens/03-onboarding-tracks.html",name: "Track Selection",     desc: "What's Your Story? — choose a track" },
+        { num: 4,  file: "screens/04-auth.html",             name: "Login / Sign Up",     desc: "Auth with social + email" },
+      ]},
+      { group: "Core Experience", items: [
+        { num: 5,  file: "screens/05-home.html",             name: "Home / Daily Prompt", desc: "Daily habit entry point" },
+        { num: 6,  file: "screens/06-recording-studio.html", name: "Recording Studio",    desc: "Distraction-free recording" },
+        { num: 7,  file: "screens/07-analysis-feedback.html",name: "Analysis & Feedback", desc: "AI-generated performance review" },
+        { num: 8,  file: "screens/08-progress-dashboard.html",name: "Progress Dashboard", desc: "Heatmap, trends, stats" },
+      ]},
+      { group: "Learning", items: [
+        { num: 9,  file: "screens/09-learning-tracks.html",  name: "Learning Tracks",     desc: "Browse storytelling courses" },
+        { num: 10, file: "screens/10-track-detail.html",     name: "Track Detail",        desc: "Lesson list + progress" },
+      ]},
+      { group: "Community", items: [
+        { num: 11, file: "screens/11-community-hub.html",    name: "Community Hub",       desc: "Challenges, leaderboard, entries" },
+        { num: 15, file: "screens/15-challenge-detail.html", name: "Challenge Detail",    desc: "Full challenge view + entries" },
+        { num: 16, file: "screens/16-leaderboard.html",      name: "Leaderboard",         desc: "Full ranked participant list" },
+      ]},
+      { group: "Playback & Settings", items: [
+        { num: 12, file: "screens/12-recording-playback.html",name: "Recording Playback", desc: "Review + Day 1 vs Now comparison" },
+        { num: 13, file: "screens/13-settings.html",          name: "Settings / Profile",  desc: "Account, preferences, practice" },
+        { num: 14, file: "screens/14-subscription-tiers.html",name: "Subscription Tiers",  desc: "Free / Premium / Enterprise" },
+      ]},
+    ];
+
+    const flatScreens = SCREENS.flatMap(g => g.items);
+    let activeIndex = 0;
+
+    const sidebar     = document.getElementById("sidebar");
+    const iframe      = document.getElementById("preview-iframe");
+    const titleEl     = document.getElementById("preview-title");
+    const btnPrev     = document.getElementById("btn-prev");
+    const btnNext     = document.getElementById("btn-next");
+    const btnOpenTab  = document.getElementById("btn-open-tab");
+    const btnToggle   = document.getElementById("toggle-sidebar");
+
+    function buildSidebar() {
+      sidebar.innerHTML = SCREENS.map(group => `
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">${group.group}</div>
+          ${group.items.map(s => {
+            const idx = flatScreens.indexOf(s);
+            return `<button class="screen-item" data-idx="${idx}">
+              <span class="screen-item-num">${s.num}</span>
+              <div class="screen-item-text">
+                <div class="screen-item-name">${s.name}</div>
+                <div class="screen-item-desc">${s.desc}</div>
+              </div>
+            </button>`;
+          }).join("")}
+        </div>
+      `).join("");
+
+      sidebar.addEventListener("click", (e) => {
+        const btn = e.target.closest(".screen-item");
+        if (!btn) return;
+        selectScreen(parseInt(btn.dataset.idx, 10));
+      });
+    }
+
+    function selectScreen(idx) {
+      if (idx < 0 || idx >= flatScreens.length) return;
+      activeIndex = idx;
+      const s = flatScreens[idx];
+
+      iframe.src = s.file;
+      titleEl.textContent = `${s.num}. ${s.name}`;
+      btnPrev.disabled = idx === 0;
+      btnNext.disabled = idx === flatScreens.length - 1;
+
+      sidebar.querySelectorAll(".screen-item").forEach((el, i) => {
+        el.classList.toggle("active", i === idx);
+      });
+
+      const activeBtn = sidebar.querySelector(".screen-item.active");
+      if (activeBtn) activeBtn.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    btnPrev.addEventListener("click", () => selectScreen(activeIndex - 1));
+    btnNext.addEventListener("click", () => selectScreen(activeIndex + 1));
+    btnOpenTab.addEventListener("click", () => {
+      window.open(flatScreens[activeIndex].file, "_blank");
+    });
+    btnToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("collapsed");
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        selectScreen(activeIndex - 1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        selectScreen(activeIndex + 1);
+      }
+    });
+
+    buildSidebar();
+    selectScreen(0);
+  </script>
 </body>
 </html>
