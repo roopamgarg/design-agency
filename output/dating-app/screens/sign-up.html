@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ember — Create Account</title>
+  <link rel="stylesheet" href="../../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-family-sans);
+      color: var(--color-text-primary);
+      background-color: var(--color-bg-secondary);
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 390px;
+      min-height: 100dvh;
+      position: relative;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding: var(--space-8) 0;
+      }
+
+      .phone-frame {
+        min-height: 844px;
+        max-height: 844px;
+        border-radius: var(--radius-3xl);
+        box-shadow: var(--shadow-2xl);
+        border: 1px solid var(--color-border-subtle);
+        overflow: hidden;
+      }
+    }
+
+    .screen {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-bg-primary);
+      overflow-y: auto;
+    }
+
+    @media (min-width: 768px) {
+      .screen {
+        min-height: 844px;
+        max-height: 844px;
+      }
+    }
+
+    /* ---------- Header ---------- */
+    .header {
+      display: flex;
+      align-items: center;
+      padding: var(--space-4) var(--space-page-x-mobile);
+      position: relative;
+    }
+
+    .btn-back {
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: var(--radius-full);
+      color: var(--color-text-primary);
+      transition: background var(--transition-fast);
+      margin-left: calc(-1 * var(--space-2));
+    }
+
+    .btn-back:hover {
+      background: var(--color-primary-subtle);
+    }
+
+    .btn-back:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .btn-back svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .step-dots {
+      display: flex;
+      gap: var(--space-1);
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .step-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: var(--radius-full);
+      background: var(--color-border-strong);
+      transition: all var(--transition-normal);
+    }
+
+    .step-dot.active {
+      width: 18px;
+      background: var(--color-primary);
+    }
+
+    .step-dot.completed {
+      background: var(--color-primary);
+    }
+
+    /* ---------- Content ---------- */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-4) var(--space-page-x-mobile) var(--space-8);
+    }
+
+    .page-title {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-secondary);
+      letter-spacing: var(--letter-spacing-tight);
+      line-height: var(--line-height-tight);
+      margin-bottom: var(--space-2);
+    }
+
+    .page-subtitle {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-regular);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-normal);
+      margin-bottom: var(--space-8);
+    }
+
+    /* ---------- Tabs ---------- */
+    .tab-group {
+      display: flex;
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-1);
+      margin-bottom: var(--space-6);
+    }
+
+    .tab-btn {
+      flex: 1;
+      height: 40px;
+      min-height: var(--touch-target-min);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-tertiary);
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: all var(--transition-normal);
+    }
+
+    .tab-btn[aria-selected="true"] {
+      background: var(--color-bg-elevated);
+      color: var(--color-text-primary);
+      box-shadow: var(--shadow-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .tab-btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    /* ---------- Input fields ---------- */
+    .input-group {
+      margin-bottom: var(--space-5);
+    }
+
+    .input-label {
+      display: block;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-2);
+    }
+
+    .phone-input-row {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .country-select {
+      width: 88px;
+      flex-shrink: 0;
+      height: var(--input-height);
+      border: 1px solid var(--input-border);
+      border-radius: var(--input-radius);
+      background: var(--input-bg);
+      padding: 0 var(--space-3);
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237A7A7A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      transition: border-color var(--transition-fast);
+    }
+
+    .country-select:focus {
+      outline: none;
+      border-color: var(--input-border-focus);
+      box-shadow: 0 0 0 3px var(--color-primary-subtle);
+    }
+
+    .text-input {
+      flex: 1;
+      height: var(--input-height);
+      border: 1px solid var(--input-border);
+      border-radius: var(--input-radius);
+      background: var(--input-bg);
+      padding: 0 var(--input-padding-x);
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-base);
+      color: var(--color-text-primary);
+      transition: border-color var(--transition-fast);
+    }
+
+    .text-input::placeholder {
+      color: var(--color-text-disabled);
+    }
+
+    .text-input:focus {
+      outline: none;
+      border-color: var(--input-border-focus);
+      box-shadow: 0 0 0 3px var(--color-primary-subtle);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* ---------- Primary button ---------- */
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: var(--btn-height-lg);
+      min-height: var(--touch-target-min);
+      border: none;
+      border-radius: var(--btn-radius);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      color: var(--color-primary-contrast);
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-base);
+      font-weight: var(--btn-font-weight);
+      letter-spacing: var(--btn-letter-spacing);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      box-shadow: var(--shadow-md), var(--shadow-glow-primary);
+      margin-top: var(--space-2);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg), var(--shadow-glow-primary);
+    }
+
+    .btn-primary:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-primary:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 3px;
+    }
+
+    /* ---------- Divider ---------- */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin: var(--space-6) 0;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--color-border-default);
+    }
+
+    .or-divider span {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-tertiary);
+      white-space: nowrap;
+    }
+
+    /* ---------- Social buttons ---------- */
+    .social-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .btn-social {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-3);
+      width: 100%;
+      height: var(--btn-height-lg);
+      min-height: var(--touch-target-min);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--btn-radius);
+      background: var(--color-bg-elevated);
+      color: var(--color-text-primary);
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+    }
+
+    .btn-social:hover {
+      border-color: var(--color-border-strong);
+      background: var(--color-bg-secondary);
+    }
+
+    .btn-social:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 3px;
+    }
+
+    .btn-social svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    /* ---------- Terms ---------- */
+    .terms {
+      margin-top: auto;
+      padding-top: var(--space-6);
+      text-align: center;
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .terms a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: var(--font-weight-medium);
+    }
+
+    .terms a:hover {
+      text-decoration: underline;
+    }
+
+    .terms a:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* =============================================
+       OTP Verification Section
+       ============================================= */
+    .otp-section {
+      display: none;
+      flex-direction: column;
+    }
+
+    .otp-section.active {
+      display: flex;
+    }
+
+    .signup-section.hidden {
+      display: none;
+    }
+
+    .otp-title {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-secondary);
+      letter-spacing: var(--letter-spacing-tight);
+      line-height: var(--line-height-tight);
+      margin-bottom: var(--space-2);
+    }
+
+    .otp-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-normal);
+      margin-bottom: var(--space-8);
+    }
+
+    .otp-sent-to {
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .otp-inputs {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-6);
+    }
+
+    .otp-digit {
+      width: 48px;
+      height: 56px;
+      border: 1.5px solid var(--color-border-default);
+      border-radius: var(--input-radius);
+      background: var(--input-bg);
+      text-align: center;
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      caret-color: var(--color-primary);
+      transition: border-color var(--transition-fast);
+    }
+
+    .otp-digit:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-subtle);
+    }
+
+    .otp-digit.filled {
+      border-color: var(--color-primary);
+    }
+
+    .resend-timer {
+      text-align: center;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-8);
+    }
+
+    .resend-link {
+      color: var(--color-primary);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-sm);
+      min-height: var(--touch-target-min);
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+    }
+
+    .resend-link:disabled {
+      color: var(--color-text-disabled);
+      cursor: not-allowed;
+    }
+
+    .resend-link:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .btn-verify {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: var(--btn-height-lg);
+      min-height: var(--touch-target-min);
+      border: none;
+      border-radius: var(--btn-radius);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      color: var(--color-primary-contrast);
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-base);
+      font-weight: var(--btn-font-weight);
+      letter-spacing: var(--btn-letter-spacing);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      box-shadow: var(--shadow-md), var(--shadow-glow-primary);
+    }
+
+    .btn-verify:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg), var(--shadow-glow-primary);
+    }
+
+    .btn-verify:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-verify:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-verify:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 3px;
+    }
+
+    /* ---------- Error states ---------- */
+    .input-group.has-error .text-input,
+    .input-group.has-error .country-select {
+      border-color: var(--color-error);
+      box-shadow: 0 0 0 3px var(--color-error-subtle);
+    }
+
+    .input-error-msg {
+      display: none;
+      font-size: var(--font-size-xs);
+      color: var(--color-error);
+      margin-top: var(--space-1);
+      line-height: var(--line-height-normal);
+    }
+
+    .input-group.has-error .input-error-msg {
+      display: block;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: var(--space-2);
+      z-index: 100;
+      background: var(--color-primary);
+      color: #fff;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      left: var(--space-4);
+    }
+
+    @media (min-width: 1440px) {
+      body {
+        background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%);
+      }
+      .phone-frame {
+        box-shadow: 0 0 60px rgba(0,0,0,0.06);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <a href="#signupSection" class="skip-link">Skip to sign-up form</a>
+    <div class="screen" data-screen="sign-up">
+
+      <!-- Header -->
+      <header class="header">
+        <button class="btn-back" aria-label="Go back" id="btnBack">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5"/>
+            <polyline points="12 19 5 12 12 5"/>
+          </svg>
+        </button>
+        <nav class="step-dots" aria-label="Sign-up progress: step 1 of 8">
+          <div class="step-dot active" aria-current="step"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </nav>
+      </header>
+
+      <!-- Sign-up form -->
+      <main class="content signup-section" id="signupSection">
+        <h1 class="page-title">Create Your Account</h1>
+        <p class="page-subtitle">We'll send you a verification code</p>
+
+        <!-- Phone / Email toggle -->
+        <div class="tab-group" role="tablist" aria-label="Contact method">
+          <button class="tab-btn" role="tab" id="tabPhone" aria-selected="true" aria-controls="panelPhone">Phone</button>
+          <button class="tab-btn" role="tab" id="tabEmail" aria-selected="false" aria-controls="panelEmail">Email</button>
+        </div>
+
+        <!-- Phone panel -->
+        <div class="tab-panel active" role="tabpanel" id="panelPhone" aria-labelledby="tabPhone">
+          <div class="input-group has-error">
+            <label class="input-label" for="phoneNumber">Phone number</label>
+            <div class="phone-input-row">
+              <select class="country-select" id="countryCode" aria-label="Country code">
+                <option value="+1" selected>+1</option>
+                <option value="+44">+44</option>
+                <option value="+91">+91</option>
+                <option value="+33">+33</option>
+                <option value="+49">+49</option>
+                <option value="+61">+61</option>
+                <option value="+81">+81</option>
+              </select>
+              <input
+                class="text-input"
+                type="tel"
+                id="phoneNumber"
+                placeholder="(555) 123-4567"
+                inputmode="tel"
+                autocomplete="tel-national"
+                aria-describedby="phoneHint phoneError"
+                aria-invalid="true"
+              >
+            </div>
+            <span class="input-error-msg" id="phoneError">Please enter a valid phone number</span>
+            <span id="phoneHint" class="visually-hidden">Enter your 10-digit phone number</span>
+          </div>
+        </div>
+
+        <!-- Email panel -->
+        <div class="tab-panel" role="tabpanel" id="panelEmail" aria-labelledby="tabEmail">
+          <div class="input-group">
+            <label class="input-label" for="emailAddress">Email address</label>
+            <input
+              class="text-input"
+              type="email"
+              id="emailAddress"
+              placeholder="you@example.com"
+              inputmode="email"
+              autocomplete="email"
+              aria-describedby="emailHint"
+            >
+            <span id="emailHint" class="visually-hidden">Enter your email address</span>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btnContinue" disabled aria-label="Continue to verification">Continue</button>
+
+        <!-- Divider -->
+        <div class="or-divider" role="separator">
+          <span>or continue with</span>
+        </div>
+
+        <!-- Social -->
+        <div class="social-buttons">
+          <button class="btn-social" aria-label="Continue with Apple">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C4.24 16.7 4.89 10.5 9.04 10.26c1.28.07 2.17.74 2.92.78.99-.2 1.94-.78 3-.84 1.82-.1 3.18.65 3.96 2.01-3.64 2.18-2.42 6.94.97 8.28-.72 1.9-1.64 3.74-2.84 4.79zM12.05 10.2c-.14-2.4 1.82-4.47 4.1-4.68.33 2.78-2.47 4.86-4.1 4.68z"/>
+            </svg>
+            Continue with Apple
+          </button>
+          <button class="btn-social" aria-label="Continue with Google">
+            <svg viewBox="0 0 24 24">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            Continue with Google
+          </button>
+        </div>
+
+        <!-- Terms -->
+        <p class="terms">
+          By continuing, you agree to our
+          <a href="#">Terms of Service</a> and
+          <a href="#">Privacy Policy</a>
+        </p>
+      </main>
+
+      <!-- OTP Verification -->
+      <section class="content otp-section" id="otpSection" aria-label="Verification code entry">
+        <h1 class="otp-title">Enter Verification Code</h1>
+        <p class="otp-subtitle">
+          Code sent to <span class="otp-sent-to" id="otpDestination">+1 (555) 123-4567</span>
+        </p>
+
+        <fieldset style="border:none; padding:0; margin:0;">
+          <legend class="visually-hidden">6-digit verification code</legend>
+          <div class="otp-inputs" id="otpInputs">
+            <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 1" autocomplete="one-time-code">
+            <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 2">
+            <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 3">
+            <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 4">
+            <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 5">
+            <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 6">
+          </div>
+        </fieldset>
+
+        <div class="resend-timer" id="resendArea">
+          <button class="resend-link" id="resendBtn" disabled>Resend code in <span id="resendTimer">0:45</span></button>
+        </div>
+
+        <button class="btn-verify" id="btnVerify" disabled>Verify</button>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Visually-hidden utility -->
+  <style>
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+
+  <script>
+    (function () {
+      /* ---------- Tab switching ---------- */
+      var tabPhone = document.getElementById('tabPhone');
+      var tabEmail = document.getElementById('tabEmail');
+      var panelPhone = document.getElementById('panelPhone');
+      var panelEmail = document.getElementById('panelEmail');
+      var btnContinue = document.getElementById('btnContinue');
+      var phoneInput = document.getElementById('phoneNumber');
+      var emailInput = document.getElementById('emailAddress');
+
+      function switchTab(tab) {
+        var isPhone = tab === 'phone';
+        tabPhone.setAttribute('aria-selected', isPhone ? 'true' : 'false');
+        tabEmail.setAttribute('aria-selected', isPhone ? 'false' : 'true');
+        panelPhone.classList.toggle('active', isPhone);
+        panelEmail.classList.toggle('active', !isPhone);
+        validateInput();
+        if (isPhone) phoneInput.focus(); else emailInput.focus();
+      }
+
+      tabPhone.addEventListener('click', function () { switchTab('phone'); });
+      tabEmail.addEventListener('click', function () { switchTab('email'); });
+
+      /* Keyboard nav for tabs */
+      [tabPhone, tabEmail].forEach(function (tab) {
+        tab.addEventListener('keydown', function (e) {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            switchTab(tab === tabPhone ? 'email' : 'phone');
+          }
+        });
+      });
+
+      /* ---------- Validation ---------- */
+      function validateInput() {
+        var isPhone = tabPhone.getAttribute('aria-selected') === 'true';
+        var valid = false;
+        if (isPhone) {
+          var digits = phoneInput.value.replace(/\D/g, '');
+          valid = digits.length >= 7;
+        } else {
+          valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
+        }
+        btnContinue.disabled = !valid;
+      }
+
+      phoneInput.addEventListener('input', function () {
+        var digits = this.value.replace(/\D/g, '');
+        if (digits.length > 10) digits = digits.slice(0, 10);
+        var formatted = '';
+        if (digits.length > 0) formatted = '(' + digits.slice(0, 3);
+        if (digits.length >= 3) formatted += ') ';
+        if (digits.length > 3) formatted += digits.slice(3, 6);
+        if (digits.length >= 6) formatted += '-' + digits.slice(6);
+        this.value = formatted;
+        validateInput();
+      });
+
+      emailInput.addEventListener('input', validateInput);
+
+      /* ---------- Continue → OTP ---------- */
+      var signupSection = document.getElementById('signupSection');
+      var otpSection = document.getElementById('otpSection');
+      var otpDestination = document.getElementById('otpDestination');
+
+      btnContinue.addEventListener('click', function () {
+        if (this.disabled) return;
+        var isPhone = tabPhone.getAttribute('aria-selected') === 'true';
+        var countryCode = document.getElementById('countryCode').value;
+        otpDestination.textContent = isPhone
+          ? countryCode + ' ' + phoneInput.value
+          : emailInput.value;
+        signupSection.classList.add('hidden');
+        otpSection.classList.add('active');
+        document.querySelector('.otp-digit').focus();
+        startResendTimer();
+      });
+
+      /* ---------- Back button ---------- */
+      document.getElementById('btnBack').addEventListener('click', function () {
+        if (otpSection.classList.contains('active')) {
+          otpSection.classList.remove('active');
+          signupSection.classList.remove('hidden');
+        } else {
+          window.location.href = 'welcome.html';
+        }
+      });
+
+      /* ---------- OTP input handling ---------- */
+      var otpDigits = document.querySelectorAll('.otp-digit');
+      var btnVerify = document.getElementById('btnVerify');
+
+      function checkOTPComplete() {
+        var filled = true;
+        otpDigits.forEach(function (d) { if (!d.value) filled = false; });
+        btnVerify.disabled = !filled;
+      }
+
+      otpDigits.forEach(function (input, idx) {
+        input.addEventListener('input', function (e) {
+          var val = this.value.replace(/\D/g, '');
+          this.value = val.slice(0, 1);
+          if (val && idx < otpDigits.length - 1) {
+            otpDigits[idx + 1].focus();
+          }
+          this.classList.toggle('filled', !!this.value);
+          checkOTPComplete();
+        });
+
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Backspace' && !this.value && idx > 0) {
+            otpDigits[idx - 1].focus();
+            otpDigits[idx - 1].value = '';
+            otpDigits[idx - 1].classList.remove('filled');
+            checkOTPComplete();
+          }
+        });
+
+        input.addEventListener('paste', function (e) {
+          e.preventDefault();
+          var paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+          paste.split('').forEach(function (ch, i) {
+            if (otpDigits[i]) {
+              otpDigits[i].value = ch;
+              otpDigits[i].classList.add('filled');
+            }
+          });
+          var focusIdx = Math.min(paste.length, otpDigits.length - 1);
+          otpDigits[focusIdx].focus();
+          checkOTPComplete();
+        });
+      });
+
+      /* ---------- Resend timer ---------- */
+      var resendBtn = document.getElementById('resendBtn');
+      var resendTimerEl = document.getElementById('resendTimer');
+      var countdown;
+
+      function startResendTimer() {
+        var secs = 45;
+        resendBtn.disabled = true;
+        clearInterval(countdown);
+        countdown = setInterval(function () {
+          secs--;
+          resendTimerEl.textContent = '0:' + (secs < 10 ? '0' : '') + secs;
+          if (secs <= 0) {
+            clearInterval(countdown);
+            resendBtn.disabled = false;
+            resendBtn.innerHTML = 'Resend code';
+          }
+        }, 1000);
+      }
+
+      resendBtn.addEventListener('click', function () {
+        if (!this.disabled) {
+          resendBtn.innerHTML = 'Resend code in <span id="resendTimer">0:45</span>';
+          startResendTimer();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

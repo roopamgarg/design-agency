@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ember — States</title>
+  <link rel="stylesheet" href="../../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    html {
+      font-family: var(--font-family-sans);
+      background: #E8E0D8;
+      color: var(--color-text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      min-height: 100dvh;
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .states-page {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .states-page > header {
+      text-align: center;
+      margin-bottom: var(--space-12);
+    }
+
+    .states-page > header h1 {
+      font-family: var(--font-family-display);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .states-page > header p {
+      font-size: 0.9375rem;
+      color: var(--color-text-tertiary);
+    }
+
+    .section-group {
+      margin-bottom: var(--space-16);
+    }
+
+    .section-group > h2 {
+      font-family: var(--font-family-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+      padding-left: var(--space-2);
+    }
+
+    .section-group > p {
+      font-size: 0.875rem;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-8);
+      padding-left: var(--space-2);
+    }
+
+    .states-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: var(--space-8);
+    }
+
+    @media (max-width: 480px) {
+      .states-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .state-showcase {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .state-label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--space-3);
+      text-align: center;
+    }
+
+    .state-sublabel {
+      font-size: 0.75rem;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-4);
+      text-align: center;
+      font-weight: 400;
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 390px;
+      background: var(--color-bg-primary);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,0.04);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .phone-frame--short { min-height: 480px; }
+    .phone-frame--medium { min-height: 600px; }
+    .phone-frame--tall { min-height: 720px; }
+    .phone-frame--auto { min-height: auto; }
+
+    /* ===== EMPTY STATES ===== */
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--space-12) var(--space-8);
+      min-height: 480px;
+    }
+
+    .empty-state__icon {
+      width: 96px;
+      height: 96px;
+      margin-bottom: var(--space-8);
+      color: var(--color-accent);
+      opacity: 0.85;
+    }
+
+    .empty-state__title {
+      font-family: var(--font-family-display);
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-3);
+      line-height: 1.3;
+    }
+
+    .empty-state__subtitle {
+      font-size: 0.9375rem;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      max-width: 280px;
+      margin-bottom: var(--space-3);
+    }
+
+    .empty-state__meta {
+      font-size: 0.8125rem;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-8);
+    }
+
+    .empty-state__secondary-info {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: var(--color-bg-secondary);
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-full);
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+    }
+
+    .empty-state__secondary-info svg {
+      width: 14px;
+      height: 14px;
+      color: var(--color-primary);
+    }
+
+    /* Buttons */
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      min-height: var(--touch-target-min);
+      padding: var(--space-3) var(--space-6);
+      border-radius: var(--radius-full);
+      font-family: var(--font-family-sans);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn--primary {
+      background: var(--color-primary);
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(184, 134, 11, 0.25);
+    }
+
+    .btn--primary:hover {
+      box-shadow: 0 4px 16px rgba(184, 134, 11, 0.35);
+    }
+
+    .btn--secondary {
+      background: transparent;
+      color: var(--color-primary);
+      border: 1.5px solid var(--color-accent);
+    }
+
+    .btn--secondary:hover {
+      background: rgba(201, 169, 110, 0.08);
+    }
+
+    .btn--small {
+      min-height: 36px;
+      padding: var(--space-2) var(--space-4);
+      font-size: 0.8125rem;
+    }
+
+    .btn--ghost {
+      background: transparent;
+      color: var(--color-primary);
+      border: none;
+      font-weight: 500;
+      padding: var(--space-2) var(--space-3);
+      min-height: 36px;
+    }
+
+    .btn--ghost:hover {
+      background: rgba(201, 169, 110, 0.08);
+    }
+
+    /* ===== SKELETON / SHIMMER ===== */
+
+    .skeleton {
+      background: linear-gradient(
+        90deg,
+        var(--color-bg-tertiary) 0%,
+        var(--color-bg-secondary) 40%,
+        var(--color-bg-tertiary) 80%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.8s ease-in-out infinite;
+      border-radius: var(--radius-md);
+    }
+
+    .skeleton--circle {
+      border-radius: var(--radius-full);
+    }
+
+    .skeleton--text {
+      height: 14px;
+      border-radius: var(--radius-sm);
+    }
+
+    .skeleton--text-lg {
+      height: 20px;
+      border-radius: var(--radius-sm);
+    }
+
+    .skeleton--text-sm {
+      height: 10px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ===== LOADING: PROFILE CARD ===== */
+
+    .loading-profile-card {
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .loading-profile-card__photo {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      border-radius: var(--radius-2xl);
+      margin-bottom: var(--space-4);
+    }
+
+    .loading-profile-card__info {
+      width: 100%;
+      padding: 0 var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .loading-profile-card__name {
+      width: 60%;
+      margin-bottom: var(--space-3);
+    }
+
+    .loading-profile-card__detail {
+      width: 40%;
+      margin-bottom: var(--space-3);
+    }
+
+    .loading-profile-card__badge {
+      width: 24%;
+      height: 24px;
+      border-radius: var(--radius-full);
+    }
+
+    .loading-profile-card__actions {
+      display: flex;
+      gap: var(--space-6);
+      justify-content: center;
+      padding-bottom: var(--space-4);
+    }
+
+    .loading-profile-card__action-btn {
+      width: 56px;
+      height: 56px;
+    }
+
+    /* ===== LOADING: CONVERSATION LIST ===== */
+
+    .loading-conversations {
+      padding: var(--space-4);
+    }
+
+    .loading-conv-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+    }
+
+    .loading-conv-row + .loading-conv-row {
+      border-top: 1px solid var(--color-bg-secondary);
+    }
+
+    .loading-conv-row__avatar {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+
+    .loading-conv-row__text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .loading-conv-row__timestamp {
+      width: 36px;
+      align-self: flex-start;
+      margin-top: var(--space-1);
+    }
+
+    /* ===== LOADING: PROFILE ===== */
+
+    .loading-profile {
+      padding: var(--space-6) var(--space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .loading-profile__avatar {
+      width: 128px;
+      height: 128px;
+      margin-bottom: var(--space-5);
+    }
+
+    .loading-profile__name {
+      width: 50%;
+      margin-bottom: var(--space-4);
+    }
+
+    .loading-profile__btn {
+      width: 100%;
+      height: 44px;
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-8);
+    }
+
+    .loading-profile__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+      width: 100%;
+      margin-bottom: var(--space-6);
+    }
+
+    .loading-profile__grid-cell {
+      aspect-ratio: 1;
+      border-radius: var(--radius-lg);
+    }
+
+    .loading-profile__prompt {
+      width: 100%;
+      height: 80px;
+      border-radius: var(--card-radius);
+      margin-bottom: var(--space-3);
+    }
+
+    /* ===== ERROR STATES ===== */
+
+    .error-banner {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      background: var(--color-bg-tertiary);
+      border-left: 3px solid var(--color-accent);
+      padding: var(--space-3) var(--space-4);
+      margin: var(--space-3);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    .error-banner__icon {
+      width: 20px;
+      height: 20px;
+      color: var(--color-primary);
+      flex-shrink: 0;
+    }
+
+    .error-banner__text {
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+      line-height: 1.4;
+    }
+
+    .error-banner__text strong {
+      display: block;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 2px;
+    }
+
+    .error-fullpage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--space-12) var(--space-8);
+      min-height: 480px;
+    }
+
+    .error-fullpage__icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: var(--space-6);
+      color: var(--color-text-tertiary);
+      opacity: 0.7;
+    }
+
+    .error-fullpage__title {
+      font-family: var(--font-family-display);
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .error-fullpage__subtitle {
+      font-size: 0.9375rem;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      max-width: 280px;
+      margin-bottom: var(--space-8);
+    }
+
+    .error-upload-card {
+      margin: var(--space-4);
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+    }
+
+    .error-upload-card__image-area {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: var(--color-bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .error-upload-card__placeholder {
+      width: 100%;
+      height: 100%;
+      background:
+        linear-gradient(135deg, var(--color-bg-tertiary) 25%, var(--color-bg-secondary) 50%, var(--color-bg-tertiary) 75%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .error-upload-card__placeholder svg {
+      width: 48px;
+      height: 48px;
+      color: var(--color-text-tertiary);
+      opacity: 0.5;
+    }
+
+    .error-upload-card__overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(155, 35, 53, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .error-upload-card__overlay-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-full);
+      background: rgba(155, 35, 53, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+    }
+
+    .error-upload-card__overlay-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .error-upload-card__body {
+      padding: var(--space-4);
+    }
+
+    .error-upload-card__error-text {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--color-error);
+      margin-bottom: var(--space-3);
+    }
+
+    .error-upload-card__actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .error-upload-card__link {
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: var(--font-family-sans);
+    }
+
+    .error-upload-card__link:hover {
+      color: var(--color-text-primary);
+    }
+
+    /* Offline top banner */
+    .offline-top-banner {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: var(--color-accent);
+      color: #FFFFFF;
+      padding: var(--space-2) var(--space-4);
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+
+    .offline-top-banner svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* Mock content behind banners */
+    .mock-content {
+      padding: var(--space-4);
+      opacity: 0.4;
+    }
+
+    .mock-content__bar {
+      height: 12px;
+      background: var(--color-bg-tertiary);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-3);
+    }
+
+    /* ===== VISUALLY HIDDEN ===== */
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ===== RESPONSIVE ===== */
+
+    @media (max-width: 480px) {
+      body {
+        padding: var(--space-4) var(--space-2);
+      }
+
+      .states-page > header h1 {
+        font-size: 1.5rem;
+      }
+
+      .section-group > h2 {
+        font-size: 1.25rem;
+      }
+
+      .phone-frame {
+        max-width: 100%;
+      }
+    }
+
+    /* ===== PERMISSION OVERLAY ===== */
+    .permission-overlay {
+      position: relative;
+      min-height: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .permission-overlay__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(26, 26, 26, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .permission-overlay__card {
+      position: relative;
+      z-index: 1;
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-8) var(--space-6);
+      margin: var(--space-4);
+      max-width: 320px;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .permission-overlay__icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto var(--space-5);
+      background: rgba(184, 134, 11, 0.08);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+    }
+
+    .permission-overlay__icon svg {
+      width: 36px;
+      height: 36px;
+    }
+
+    .permission-overlay__title {
+      font-family: var(--font-family-display);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .permission-overlay__desc {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      margin-bottom: var(--space-6);
+    }
+
+    .permission-overlay__actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: var(--space-2);
+      z-index: 100;
+      background: var(--color-primary);
+      color: #fff;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      left: var(--space-4);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .skeleton {
+        animation: none !important;
+        background: var(--color-bg-tertiary) !important;
+      }
+      .btn,
+      .match-overlay,
+      .match-overlay-content {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="states-page" data-screen="states">
+    <a href="#section-empty" class="skip-link">Skip to main content</a>
+
+    <header>
+      <h1>Ember — App States</h1>
+      <p>Empty, loading, and error states across the dating experience</p>
+    </header>
+
+    <!-- ============================================== -->
+    <!-- EMPTY STATES                                    -->
+    <!-- ============================================== -->
+    <section class="section-group" aria-labelledby="section-empty">
+      <h2 id="section-empty">Empty States</h2>
+      <p>Shown when there is no content to display</p>
+
+      <div class="states-grid">
+
+        <!-- 1. No Matches Yet -->
+        <article class="state-showcase">
+          <p class="state-label">No Matches Yet (New User)</p>
+          <p class="state-sublabel">Discovery tab — first-time user</p>
+          <div class="phone-frame phone-frame--short">
+            <div class="empty-state" role="status" aria-label="No matches yet">
+              <svg class="empty-state__icon" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+                <circle cx="48" cy="48" r="44" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3" opacity="0.3"/>
+                <circle cx="48" cy="48" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
+                <line x1="48" y1="18" x2="48" y2="42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="48" y1="48" x2="62" y2="38" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="48" y1="10" x2="48" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="48" y1="80" x2="48" y2="86" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="10" y1="48" x2="16" y2="48" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="80" y1="48" x2="86" y2="48" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <h3 class="empty-state__title">We're finding your best matches</h3>
+              <p class="empty-state__subtitle">Check back soon! Your first curated batch is on its way.</p>
+              <p class="empty-state__meta">Usually within a few hours</p>
+              <button type="button" class="btn btn--secondary" aria-label="Review your preferences">Review Your Preferences</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2. Daily Matches Exhausted -->
+        <article class="state-showcase">
+          <p class="state-label">Daily Matches Exhausted</p>
+          <p class="state-sublabel">All curated matches viewed for the day</p>
+          <div class="phone-frame phone-frame--short">
+            <div class="empty-state" role="status" aria-label="Daily matches exhausted">
+              <svg class="empty-state__icon" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+                <circle cx="48" cy="52" r="28" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+                <path d="M30 52 A18 18 0 0 1 66 52" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <circle cx="48" cy="52" r="3" fill="currentColor" opacity="0.5"/>
+                <line x1="48" y1="24" x2="48" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="28" y1="32" x2="25" y2="29" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="68" y1="32" x2="71" y2="29" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="70" cy="26" r="10" fill="currentColor" opacity="0.15"/>
+                <path d="M67 26 Q70 22 73 26 Q70 30 67 26Z" fill="currentColor" opacity="0.6"/>
+              </svg>
+              <h3 class="empty-state__title">You've seen today's matches</h3>
+              <p class="empty-state__subtitle">New ones arrive tomorrow at 9:00 AM</p>
+              <div class="empty-state__secondary-info">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M2 4l6 4 6-4M2 4v8h12V4H2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                </svg>
+                <span>3 pending conversations waiting</span>
+              </div>
+              <button type="button" class="btn btn--primary" aria-label="Go to messages">Go to Messages</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 3. No Conversations -->
+        <article class="state-showcase">
+          <p class="state-label">No Conversations</p>
+          <p class="state-sublabel">Messages tab — no chats started</p>
+          <div class="phone-frame phone-frame--short">
+            <div class="empty-state" role="status" aria-label="No conversations yet">
+              <svg class="empty-state__icon" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+                <rect x="16" y="20" width="56" height="40" rx="12" stroke="currentColor" stroke-width="2" fill="none"/>
+                <path d="M28 60 L24 72 L40 60" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+                <line x1="30" y1="35" x2="56" y2="35" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+                <line x1="30" y1="43" x2="48" y2="43" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.25"/>
+                <circle cx="68" cy="30" r="4" fill="currentColor" opacity="0.25"/>
+                <circle cx="76" cy="40" r="3" fill="currentColor" opacity="0.15"/>
+                <circle cx="72" cy="50" r="2" fill="currentColor" opacity="0.1"/>
+              </svg>
+              <h3 class="empty-state__title">No conversations yet</h3>
+              <p class="empty-state__subtitle">Matches are waiting! Send the first message.</p>
+              <button type="button" class="btn btn--primary" aria-label="View matches">View Matches</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 4. No Likes Received -->
+        <article class="state-showcase">
+          <p class="state-label">No Likes Received</p>
+          <p class="state-sublabel">Likes tab — no incoming likes</p>
+          <div class="phone-frame phone-frame--short">
+            <div class="empty-state" role="status" aria-label="No likes received">
+              <svg class="empty-state__icon" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+                <path d="M48 80 C20 60 12 44 12 34 C12 22 22 14 34 14 C40 14 45 17 48 22 C51 17 56 14 62 14 C74 14 84 22 84 34 C84 44 76 60 48 80Z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+                <path d="M48 72 C26 56 20 44 20 36 C20 28 26 22 34 22 C38 22 43 24 46 28" stroke="currentColor" stroke-width="1" fill="none" opacity="0.2" stroke-linecap="round"/>
+              </svg>
+              <h3 class="empty-state__title">Likes will appear here</h3>
+              <p class="empty-state__subtitle">A great profile helps — review yours?</p>
+              <button type="button" class="btn btn--secondary" aria-label="Edit profile">Edit Profile</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 5. No Search Results -->
+        <article class="state-showcase">
+          <p class="state-label">No Search Results</p>
+          <p class="state-sublabel">Filters return zero matches</p>
+          <div class="phone-frame phone-frame--short">
+            <div class="empty-state" role="status" aria-label="No search results">
+              <svg class="empty-state__icon" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+                <circle cx="40" cy="40" r="22" stroke="currentColor" stroke-width="2" fill="none"/>
+                <line x1="56" y1="56" x2="76" y2="76" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="32" y1="34" x2="48" y2="34" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
+                <line x1="32" y1="40" x2="44" y2="40" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.25"/>
+                <line x1="32" y1="46" x2="48" y2="46" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
+                <line x1="60" y1="62" x2="68" y2="70" stroke="currentColor" stroke-width="6" stroke-linecap="round" opacity="0.1"/>
+              </svg>
+              <h3 class="empty-state__title">No one matches these filters</h3>
+              <p class="empty-state__subtitle">Try expanding your distance or age range.</p>
+              <button type="button" class="btn btn--primary" aria-label="Widen filters">Widen Filters</button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- LOADING STATES                                  -->
+    <!-- ============================================== -->
+    <section class="section-group" aria-labelledby="section-loading">
+      <h2 id="section-loading">Loading States</h2>
+      <p>Skeleton screens shown while content is being fetched</p>
+
+      <div class="states-grid">
+
+        <!-- 1. Profile Card Loading -->
+        <article class="state-showcase">
+          <p class="state-label">Profile Card Loading</p>
+          <p class="state-sublabel">Discovery tab — fetching next profile</p>
+          <div class="phone-frame phone-frame--tall" role="status" aria-label="Loading profile card">
+            <span class="visually-hidden">Loading profile card</span>
+            <div class="loading-profile-card">
+              <div class="skeleton loading-profile-card__photo" aria-hidden="true"></div>
+              <div class="loading-profile-card__info">
+                <div class="skeleton skeleton--text-lg loading-profile-card__name" aria-hidden="true"></div>
+                <div class="skeleton skeleton--text loading-profile-card__detail" aria-hidden="true"></div>
+                <div class="skeleton loading-profile-card__badge" aria-hidden="true" style="margin-top: var(--space-2);"></div>
+              </div>
+              <div class="loading-profile-card__actions">
+                <div class="skeleton skeleton--circle loading-profile-card__action-btn" aria-hidden="true"></div>
+                <div class="skeleton skeleton--circle loading-profile-card__action-btn" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2. Conversation List Loading -->
+        <article class="state-showcase">
+          <p class="state-label">Conversation List Loading</p>
+          <p class="state-sublabel">Messages tab — loading chat history</p>
+          <div class="phone-frame phone-frame--medium" role="status" aria-label="Loading conversations">
+            <span class="visually-hidden">Loading conversations</span>
+            <div class="loading-conversations">
+              <div class="loading-conv-row" aria-hidden="true">
+                <div class="skeleton skeleton--circle loading-conv-row__avatar"></div>
+                <div class="loading-conv-row__text">
+                  <div class="skeleton skeleton--text" style="width: 40%;"></div>
+                  <div class="skeleton skeleton--text" style="width: 85%;"></div>
+                </div>
+                <div class="skeleton skeleton--text-sm loading-conv-row__timestamp"></div>
+              </div>
+              <div class="loading-conv-row" aria-hidden="true">
+                <div class="skeleton skeleton--circle loading-conv-row__avatar"></div>
+                <div class="loading-conv-row__text">
+                  <div class="skeleton skeleton--text" style="width: 55%;"></div>
+                  <div class="skeleton skeleton--text" style="width: 70%;"></div>
+                </div>
+                <div class="skeleton skeleton--text-sm loading-conv-row__timestamp"></div>
+              </div>
+              <div class="loading-conv-row" aria-hidden="true">
+                <div class="skeleton skeleton--circle loading-conv-row__avatar"></div>
+                <div class="loading-conv-row__text">
+                  <div class="skeleton skeleton--text" style="width: 35%;"></div>
+                  <div class="skeleton skeleton--text" style="width: 90%;"></div>
+                </div>
+                <div class="skeleton skeleton--text-sm loading-conv-row__timestamp"></div>
+              </div>
+              <div class="loading-conv-row" aria-hidden="true">
+                <div class="skeleton skeleton--circle loading-conv-row__avatar"></div>
+                <div class="loading-conv-row__text">
+                  <div class="skeleton skeleton--text" style="width: 48%;"></div>
+                  <div class="skeleton skeleton--text" style="width: 75%;"></div>
+                </div>
+                <div class="skeleton skeleton--text-sm loading-conv-row__timestamp"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 3. Profile Loading -->
+        <article class="state-showcase">
+          <p class="state-label">Profile Loading</p>
+          <p class="state-sublabel">Full profile view — loading user details</p>
+          <div class="phone-frame phone-frame--tall" role="status" aria-label="Loading profile">
+            <span class="visually-hidden">Loading profile</span>
+            <div class="loading-profile">
+              <div class="skeleton skeleton--circle loading-profile__avatar" aria-hidden="true"></div>
+              <div class="skeleton skeleton--text-lg loading-profile__name" aria-hidden="true"></div>
+              <div class="skeleton loading-profile__btn" aria-hidden="true"></div>
+              <div class="loading-profile__grid" aria-hidden="true">
+                <div class="skeleton loading-profile__grid-cell"></div>
+                <div class="skeleton loading-profile__grid-cell"></div>
+                <div class="skeleton loading-profile__grid-cell"></div>
+                <div class="skeleton loading-profile__grid-cell"></div>
+                <div class="skeleton loading-profile__grid-cell"></div>
+                <div class="skeleton loading-profile__grid-cell"></div>
+              </div>
+              <div class="skeleton loading-profile__prompt" aria-hidden="true"></div>
+              <div class="skeleton loading-profile__prompt" aria-hidden="true"></div>
+              <div class="skeleton loading-profile__prompt" aria-hidden="true"></div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- ERROR STATES                                    -->
+    <!-- ============================================== -->
+    <section class="section-group" aria-labelledby="section-error">
+      <h2 id="section-error">Error States</h2>
+      <p>Feedback when something goes wrong</p>
+
+      <div class="states-grid">
+
+        <!-- 1a. Network Offline — Inline Banner -->
+        <article class="state-showcase">
+          <p class="state-label">Network Offline — Inline Banner</p>
+          <p class="state-sublabel">Persistent top bar over existing content</p>
+          <div class="phone-frame phone-frame--short" aria-label="Offline inline banner example">
+            <div class="offline-top-banner" role="alert">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M1 1L15 15M3.5 6.5A7.5 7.5 0 0 1 8 5a7.5 7.5 0 0 1 4.5 1.5M5.5 9A5 5 0 0 1 8 8a5 5 0 0 1 2.5 1M8 12.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <span>You're offline — messages will send when you reconnect</span>
+            </div>
+            <div class="error-banner" role="status">
+              <svg class="error-banner__icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M3 6A8 8 0 0 1 10 3a8 8 0 0 1 7 3M6 9a5 5 0 0 1 4-2 5 5 0 0 1 4 2M10 14a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="2" y1="2" x2="18" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <div class="error-banner__text">
+                <strong>No connection</strong>
+                Messages will send when you reconnect.
+              </div>
+            </div>
+            <div class="mock-content" aria-hidden="true">
+              <div class="mock-content__bar" style="width: 70%;"></div>
+              <div class="mock-content__bar" style="width: 50%;"></div>
+              <div class="mock-content__bar" style="width: 80%;"></div>
+              <div class="mock-content__bar" style="width: 45%;"></div>
+              <div class="mock-content__bar" style="width: 65%;"></div>
+              <div class="mock-content__bar" style="width: 55%;"></div>
+              <div class="mock-content__bar" style="width: 70%;"></div>
+              <div class="mock-content__bar" style="width: 40%;"></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 1b. Network Offline — Full Page -->
+        <article class="state-showcase">
+          <p class="state-label">Network Offline — Full Page</p>
+          <p class="state-sublabel">Shown when app cannot load any content</p>
+          <div class="phone-frame phone-frame--short">
+            <div class="error-fullpage" role="alert" aria-label="You are offline">
+              <svg class="error-fullpage__icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                <path d="M40 56a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" fill="currentColor" opacity="0.5"/>
+                <path d="M12 28C18 22 28 16 40 16s22 6 28 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                <path d="M20 36c4-4 11-8 20-8s16 4 20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6"/>
+                <path d="M28 44c3-3 7-5 12-5s9 2 12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.4"/>
+                <line x1="10" y1="10" x2="70" y2="70" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+              <h3 class="error-fullpage__title">You're offline</h3>
+              <p class="error-fullpage__subtitle">Check your connection and try again. Messages will send when you reconnect.</p>
+              <button type="button" class="btn btn--primary" aria-label="Try again">Try Again</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2. Server Error -->
+        <article class="state-showcase">
+          <p class="state-label">Server Error</p>
+          <p class="state-sublabel">500 — unexpected server failure</p>
+          <div class="phone-frame phone-frame--short">
+            <div class="error-fullpage" role="alert" aria-label="Server error">
+              <svg class="error-fullpage__icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                <path d="M40 72 C18 56 8 42 8 30 C8 18 18 8 28 8 C34 8 38 12 40 16 C42 12 46 8 52 8 C62 8 72 18 72 30 C72 42 62 56 40 72Z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+                <line x1="30" y1="30" x2="50" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="50" y1="30" x2="30" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+              <h3 class="error-fullpage__title">Something went wrong</h3>
+              <p class="error-fullpage__subtitle">We're working on it. Pull to retry.</p>
+              <button type="button" class="btn btn--primary" aria-label="Try again">Try Again</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 3. Photo Upload Failure -->
+        <article class="state-showcase">
+          <p class="state-label">Photo Upload Failure</p>
+          <p class="state-sublabel">Inline card — file size exceeded</p>
+          <div class="phone-frame phone-frame--auto" aria-label="Photo upload error">
+            <div style="padding: var(--space-4) 0;">
+              <div class="error-upload-card" role="alert">
+                <div class="error-upload-card__image-area">
+                  <div class="error-upload-card__placeholder">
+                    <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                      <rect x="6" y="10" width="36" height="28" rx="4" stroke="currentColor" stroke-width="2" fill="none"/>
+                      <circle cx="18" cy="22" r="4" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                      <path d="M6 32 L16 24 L24 30 L32 22 L42 30 L42 34 C42 36 40 38 38 38 L10 38 C8 38 6 36 6 34Z" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.6"/>
+                    </svg>
+                  </div>
+                  <div class="error-upload-card__overlay">
+                    <div class="error-upload-card__overlay-icon">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div class="error-upload-card__body">
+                  <p class="error-upload-card__error-text">Upload failed — file too large</p>
+                  <div class="error-upload-card__actions">
+                    <button type="button" class="btn btn--primary btn--small" aria-label="Retry upload">Retry</button>
+                    <button type="button" class="error-upload-card__link" aria-label="Choose a different photo">Choose different photo</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 4. Permission Request Overlay -->
+        <article class="state-showcase">
+          <p class="state-label">Permission Request — Camera</p>
+          <p class="state-sublabel">Photo verification — camera access needed</p>
+          <div class="phone-frame phone-frame--short">
+            <div class="permission-overlay" role="dialog" aria-modal="true" aria-label="Camera permission request">
+              <div class="permission-overlay__backdrop"></div>
+              <div class="permission-overlay__card">
+                <div class="permission-overlay__icon" aria-hidden="true">
+                  <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="12" width="40" height="28" rx="4"/>
+                    <circle cx="24" cy="26" r="8"/>
+                    <circle cx="24" cy="26" r="3"/>
+                    <path d="M16 12L18 6H30L32 12"/>
+                  </svg>
+                </div>
+                <h3 class="permission-overlay__title">Allow Camera Access</h3>
+                <p class="permission-overlay__desc">Ember needs your camera for photo verification. Your biometric data is processed, never stored.</p>
+                <div class="permission-overlay__actions">
+                  <button type="button" class="btn btn--primary" style="width:100%;" aria-label="Allow camera access">Allow Camera</button>
+                  <button type="button" class="btn btn--ghost" style="width:100%;" aria-label="Not now">Not Now</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    (function() {
+      const skeletons = document.querySelectorAll('.skeleton');
+      skeletons.forEach(function(el, i) {
+        el.style.animationDelay = (i * 0.08) + 's';
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ember — Chat with Maya</title>
+  <link rel="stylesheet" href="../../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-family-sans);
+      background: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      line-height: var(--line-height-normal);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .app-shell {
+      max-width: var(--content-width-base);
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-bg-primary);
+      position: relative;
+    }
+
+    /* Chat Header */
+    .chat-header {
+      background: var(--color-bg-elevated);
+      border-bottom: 1px solid var(--color-border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+    }
+
+    .chat-header-main {
+      display: flex;
+      align-items: center;
+      padding: var(--space-2) var(--space-page-x-mobile);
+      padding-top: var(--space-6);
+      gap: var(--space-2);
+    }
+
+    .back-btn {
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--color-text-primary);
+      border-radius: var(--radius-full);
+      transition: background var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn:hover { background: var(--color-bg-secondary); }
+    .back-btn:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+
+    .chat-user-info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-width: 0;
+    }
+
+    .chat-avatar {
+      width: var(--avatar-sm);
+      height: var(--avatar-sm);
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .chat-avatar .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-semibold);
+      color: #fff;
+      font-size: var(--font-size-sm);
+    }
+
+    .chat-avatar .online-dot {
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--color-online);
+      border: 2px solid var(--color-bg-elevated);
+    }
+
+    .chat-name-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .chat-name {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+
+    .verified-badge {
+      width: 14px;
+      height: 14px;
+      color: var(--color-verified);
+      flex-shrink: 0;
+    }
+
+    .chat-header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      flex-shrink: 0;
+    }
+
+    .header-icon-btn {
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      border-radius: var(--radius-full);
+      transition: background var(--transition-fast);
+    }
+
+    .header-icon-btn:hover { background: var(--color-bg-secondary); }
+    .header-icon-btn:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+
+    /* Trust Level Bar */
+    .trust-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-page-x-mobile);
+      border-top: 1px solid var(--color-border-subtle);
+    }
+
+    .trust-label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-accent-dark);
+      white-space: nowrap;
+    }
+
+    .trust-progress {
+      flex: 1;
+      display: flex;
+      gap: 3px;
+    }
+
+    .trust-dot {
+      flex: 1;
+      height: 3px;
+      border-radius: var(--radius-full);
+      background: var(--color-border-default);
+    }
+
+    .trust-dot.filled {
+      background: var(--color-accent);
+    }
+
+    .trust-unlock {
+      font-size: 10px;
+      color: var(--color-text-tertiary);
+      white-space: nowrap;
+    }
+
+    /* Match Context Banner */
+    .context-banner {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin: var(--space-3) var(--space-page-x-mobile);
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-accent-subtle);
+      border-radius: var(--radius-md);
+    }
+
+    .context-thumb {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+    }
+
+    .context-thumb .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: var(--font-weight-semibold);
+      color: #fff;
+    }
+
+    .context-text {
+      flex: 1;
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+
+    .context-dismiss {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--color-text-tertiary);
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+
+    .context-dismiss:hover { background: rgba(0,0,0,0.05); }
+    .context-dismiss:focus-visible { outline: 2px solid var(--color-border-focus); }
+
+    /* Messages Area */
+    .messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4) var(--space-page-x-mobile);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    /* System message */
+    .system-msg {
+      text-align: center;
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      padding: var(--space-2) 0;
+    }
+
+    /* Icebreaker card */
+    .icebreaker-card {
+      align-self: center;
+      max-width: 280px;
+      padding: var(--space-4);
+      border: 1.5px dashed var(--color-accent);
+      border-radius: var(--radius-lg);
+      background: var(--color-accent-subtle);
+      text-align: center;
+    }
+
+    .icebreaker-label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-accent-dark);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+      margin-bottom: var(--space-2);
+    }
+
+    .icebreaker-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    /* Message Bubbles */
+    .msg-row {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .msg-row.sent {
+      align-items: flex-end;
+    }
+
+    .msg-row.received {
+      align-items: flex-start;
+    }
+
+    .msg-bubble {
+      max-width: 78%;
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-relaxed);
+      position: relative;
+    }
+
+    .msg-row.sent .msg-bubble {
+      background: var(--color-primary);
+      color: #fff;
+      border-radius: var(--radius-xl) var(--radius-xl) var(--radius-sm) var(--radius-xl);
+    }
+
+    .msg-row.received .msg-bubble {
+      background: var(--color-bg-elevated);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-sm);
+    }
+
+    .msg-time {
+      font-size: 10px;
+      margin-top: var(--space-1);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .msg-row.sent .msg-time {
+      color: var(--color-text-tertiary);
+      justify-content: flex-end;
+    }
+
+    .msg-row.received .msg-time {
+      color: var(--color-text-tertiary);
+    }
+
+    .msg-check {
+      color: var(--color-accent);
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      align-self: flex-start;
+    }
+
+    .typing-bubble {
+      background: var(--color-bg-elevated);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-sm);
+      padding: var(--space-3) var(--space-4);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .typing-bubble span {
+      width: 6px;
+      height: 6px;
+      border-radius: var(--radius-full);
+      background: var(--color-text-tertiary);
+      animation: typingBounce 1.4s infinite;
+    }
+
+    .typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* Compose Bar */
+    .compose-bar {
+      position: sticky;
+      bottom: 0;
+      background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border-subtle);
+      padding: var(--space-2) var(--space-page-x-mobile);
+      display: flex;
+      align-items: flex-end;
+      gap: var(--space-2);
+    }
+
+    .compose-icon-btn {
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--color-text-tertiary);
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+      transition: color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .compose-icon-btn:hover {
+      color: var(--color-text-secondary);
+      background: var(--color-bg-secondary);
+    }
+
+    .compose-icon-btn:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+
+    .compose-icon-btn.icebreaker-btn {
+      color: var(--color-accent-dark);
+    }
+
+    .compose-input-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .compose-input {
+      width: 100%;
+      min-height: var(--touch-target-min);
+      max-height: 120px;
+      padding: var(--space-2) var(--space-4);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-2xl);
+      background: var(--color-bg-primary);
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      resize: none;
+      outline: none;
+      transition: border-color var(--transition-fast);
+      line-height: var(--line-height-normal);
+    }
+
+    .compose-input::placeholder {
+      color: var(--color-text-tertiary);
+    }
+
+    .compose-input:focus {
+      border-color: var(--color-border-focus);
+    }
+
+    .compose-send-btn {
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: var(--color-primary);
+      color: #fff;
+      cursor: pointer;
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+      transition: background var(--transition-fast), opacity var(--transition-fast);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .compose-send-btn.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .compose-send-btn:hover { background: var(--color-primary-dark); }
+    .compose-send-btn:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+
+    .mic-btn {
+      transition: opacity var(--transition-fast);
+    }
+
+    .mic-btn.hidden {
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    /* Responsive */
+    @media (min-width: 768px) {
+      .chat-header-main { padding-left: var(--space-page-x-tablet); padding-right: var(--space-page-x-tablet); }
+      .trust-bar { padding-left: var(--space-page-x-tablet); padding-right: var(--space-page-x-tablet); }
+      .context-banner { margin-left: var(--space-page-x-tablet); margin-right: var(--space-page-x-tablet); }
+      .messages-area { padding-left: var(--space-page-x-tablet); padding-right: var(--space-page-x-tablet); }
+      .compose-bar { padding-left: var(--space-page-x-tablet); padding-right: var(--space-page-x-tablet); }
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: var(--space-2);
+      z-index: 100;
+      background: var(--color-primary);
+      color: #fff;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      left: var(--space-4);
+    }
+
+    @media (min-width: 1440px) {
+      body { background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%); }
+      .app-shell {
+        box-shadow: 0 0 60px rgba(0,0,0,0.06);
+        border-radius: 24px 24px 0 0;
+        margin-top: var(--space-8);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" data-screen="chat">
+    <a href="#chat-messages" class="skip-link">Skip to messages</a>
+
+    <!-- Chat Header -->
+    <header class="chat-header" role="banner">
+      <div class="chat-header-main">
+        <a class="back-btn" href="messages.html" aria-label="Back to messages">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <div class="chat-user-info">
+          <div class="chat-avatar">
+            <div class="avatar-placeholder" style="background: linear-gradient(145deg, #E2CFA0, #C9A96E);">M</div>
+            <span class="online-dot" aria-label="Online"></span>
+          </div>
+          <div class="chat-name-row">
+            <span class="chat-name">Maya, 28</span>
+            <svg class="verified-badge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-label="Verified"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+          </div>
+        </div>
+        <div class="chat-header-actions">
+          <button class="header-icon-btn" aria-label="Video call">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          </button>
+          <button class="header-icon-btn" aria-label="More options">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Trust Level Bar -->
+      <div class="trust-bar" role="status" aria-label="Trust level: Building Trust, level 2 of 4">
+        <span class="trust-label">Building Trust</span>
+        <div class="trust-progress" aria-hidden="true">
+          <div class="trust-dot filled"></div>
+          <div class="trust-dot filled"></div>
+          <div class="trust-dot"></div>
+          <div class="trust-dot"></div>
+        </div>
+        <span class="trust-unlock">Voice notes unlocked</span>
+      </div>
+    </header>
+
+    <!-- Match Context Banner -->
+    <div class="context-banner" id="contextBanner" role="complementary" aria-label="Match context">
+      <div class="context-thumb">
+        <div class="avatar-placeholder" style="background: linear-gradient(145deg, #E2CFA0, #C9A96E);">M</div>
+      </div>
+      <span class="context-text">You liked Maya's photo</span>
+      <button class="context-dismiss" id="dismissBanner" aria-label="Dismiss">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Messages Area -->
+    <main class="messages-area" id="chat-messages" role="log" aria-label="Conversation with Maya" aria-live="polite">
+
+      <!-- System message -->
+      <div class="system-msg" role="status">You matched on May 10</div>
+
+      <!-- Icebreaker -->
+      <div class="icebreaker-card" role="note">
+        <div class="icebreaker-label">Conversation starter</div>
+        <div class="icebreaker-text">What's the best trip you've ever taken?</div>
+      </div>
+
+      <!-- Sent -->
+      <div class="msg-row sent">
+        <div class="msg-bubble">That's a great question! I'd have to say my solo trip to Japan last spring. The food alone was life-changing.</div>
+        <div class="msg-time">2:34 PM</div>
+      </div>
+
+      <!-- Received -->
+      <div class="msg-row received">
+        <div class="msg-bubble">Oh I've been wanting to go! Did you do Tokyo or more rural areas?</div>
+        <div class="msg-time">2:36 PM</div>
+      </div>
+
+      <!-- Sent -->
+      <div class="msg-row sent">
+        <div class="msg-bubble">Both! Started in Tokyo, then took the train down to Kyoto and some smaller towns. Highly recommend it.</div>
+        <div class="msg-time">2:38 PM <span class="msg-check" aria-label="Read">✓✓</span></div>
+      </div>
+
+      <!-- Received -->
+      <div class="msg-row received">
+        <div class="msg-bubble">That sounds amazing! I'd love to hear more. What was your favorite food moment?</div>
+        <div class="msg-time">2:40 PM</div>
+      </div>
+
+      <!-- Typing indicator -->
+      <div class="typing-indicator" aria-label="Maya is typing">
+        <div class="typing-bubble">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Compose Bar -->
+    <footer class="compose-bar" role="contentinfo">
+      <button class="compose-icon-btn icebreaker-btn" aria-label="Conversation starters">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </button>
+      <div class="compose-input-wrap">
+        <textarea class="compose-input" id="composeInput" placeholder="Say something thoughtful..." rows="1" aria-label="Message input"></textarea>
+      </div>
+      <button class="compose-icon-btn mic-btn" id="micBtn" aria-label="Send voice note">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <button class="compose-send-btn" id="sendBtn" aria-label="Send message">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+      <button class="compose-icon-btn" aria-label="Attach photo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </button>
+    </footer>
+
+  </div>
+
+  <script>
+    const input = document.getElementById('composeInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const micBtn = document.getElementById('micBtn');
+    const dismissBtn = document.getElementById('dismissBanner');
+    const banner = document.getElementById('contextBanner');
+
+    input.addEventListener('input', () => {
+      const hasText = input.value.trim().length > 0;
+      sendBtn.classList.toggle('visible', hasText);
+      micBtn.classList.toggle('hidden', hasText);
+
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+    });
+
+    dismissBtn.addEventListener('click', () => {
+      banner.style.opacity = '0';
+      banner.style.transition = 'opacity 200ms ease, max-height 200ms ease, margin 200ms ease, padding 200ms ease';
+      banner.style.maxHeight = '0';
+      banner.style.margin = '0';
+      banner.style.padding = '0';
+      banner.style.overflow = 'hidden';
+      setTimeout(() => { banner.style.display = 'none'; }, 220);
+    });
+  </script>
+</body>
+</html>

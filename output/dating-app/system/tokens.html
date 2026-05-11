@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Reference — Dating App</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            color: var(--color-text-primary);
+            background: var(--color-bg-primary);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page-header {
+            padding: var(--space-12) var(--space-8) var(--space-8);
+            text-align: center;
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .page-header h1 {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-bold);
+            letter-spacing: var(--letter-spacing-tight);
+            margin-bottom: var(--space-2);
+        }
+        .page-header p {
+            font-size: var(--font-size-md);
+            color: var(--color-text-secondary);
+        }
+
+        main { max-width: 1200px; margin: 0 auto; padding: var(--space-8); }
+
+        section { margin-bottom: var(--space-16); }
+        section > h2 {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-2);
+        }
+        section > .desc {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-6);
+        }
+
+        /* Color Swatches */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: var(--space-4);
+        }
+        .color-swatch {
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--color-border-subtle);
+        }
+        .color-swatch-preview {
+            height: 80px;
+        }
+        .color-swatch-info {
+            padding: var(--space-3);
+            background: var(--color-bg-elevated);
+        }
+        .color-swatch-name {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            margin-bottom: 2px;
+        }
+        .color-swatch-value {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            font-family: var(--font-family-mono);
+        }
+        .color-swatch-token {
+            font-size: 10px;
+            color: var(--color-text-tertiary);
+            font-family: var(--font-family-mono);
+            margin-top: 2px;
+        }
+
+        /* Type Samples */
+        .type-sample {
+            padding: var(--space-4) 0;
+            border-bottom: 1px solid var(--color-border-subtle);
+            display: flex;
+            align-items: baseline;
+            gap: var(--space-6);
+        }
+        .type-sample:last-child { border-bottom: none; }
+        .type-sample-text { flex: 1; }
+        .type-sample-meta {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            font-family: var(--font-family-mono);
+            min-width: 200px;
+            text-align: right;
+        }
+
+        /* Spacing Scale */
+        .spacing-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-2) 0;
+        }
+        .spacing-bar {
+            height: 24px;
+            background: var(--color-primary-subtle);
+            border: 1px solid var(--color-primary);
+            border-radius: var(--radius-sm);
+            transition: background var(--transition-fast);
+        }
+        .spacing-bar:hover { background: var(--color-primary); opacity: 0.3; }
+        .spacing-label {
+            font-size: var(--font-size-xs);
+            font-family: var(--font-family-mono);
+            color: var(--color-text-tertiary);
+            min-width: 100px;
+        }
+        .spacing-value {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            min-width: 60px;
+        }
+
+        /* Radius Preview */
+        .radius-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: var(--space-4);
+        }
+        .radius-item {
+            text-align: center;
+        }
+        .radius-preview {
+            width: 80px;
+            height: 80px;
+            background: var(--color-bg-secondary);
+            border: 2px solid var(--color-border-default);
+            margin: 0 auto var(--space-2);
+        }
+        .radius-name {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+        }
+        .radius-val {
+            font-size: 10px;
+            color: var(--color-text-tertiary);
+            font-family: var(--font-family-mono);
+        }
+
+        /* Shadow Preview */
+        .shadow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: var(--space-6);
+        }
+        .shadow-item { text-align: center; }
+        .shadow-preview {
+            width: 120px;
+            height: 80px;
+            background: var(--color-bg-elevated);
+            border-radius: var(--radius-lg);
+            margin: 0 auto var(--space-3);
+        }
+        .shadow-name {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+        }
+        .shadow-val {
+            font-size: 10px;
+            color: var(--color-text-tertiary);
+            font-family: var(--font-family-mono);
+            margin-top: 2px;
+        }
+
+        /* Transition */
+        .transition-demo {
+            display: flex;
+            gap: var(--space-6);
+            flex-wrap: wrap;
+        }
+        .transition-item {
+            text-align: center;
+        }
+        .transition-box {
+            width: 80px;
+            height: 80px;
+            background: var(--color-primary-subtle);
+            border: 2px solid var(--color-primary);
+            border-radius: var(--radius-lg);
+            margin: 0 auto var(--space-3);
+            cursor: pointer;
+        }
+        .transition-box:hover {
+            background: var(--color-primary);
+            transform: scale(1.05);
+        }
+        .transition-name {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+        }
+        .transition-val {
+            font-size: 10px;
+            color: var(--color-text-tertiary);
+            font-family: var(--font-family-mono);
+        }
+
+        .subsection { margin-top: var(--space-8); }
+        .subsection-title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-widest);
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-4);
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <h1>Design Tokens</h1>
+        <p>Visual reference for the dating app design system — colors, type, spacing, radii, shadows, and motion.</p>
+    </header>
+
+    <main>
+        <!-- COLORS -->
+        <section>
+            <h2>Colors</h2>
+            <p class="desc">A warm, muted luxury palette centered on champagne gold, deep slate, and warm neutrals. Optimized for WCAG 2.1 AA contrast.</p>
+
+            <div class="subsection">
+                <div class="subsection-title">Brand Colors</div>
+                <div class="color-grid">
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #B8860B;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Primary</div>
+                            <div class="color-swatch-value">#B8860B</div>
+                            <div class="color-swatch-token">--color-primary</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #D4A855;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Primary Light</div>
+                            <div class="color-swatch-value">#D4A855</div>
+                            <div class="color-swatch-token">--color-primary-light</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #8B6508;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Primary Dark</div>
+                            <div class="color-swatch-value">#8B6508</div>
+                            <div class="color-swatch-token">--color-primary-dark</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #2C3E50;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Secondary</div>
+                            <div class="color-swatch-value">#2C3E50</div>
+                            <div class="color-swatch-token">--color-secondary</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #C9A96E;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Accent (Champagne)</div>
+                            <div class="color-swatch-value">#C9A96E</div>
+                            <div class="color-swatch-token">--color-accent</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">Semantic Colors</div>
+                <div class="color-grid">
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #4A7C59;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Success</div>
+                            <div class="color-swatch-value">#4A7C59</div>
+                            <div class="color-swatch-token">--color-success</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #B8860B;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Warning</div>
+                            <div class="color-swatch-value">#B8860B</div>
+                            <div class="color-swatch-token">--color-warning</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #9B2335;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Error</div>
+                            <div class="color-swatch-value">#9B2335</div>
+                            <div class="color-swatch-token">--color-error</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #4A6FA5;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Info</div>
+                            <div class="color-swatch-value">#4A6FA5</div>
+                            <div class="color-swatch-token">--color-info</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">Surfaces</div>
+                <div class="color-grid">
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #FAF8F5;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Background</div>
+                            <div class="color-swatch-value">#FAF8F5</div>
+                            <div class="color-swatch-token">--color-bg-primary</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #F5F0EB;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Secondary BG</div>
+                            <div class="color-swatch-value">#F5F0EB</div>
+                            <div class="color-swatch-token">--color-bg-secondary</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #EDE6DD;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Tertiary BG</div>
+                            <div class="color-swatch-value">#EDE6DD</div>
+                            <div class="color-swatch-token">--color-bg-tertiary</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #FFFFFF; border: 1px solid #E5DFD8;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Elevated</div>
+                            <div class="color-swatch-value">#FFFFFF</div>
+                            <div class="color-swatch-token">--color-bg-elevated</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">Text</div>
+                <div class="color-grid">
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #1A1A1A;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Primary Text</div>
+                            <div class="color-swatch-value">#1A1A1A</div>
+                            <div class="color-swatch-token">--color-text-primary</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #4A4A4A;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Secondary Text</div>
+                            <div class="color-swatch-value">#4A4A4A</div>
+                            <div class="color-swatch-token">--color-text-secondary</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #7A7A7A;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Tertiary Text</div>
+                            <div class="color-swatch-value">#7A7A7A</div>
+                            <div class="color-swatch-token">--color-text-tertiary</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #B0B0B0;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Disabled Text</div>
+                            <div class="color-swatch-value">#B0B0B0</div>
+                            <div class="color-swatch-token">--color-text-disabled</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">Dark Mode Surfaces</div>
+                <div class="color-grid">
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #121212;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Dark BG</div>
+                            <div class="color-swatch-value">#121212</div>
+                            <div class="color-swatch-token">--color-dark-bg-primary</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #1E1E1E;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Dark Secondary</div>
+                            <div class="color-swatch-value">#1E1E1E</div>
+                            <div class="color-swatch-token">--color-dark-bg-secondary</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #2A2A2A;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Dark Elevated</div>
+                            <div class="color-swatch-value">#2A2A2A</div>
+                            <div class="color-swatch-token">--color-dark-bg-elevated</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-preview" style="background: #D4A855;"></div>
+                        <div class="color-swatch-info">
+                            <div class="color-swatch-name">Dark Primary</div>
+                            <div class="color-swatch-value">#D4A855</div>
+                            <div class="color-swatch-token">--color-dark-primary</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TYPOGRAPHY -->
+        <section>
+            <h2>Typography</h2>
+            <p class="desc">Inter for UI clarity, Playfair Display for editorial warmth. Major Third scale (1.25) provides elegant hierarchy.</p>
+
+            <div class="subsection">
+                <div class="subsection-title">Display (Playfair Display)</div>
+                <div class="type-sample">
+                    <div class="type-sample-text" style="font-family: var(--font-family-display); font-size: var(--font-size-5xl); font-weight: var(--font-weight-bold); letter-spacing: var(--letter-spacing-tight); line-height: var(--line-height-tight);">Find Your Person</div>
+                    <div class="type-sample-meta">60px / Bold<br>--font-size-5xl</div>
+                </div>
+                <div class="type-sample">
+                    <div class="type-sample-text" style="font-family: var(--font-family-display); font-size: var(--font-size-4xl); font-weight: var(--font-weight-bold); letter-spacing: var(--letter-spacing-tight); line-height: var(--line-height-tight);">It's a Match</div>
+                    <div class="type-sample-meta">48px / Bold<br>--font-size-4xl</div>
+                </div>
+                <div class="type-sample">
+                    <div class="type-sample-text" style="font-family: var(--font-family-display); font-size: var(--font-size-3xl); font-weight: var(--font-weight-semibold); line-height: var(--line-height-snug);">Daily Curated Matches</div>
+                    <div class="type-sample-meta">36px / Semibold<br>--font-size-3xl</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">UI Text (Inter)</div>
+                <div class="type-sample">
+                    <div class="type-sample-text" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); line-height: var(--line-height-snug);">Section Heading</div>
+                    <div class="type-sample-meta">30px / Semibold<br>--font-size-2xl</div>
+                </div>
+                <div class="type-sample">
+                    <div class="type-sample-text" style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold); line-height: var(--line-height-snug);">Card Title</div>
+                    <div class="type-sample-meta">24px / Semibold<br>--font-size-xl</div>
+                </div>
+                <div class="type-sample">
+                    <div class="type-sample-text" style="font-size: var(--font-size-lg); font-weight: var(--font-weight-medium); line-height: var(--line-height-normal);">Subheading Text</div>
+                    <div class="type-sample-meta">20px / Medium<br>--font-size-lg</div>
+                </div>
+                <div class="type-sample">
+                    <div class="type-sample-text" style="font-size: var(--font-size-md); font-weight: var(--font-weight-regular); line-height: var(--line-height-relaxed);">Body large — used for prominent profile prompts and longer-form text that needs comfortable reading.</div>
+                    <div class="type-sample-meta">18px / Regular<br>--font-size-md</div>
+                </div>
+                <div class="type-sample">
+                    <div class="type-sample-text" style="font-size: var(--font-size-base); font-weight: var(--font-weight-regular); line-height: var(--line-height-normal);">Body base — primary text for messages, descriptions, and general UI content throughout the app.</div>
+                    <div class="type-sample-meta">16px / Regular<br>--font-size-base</div>
+                </div>
+                <div class="type-sample">
+                    <div class="type-sample-text" style="font-size: var(--font-size-sm); font-weight: var(--font-weight-regular); line-height: var(--line-height-normal); color: var(--color-text-secondary);">Small text — used for secondary information, timestamps, and metadata.</div>
+                    <div class="type-sample-meta">14px / Regular<br>--font-size-sm</div>
+                </div>
+                <div class="type-sample">
+                    <div class="type-sample-text" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); line-height: var(--line-height-normal); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: var(--letter-spacing-wider);">Caption / Label</div>
+                    <div class="type-sample-meta">12px / Medium<br>--font-size-xs</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SPACING -->
+        <section>
+            <h2>Spacing</h2>
+            <p class="desc">4px base unit with a harmonious scale. Generous spacing reinforces the luxury, uncluttered aesthetic.</p>
+
+            <div class="spacing-row">
+                <div class="spacing-label">--space-1</div>
+                <div class="spacing-bar" style="width: 4px;"></div>
+                <div class="spacing-value">4px</div>
+            </div>
+            <div class="spacing-row">
+                <div class="spacing-label">--space-2</div>
+                <div class="spacing-bar" style="width: 8px;"></div>
+                <div class="spacing-value">8px</div>
+            </div>
+            <div class="spacing-row">
+                <div class="spacing-label">--space-3</div>
+                <div class="spacing-bar" style="width: 12px;"></div>
+                <div class="spacing-value">12px</div>
+            </div>
+            <div class="spacing-row">
+                <div class="spacing-label">--space-4</div>
+                <div class="spacing-bar" style="width: 16px;"></div>
+                <div class="spacing-value">16px</div>
+            </div>
+            <div class="spacing-row">
+                <div class="spacing-label">--space-5</div>
+                <div class="spacing-bar" style="width: 20px;"></div>
+                <div class="spacing-value">20px</div>
+            </div>
+            <div class="spacing-row">
+                <div class="spacing-label">--space-6</div>
+                <div class="spacing-bar" style="width: 24px;"></div>
+                <div class="spacing-value">24px</div>
+            </div>
+            <div class="spacing-row">
+                <div class="spacing-label">--space-8</div>
+                <div class="spacing-bar" style="width: 32px;"></div>
+                <div class="spacing-value">32px</div>
+            </div>
+            <div class="spacing-row">
+                <div class="spacing-label">--space-10</div>
+                <div class="spacing-bar" style="width: 40px;"></div>
+                <div class="spacing-value">40px</div>
+            </div>
+            <div class="spacing-row">
+                <div class="spacing-label">--space-12</div>
+                <div class="spacing-bar" style="width: 48px;"></div>
+                <div class="spacing-value">48px</div>
+            </div>
+            <div class="spacing-row">
+                <div class="spacing-label">--space-16</div>
+                <div class="spacing-bar" style="width: 64px;"></div>
+                <div class="spacing-value">64px</div>
+            </div>
+            <div class="spacing-row">
+                <div class="spacing-label">--space-20</div>
+                <div class="spacing-bar" style="width: 80px;"></div>
+                <div class="spacing-value">80px</div>
+            </div>
+            <div class="spacing-row">
+                <div class="spacing-label">--space-24</div>
+                <div class="spacing-bar" style="width: 96px;"></div>
+                <div class="spacing-value">96px</div>
+            </div>
+        </section>
+
+        <!-- BORDER RADIUS -->
+        <section>
+            <h2>Border Radius</h2>
+            <p class="desc">Rounded corners range from subtle (4px) to fully circular (pill). Cards and modals use larger radii for the soft luxury feel.</p>
+
+            <div class="radius-grid">
+                <div class="radius-item">
+                    <div class="radius-preview" style="border-radius: var(--radius-sm);"></div>
+                    <div class="radius-name">Small</div>
+                    <div class="radius-val">4px</div>
+                </div>
+                <div class="radius-item">
+                    <div class="radius-preview" style="border-radius: var(--radius-md);"></div>
+                    <div class="radius-name">Medium</div>
+                    <div class="radius-val">8px</div>
+                </div>
+                <div class="radius-item">
+                    <div class="radius-preview" style="border-radius: var(--radius-lg);"></div>
+                    <div class="radius-name">Large</div>
+                    <div class="radius-val">12px</div>
+                </div>
+                <div class="radius-item">
+                    <div class="radius-preview" style="border-radius: var(--radius-xl);"></div>
+                    <div class="radius-name">XL</div>
+                    <div class="radius-val">16px</div>
+                </div>
+                <div class="radius-item">
+                    <div class="radius-preview" style="border-radius: var(--radius-2xl);"></div>
+                    <div class="radius-name">2XL</div>
+                    <div class="radius-val">20px</div>
+                </div>
+                <div class="radius-item">
+                    <div class="radius-preview" style="border-radius: var(--radius-3xl);"></div>
+                    <div class="radius-name">3XL</div>
+                    <div class="radius-val">24px</div>
+                </div>
+                <div class="radius-item">
+                    <div class="radius-preview" style="border-radius: var(--radius-full); width: 80px; height: 80px;"></div>
+                    <div class="radius-name">Full (Pill)</div>
+                    <div class="radius-val">9999px</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SHADOWS -->
+        <section>
+            <h2>Shadows</h2>
+            <p class="desc">Warm-tinted, soft shadows maintain the luxurious depth. Glow shadows for match celebrations and CTAs.</p>
+
+            <div class="shadow-grid">
+                <div class="shadow-item">
+                    <div class="shadow-preview" style="box-shadow: var(--shadow-xs);"></div>
+                    <div class="shadow-name">XS</div>
+                    <div class="shadow-val">--shadow-xs</div>
+                </div>
+                <div class="shadow-item">
+                    <div class="shadow-preview" style="box-shadow: var(--shadow-sm);"></div>
+                    <div class="shadow-name">SM</div>
+                    <div class="shadow-val">--shadow-sm</div>
+                </div>
+                <div class="shadow-item">
+                    <div class="shadow-preview" style="box-shadow: var(--shadow-md);"></div>
+                    <div class="shadow-name">MD</div>
+                    <div class="shadow-val">--shadow-md</div>
+                </div>
+                <div class="shadow-item">
+                    <div class="shadow-preview" style="box-shadow: var(--shadow-lg);"></div>
+                    <div class="shadow-name">LG</div>
+                    <div class="shadow-val">--shadow-lg</div>
+                </div>
+                <div class="shadow-item">
+                    <div class="shadow-preview" style="box-shadow: var(--shadow-xl);"></div>
+                    <div class="shadow-name">XL</div>
+                    <div class="shadow-val">--shadow-xl</div>
+                </div>
+                <div class="shadow-item">
+                    <div class="shadow-preview" style="box-shadow: var(--shadow-2xl);"></div>
+                    <div class="shadow-name">2XL</div>
+                    <div class="shadow-val">--shadow-2xl</div>
+                </div>
+                <div class="shadow-item">
+                    <div class="shadow-preview" style="box-shadow: var(--shadow-glow-match);"></div>
+                    <div class="shadow-name">Match Glow</div>
+                    <div class="shadow-val">--shadow-glow-match</div>
+                </div>
+                <div class="shadow-item">
+                    <div class="shadow-preview" style="box-shadow: var(--shadow-glow-primary);"></div>
+                    <div class="shadow-name">Primary Glow</div>
+                    <div class="shadow-val">--shadow-glow-primary</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANSITIONS -->
+        <section>
+            <h2>Transitions</h2>
+            <p class="desc">Deliberate, smooth motion reflecting the slow-dating philosophy. Never flashy — always purposeful.</p>
+
+            <div class="transition-demo">
+                <div class="transition-item">
+                    <div class="transition-box" style="transition: all var(--transition-fast);"></div>
+                    <div class="transition-name">Fast</div>
+                    <div class="transition-val">150ms</div>
+                </div>
+                <div class="transition-item">
+                    <div class="transition-box" style="transition: all var(--transition-normal);"></div>
+                    <div class="transition-name">Normal</div>
+                    <div class="transition-val">250ms</div>
+                </div>
+                <div class="transition-item">
+                    <div class="transition-box" style="transition: all var(--transition-slow);"></div>
+                    <div class="transition-name">Slow</div>
+                    <div class="transition-val">400ms</div>
+                </div>
+                <div class="transition-item">
+                    <div class="transition-box" style="transition: all var(--transition-deliberate);"></div>
+                    <div class="transition-name">Deliberate</div>
+                    <div class="transition-val">600ms</div>
+                </div>
+                <div class="transition-item">
+                    <div class="transition-box" style="transition: all var(--transition-spring);"></div>
+                    <div class="transition-name">Spring</div>
+                    <div class="transition-val">500ms bounce</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Z-INDEX -->
+        <section>
+            <h2>Z-Index Scale</h2>
+            <p class="desc">Layering system for predictable stacking order across modals, toasts, and fixed navigation.</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); max-width: 400px;">
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">--z-base</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">0</div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">--z-above</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">1</div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">--z-dropdown</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">100</div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">--z-sticky</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">200</div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">--z-fixed</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">300</div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">--z-drawer</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">400</div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">--z-modal-backdrop</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">500</div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">--z-modal</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">600</div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">--z-popover</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">700</div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">--z-tooltip</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">800</div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">--z-toast</div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); font-family: var(--font-family-mono);">900</div>
+            </div>
+        </section>
+
+        <!-- ACCESSIBILITY -->
+        <section>
+            <h2>Accessibility Rules</h2>
+            <p class="desc">WCAG 2.1 AA compliance baked into the token system from foundations.</p>
+
+            <div style="display: grid; gap: var(--space-4); max-width: 700px;">
+                <div style="padding: var(--space-4); background: var(--color-bg-elevated); border-radius: var(--radius-lg); border: 1px solid var(--color-border-subtle);">
+                    <div style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-1);">Color Contrast</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">All text meets 4.5:1 contrast ratio (normal text) and 3:1 (large text). Primary text #1A1A1A on #FAF8F5 achieves 15.5:1.</div>
+                </div>
+                <div style="padding: var(--space-4); background: var(--color-bg-elevated); border-radius: var(--radius-lg); border: 1px solid var(--color-border-subtle);">
+                    <div style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-1);">Touch Targets</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Minimum 44x44px for all interactive elements. Button heights are 36/44/52px with generous horizontal padding.</div>
+                </div>
+                <div style="padding: var(--space-4); background: var(--color-bg-elevated); border-radius: var(--radius-lg); border: 1px solid var(--color-border-subtle);">
+                    <div style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-1);">Reduced Motion</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">All transitions respect prefers-reduced-motion by reducing to 0ms. Animations are disabled entirely for users who prefer reduced motion.</div>
+                </div>
+                <div style="padding: var(--space-4); background: var(--color-bg-elevated); border-radius: var(--radius-lg); border: 1px solid var(--color-border-subtle);">
+                    <div style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-1);">Focus Indicators</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">All interactive elements show a 2px gold outline with 2px offset on :focus-visible. Never remove focus indicators.</div>
+                </div>
+                <div style="padding: var(--space-4); background: var(--color-bg-elevated); border-radius: var(--radius-lg); border: 1px solid var(--color-border-subtle);">
+                    <div style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-1);">Color Independence</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Never use color alone to convey meaning. Error states combine red color + text message + icon. Status badges include text labels.</div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

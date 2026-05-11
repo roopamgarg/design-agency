@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ember — Discover</title>
+  <link rel="stylesheet" href="../../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-family: var(--font-family-sans);
+      background: var(--color-bg-primary);
+      color: var(--color-secondary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      background: var(--color-bg-primary);
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 390px;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: var(--color-bg-primary);
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-5);
+      padding-top: var(--space-6);
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      font-family: var(--font-family-display);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--color-secondary);
+      letter-spacing: -0.01em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .icon-btn {
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      border-radius: var(--radius-full);
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-secondary);
+      transition: background 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(44, 62, 80, 0.06);
+    }
+
+    .icon-btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .icon-btn svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Progress pill */
+    .progress-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 14px;
+      margin: 0 var(--space-5) var(--space-3);
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-secondary);
+      box-shadow: var(--shadow-sm);
+      width: fit-content;
+    }
+
+    .progress-pill .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-primary);
+    }
+
+    /* Profile card */
+    .card-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0 var(--space-4);
+      padding-bottom: var(--space-3);
+      min-height: 0;
+    }
+
+    .profile-card {
+      position: relative;
+      width: 100%;
+      flex: 1;
+      border-radius: var(--profile-card-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .profile-photo {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #D4A574 0%, #C9A96E 25%, #B8860B 50%, #8B6914 75%, #6B4F12 100%);
+      background-size: cover;
+      background-position: center;
+    }
+
+    .photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--profile-card-overlay);
+    }
+
+    /* Photo dots */
+    .photo-dots {
+      position: absolute;
+      top: var(--space-3);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 5px;
+      z-index: 2;
+    }
+
+    .photo-dots .dot {
+      width: 28px;
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.4);
+      transition: background 0.3s ease;
+    }
+
+    .photo-dots .dot.active {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    /* Card info overlay */
+    .card-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: var(--space-5);
+      padding-bottom: var(--space-4);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .card-identity {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .card-name {
+      font-family: var(--font-family-display);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--color-text-inverse);
+      letter-spacing: -0.01em;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .card-distance {
+      font-size: 14px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 400;
+    }
+
+    .verified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      background: rgba(74, 124, 89, 0.25);
+      border: 1px solid rgba(74, 124, 89, 0.4);
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 500;
+      color: #A8D5BA;
+    }
+
+    .verified-badge svg {
+      width: 13px;
+      height: 13px;
+      color: var(--color-verified);
+      fill: var(--color-verified);
+    }
+
+    /* Prompt card overlapping bottom */
+    .prompt-overlay {
+      display: flex;
+      gap: var(--space-3);
+      align-items: flex-end;
+    }
+
+    .prompt-card {
+      flex: 1;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-md);
+    }
+
+    .prompt-question {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-primary);
+      margin-bottom: 4px;
+    }
+
+    .prompt-answer {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--color-secondary);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .prompt-like-btn {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--color-like);
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: var(--color-like);
+    }
+
+    .prompt-like-btn:hover {
+      background: var(--color-like);
+      color: #FFF;
+      transform: scale(1.08);
+    }
+
+    .prompt-like-btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .prompt-like-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Action bar */
+    .action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-12);
+      padding: var(--space-4) var(--space-5);
+      flex-shrink: 0;
+    }
+
+    .action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .action-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      background: var(--color-bg-elevated);
+      box-shadow: var(--shadow-md);
+    }
+
+    .action-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .action-btn--pass {
+      border-color: var(--color-pass);
+      color: var(--color-pass);
+    }
+
+    .action-btn--pass:hover {
+      background: var(--color-pass);
+      color: #FFFFFF;
+      transform: scale(1.1);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .action-btn--like {
+      border-color: var(--color-like);
+      color: var(--color-like);
+    }
+
+    .action-btn--like:hover {
+      background: var(--color-like);
+      color: #FFFFFF;
+      transform: scale(1.1);
+      box-shadow: var(--shadow-glow-match);
+    }
+
+    .action-btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 3px;
+    }
+
+    .action-btn:active {
+      transform: scale(0.95);
+    }
+
+    .action-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-pass);
+    }
+
+    .action-item:last-child .action-label {
+      color: var(--color-like);
+    }
+
+    /* Tab bar */
+    .tab-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      height: var(--tab-bar-height);
+      background: var(--color-bg-elevated);
+      border-top: 1px solid rgba(44, 62, 80, 0.08);
+      flex-shrink: 0;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      position: sticky;
+      bottom: 0;
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--touch-target-min);
+      min-height: var(--touch-target-min);
+      gap: 2px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      position: relative;
+      color: var(--color-pass);
+      transition: color 0.2s ease;
+      text-decoration: none;
+    }
+
+    .tab-item:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: -2px;
+      border-radius: var(--radius-sm);
+    }
+
+    .tab-item.active {
+      color: var(--color-primary);
+    }
+
+    .tab-item svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .tab-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .tab-notification-dot {
+      position: absolute;
+      top: 4px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      border: 1.5px solid var(--color-bg-elevated);
+    }
+
+    /* Responsive */
+    @media (min-width: 768px) {
+      .app-shell {
+        max-width: 420px;
+        margin: 0 auto;
+        border-left: 1px solid rgba(44,62,80,0.06);
+        border-right: 1px solid rgba(44,62,80,0.06);
+      }
+    }
+
+    @media (min-width: 1440px) {
+      body {
+        background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%);
+      }
+      .app-shell {
+        box-shadow: 0 0 60px rgba(0,0,0,0.06);
+        border-radius: 24px 24px 0 0;
+        margin-top: var(--space-8);
+        min-height: calc(100dvh - var(--space-8));
+      }
+    }
+
+    /* Animations */
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: var(--shadow-md); }
+      50% { box-shadow: var(--shadow-glow-match); }
+    }
+
+    .action-btn--like:focus {
+      animation: pulse-glow 2s infinite;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: var(--space-2);
+      z-index: 100;
+      background: var(--color-primary);
+      color: #fff;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      left: var(--space-4);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .action-btn--like:focus {
+        animation: none;
+      }
+      .carousel-slides,
+      .action-btn,
+      .prompt-like-btn,
+      .tab-item,
+      .icon-btn {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" data-screen="discover">
+    <a href="#main-card" class="skip-link">Skip to main content</a>
+    <!-- Header -->
+    <header class="header" role="banner">
+      <h1 class="header-title">Today's Picks</h1>
+      <div class="header-actions">
+        <button class="icon-btn" aria-label="Filter profiles" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/>
+            <circle cx="6" cy="12" r="2" fill="currentColor"/><circle cx="10" cy="18" r="2" fill="currentColor"/><circle cx="6" cy="6" r="2" fill="currentColor"/>
+          </svg>
+        </button>
+        <button class="icon-btn" aria-label="Notifications" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Progress -->
+    <div class="progress-pill" role="status" aria-label="3 of 6 profiles remaining">
+      <span class="dot" aria-hidden="true"></span>
+      <span>3 of 6 remaining</span>
+    </div>
+
+    <!-- Main card -->
+    <main class="card-area" id="main-card">
+      <article class="profile-card" aria-label="Profile card for Maya, age 28">
+        <div class="profile-photo" role="img" aria-label="Maya's profile photo"></div>
+        <div class="photo-overlay"></div>
+
+        <!-- Photo dots -->
+        <div class="photo-dots" role="tablist" aria-label="Profile photos">
+          <span class="dot active" role="tab" aria-selected="true" aria-label="Photo 1 of 6"></span>
+          <span class="dot" role="tab" aria-selected="false" aria-label="Photo 2 of 6"></span>
+          <span class="dot" role="tab" aria-selected="false" aria-label="Photo 3 of 6"></span>
+          <span class="dot" role="tab" aria-selected="false" aria-label="Photo 4 of 6"></span>
+          <span class="dot" role="tab" aria-selected="false" aria-label="Photo 5 of 6"></span>
+          <span class="dot" role="tab" aria-selected="false" aria-label="Photo 6 of 6"></span>
+        </div>
+
+        <!-- Card info -->
+        <div class="card-info">
+          <div class="card-identity">
+            <h2 class="card-name">Maya, 28</h2>
+            <div class="card-meta">
+              <span class="card-distance">&lt; 5 miles away</span>
+              <span class="verified-badge">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg>
+                Verified
+              </span>
+            </div>
+          </div>
+
+          <div class="prompt-overlay">
+            <div class="prompt-card">
+              <p class="prompt-question">What makes a great first date?</p>
+              <p class="prompt-answer">A cozy wine bar with great conversation and zero phone checking. Bonus points if we close the place down.</p>
+            </div>
+            <button class="prompt-like-btn" aria-label="Like this prompt response" type="button">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <!-- Action bar -->
+    <div class="action-bar" role="toolbar" aria-label="Profile actions">
+      <div class="action-item">
+        <button class="action-btn action-btn--pass" aria-label="Pass on this profile" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+        <span class="action-label" aria-hidden="true">Not for me</span>
+      </div>
+      <div class="action-item">
+        <button class="action-btn action-btn--like" aria-label="Like this profile" type="button">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+        <span class="action-label" aria-hidden="true">Like</span>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <nav class="tab-bar" role="navigation" aria-label="Main navigation">
+      <a href="#" class="tab-item active" aria-label="Discover" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" stroke="none"/>
+        </svg>
+        <span class="tab-label">Discover</span>
+      </a>
+      <a href="#" class="tab-item" aria-label="Matches, 1 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <span class="tab-label">Matches</span>
+        <span class="tab-notification-dot" aria-hidden="true"></span>
+      </a>
+      <a href="#" class="tab-item" aria-label="Messages">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span class="tab-label">Messages</span>
+      </a>
+      <a href="#" class="tab-item" aria-label="Profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span class="tab-label">Profile</span>
+      </a>
+    </nav>
+  </div>
+
+  <script>
+    (function() {
+      const dots = document.querySelectorAll('.photo-dots .dot');
+      let currentPhoto = 0;
+
+      dots.forEach(function(dot, index) {
+        dot.addEventListener('click', function() {
+          dots[currentPhoto].classList.remove('active');
+          dots[currentPhoto].setAttribute('aria-selected', 'false');
+          currentPhoto = index;
+          dots[currentPhoto].classList.add('active');
+          dots[currentPhoto].setAttribute('aria-selected', 'true');
+        });
+      });
+
+      var passBtn = document.querySelector('.action-btn--pass');
+      var likeBtn = document.querySelector('.action-btn--like');
+
+      if (passBtn) {
+        passBtn.addEventListener('click', function() {
+          var card = document.querySelector('.profile-card');
+          card.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+          card.style.transform = 'translateX(-120%) rotate(-8deg)';
+          card.style.opacity = '0';
+          setTimeout(function() {
+            card.style.transition = 'none';
+            card.style.transform = 'translateX(0) rotate(0)';
+            card.style.opacity = '1';
+          }, 500);
+        });
+      }
+
+      if (likeBtn) {
+        likeBtn.addEventListener('click', function() {
+          var card = document.querySelector('.profile-card');
+          card.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+          card.style.transform = 'translateX(120%) rotate(8deg)';
+          card.style.opacity = '0';
+          setTimeout(function() {
+            card.style.transition = 'none';
+            card.style.transform = 'translateX(0) rotate(0)';
+            card.style.opacity = '1';
+          }, 500);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

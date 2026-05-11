@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ember — Profile</title>
+  <link rel="stylesheet" href="../../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-family: var(--font-family-sans);
+      background: var(--color-bg-primary);
+      color: var(--color-secondary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      background: var(--color-bg-primary);
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 390px;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: var(--color-bg-primary);
+    }
+
+    /* Hero photo carousel */
+    .hero-photo {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      max-height: 520px;
+      background: linear-gradient(135deg, #D4A574 0%, #C9A96E 25%, #B8860B 50%, #8B6914 75%, #6B4F12 100%);
+      flex-shrink: 0;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, transparent 20%, transparent 70%, rgba(0,0,0,0.1) 100%);
+    }
+
+    /* Floating header */
+    .floating-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-6) var(--space-4);
+      padding-top: calc(var(--space-6) + env(safe-area-inset-top, 0px));
+      z-index: 10;
+    }
+
+    .header-btn {
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      border-radius: 50%;
+      border: none;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #FFFFFF;
+      transition: background 0.2s ease;
+    }
+
+    .header-btn:hover {
+      background: rgba(0,0,0,0.4);
+    }
+
+    .header-btn:focus-visible {
+      outline: 2px solid #FFFFFF;
+      outline-offset: 2px;
+    }
+
+    .header-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Photo dots on hero */
+    .hero-dots {
+      position: absolute;
+      bottom: var(--space-4);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 5px;
+      z-index: 3;
+    }
+
+    .hero-dots .dot {
+      width: 28px;
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.4);
+      transition: background 0.3s ease;
+    }
+
+    .hero-dots .dot.active {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    /* Scrollable content */
+    .profile-content {
+      flex: 1;
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+      margin-top: -20px;
+      position: relative;
+      z-index: 4;
+      padding-bottom: 100px;
+    }
+
+    /* Profile info */
+    .profile-info {
+      padding: var(--space-6) var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .profile-name-row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-2);
+      margin-bottom: var(--space-2);
+    }
+
+    .profile-name {
+      font-family: var(--font-family-display);
+      font-size: 30px;
+      font-weight: 600;
+      color: var(--color-secondary);
+      letter-spacing: -0.01em;
+    }
+
+    .profile-verified {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      background: rgba(74, 124, 89, 0.1);
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-verified);
+    }
+
+    .profile-verified svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .profile-meta-line {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    /* Compatibility score */
+    .compat-section {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-top: var(--space-5);
+      padding: var(--space-4);
+      background: linear-gradient(135deg, rgba(184,134,11,0.04) 0%, rgba(201,169,110,0.08) 100%);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(184,134,11,0.12);
+    }
+
+    .compat-ring {
+      position: relative;
+      width: 56px;
+      height: 56px;
+      flex-shrink: 0;
+    }
+
+    .compat-ring svg {
+      width: 56px;
+      height: 56px;
+      transform: rotate(-90deg);
+    }
+
+    .compat-ring .ring-bg {
+      fill: none;
+      stroke: rgba(184,134,11,0.15);
+      stroke-width: 4;
+    }
+
+    .compat-ring .ring-fill {
+      fill: none;
+      stroke: var(--color-primary);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 150.8;
+      stroke-dashoffset: calc(150.8 * (1 - 0.87));
+      transition: stroke-dashoffset 1s ease;
+    }
+
+    .compat-value {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .compat-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .compat-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-secondary);
+    }
+
+    .compat-premium-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .compat-premium-badge svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* Section container */
+    .section {
+      padding: var(--space-6) var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .section:last-of-type {
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Prompt cards */
+    .prompt-card {
+      background: var(--color-bg-primary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-3);
+      position: relative;
+    }
+
+    .prompt-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .prompt-question {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .prompt-answer {
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--color-secondary);
+    }
+
+    .prompt-like {
+      position: absolute;
+      top: var(--space-4);
+      right: var(--space-4);
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      border-radius: 50%;
+      border: 1.5px solid var(--color-border);
+      background: var(--color-bg-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-pass);
+      transition: all 0.25s ease;
+    }
+
+    .prompt-like:hover {
+      border-color: var(--color-like);
+      color: var(--color-like);
+      transform: scale(1.1);
+    }
+
+    .prompt-like.liked {
+      border-color: var(--color-like);
+      background: var(--color-like);
+      color: #FFF;
+    }
+
+    .prompt-like:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .prompt-like svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Interest chips */
+    .interests-scroll {
+      display: flex;
+      gap: var(--space-2);
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: var(--space-1);
+      margin: 0 calc(-1 * var(--space-5));
+      padding-left: var(--space-5);
+      padding-right: var(--space-5);
+    }
+
+    .interests-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .interest-chip {
+      flex-shrink: 0;
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-secondary);
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .interest-chip:hover {
+      border-color: var(--color-accent);
+      background: rgba(201,169,110,0.08);
+    }
+
+    /* About details */
+    .about-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .about-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .about-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: var(--color-bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--color-text-muted);
+    }
+
+    .about-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .about-label {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-weight: 500;
+    }
+
+    .about-value {
+      font-size: 14px;
+      color: var(--color-secondary);
+      font-weight: 500;
+    }
+
+    /* Sticky bottom action bar */
+    .bottom-action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 390px;
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-5);
+      padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+      background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border);
+      z-index: 20;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      height: 50px;
+      border-radius: var(--radius-lg);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border: none;
+      padding: 0 var(--space-6);
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .btn--secondary {
+      background: var(--color-bg-primary);
+      color: var(--color-secondary);
+      border: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+
+    .btn--secondary:hover {
+      background: rgba(44,62,80,0.04);
+    }
+
+    .btn--primary {
+      background: var(--color-primary);
+      color: #FFFFFF;
+      flex: 1;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn--primary:hover {
+      background: #A0750A;
+      box-shadow: var(--shadow-glow-match);
+      transform: translateY(-1px);
+    }
+
+    .btn--primary:active {
+      transform: translateY(0);
+    }
+
+    .btn--primary svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Report link */
+    .report-link {
+      text-align: center;
+      padding: var(--space-8) var(--space-5);
+      padding-bottom: var(--space-12);
+    }
+
+    .report-link a {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .report-link a:hover {
+      color: var(--color-secondary);
+      text-decoration: underline;
+    }
+
+    .report-link a:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    /* Responsive */
+    @media (min-width: 768px) {
+      .app-shell {
+        max-width: 420px;
+        margin: 0 auto;
+        border-left: 1px solid rgba(44,62,80,0.06);
+        border-right: 1px solid rgba(44,62,80,0.06);
+      }
+      .bottom-action-bar {
+        max-width: 420px;
+      }
+    }
+
+    @media (min-width: 1440px) {
+      body {
+        background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%);
+      }
+      .app-shell {
+        box-shadow: 0 0 60px rgba(0,0,0,0.06);
+        border-radius: 24px 24px 0 0;
+        margin-top: var(--space-8);
+        min-height: calc(100dvh - var(--space-8));
+      }
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: var(--space-2);
+      z-index: 100;
+      background: var(--color-primary);
+      color: #fff;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      left: var(--space-4);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" data-screen="profile-detail">
+    <a href="#profile-content" class="skip-link">Skip to profile content</a>
+    <!-- Hero photo carousel -->
+    <div class="hero-photo" role="img" aria-label="Maya's profile photo">
+      <div class="hero-overlay"></div>
+
+      <!-- Floating header -->
+      <header class="floating-header">
+        <button class="header-btn" aria-label="Go back" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <button class="header-btn" aria-label="More options" type="button">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+          </svg>
+        </button>
+      </header>
+
+      <!-- Photo dots -->
+      <div class="hero-dots" role="tablist" aria-label="Profile photos">
+        <span class="dot active" role="tab" aria-selected="true" aria-label="Photo 1 of 6"></span>
+        <span class="dot" role="tab" aria-selected="false" aria-label="Photo 2 of 6"></span>
+        <span class="dot" role="tab" aria-selected="false" aria-label="Photo 3 of 6"></span>
+        <span class="dot" role="tab" aria-selected="false" aria-label="Photo 4 of 6"></span>
+        <span class="dot" role="tab" aria-selected="false" aria-label="Photo 5 of 6"></span>
+        <span class="dot" role="tab" aria-selected="false" aria-label="Photo 6 of 6"></span>
+      </div>
+    </div>
+
+    <!-- Scrollable profile content -->
+    <div class="profile-content" id="profile-content">
+      <!-- Profile info -->
+      <section class="profile-info">
+        <div class="profile-name-row">
+          <h1 class="profile-name">Maya, 28</h1>
+          <span class="profile-verified">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg>
+            Verified
+          </span>
+        </div>
+        <p class="profile-meta-line">&lt; 5 miles away · Looking for a Relationship</p>
+
+        <!-- Compatibility score -->
+        <div class="compat-section" aria-label="Compatibility score 87 percent">
+          <div class="compat-ring">
+            <svg viewBox="0 0 56 56">
+              <circle class="ring-bg" cx="28" cy="28" r="24"/>
+              <circle class="ring-fill" cx="28" cy="28" r="24"/>
+            </svg>
+            <span class="compat-value" aria-hidden="true">87%</span>
+          </div>
+          <div class="compat-text">
+            <span class="compat-title">Compatibility Score</span>
+            <span class="compat-premium-badge">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+              Premium
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Prompts -->
+      <section class="section" aria-label="Prompt responses">
+        <h2 class="section-title">Prompts</h2>
+
+        <div class="prompt-card">
+          <p class="prompt-question">What makes a great first date?</p>
+          <p class="prompt-answer">A cozy wine bar with great conversation and zero phone checking. Bonus points if we close the place down.</p>
+          <button class="prompt-like" aria-label="Like this prompt response" type="button">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+
+        <div class="prompt-card">
+          <p class="prompt-question">I geek out about...</p>
+          <p class="prompt-answer">Architectural history. I can walk past a building and tell you what decade it's from and what style influenced the design.</p>
+          <button class="prompt-like" aria-label="Like this prompt response" type="button">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+
+        <div class="prompt-card">
+          <p class="prompt-question">The way to win me over is...</p>
+          <p class="prompt-answer">Be genuinely curious about the world. Ask questions nobody else thinks to ask.</p>
+          <button class="prompt-like" aria-label="Like this prompt response" type="button">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Interests -->
+      <section class="section" aria-label="Interests">
+        <h2 class="section-title">Interests</h2>
+        <div class="interests-scroll" role="list">
+          <span class="interest-chip" role="listitem">✈️ Travel</span>
+          <span class="interest-chip" role="listitem">📷 Photography</span>
+          <span class="interest-chip" role="listitem">🏛️ Architecture</span>
+          <span class="interest-chip" role="listitem">🍷 Wine</span>
+          <span class="interest-chip" role="listitem">📚 Reading</span>
+          <span class="interest-chip" role="listitem">🎷 Jazz</span>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section class="section" aria-label="About Maya">
+        <h2 class="section-title">About</h2>
+        <ul class="about-list">
+          <li class="about-item">
+            <div class="about-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22c0-4-4-6-4-10a4 4 0 0 1 8 0c0 4-4 6-4 10z"/>
+                <line x1="12" y1="2" x2="12" y2="6"/>
+              </svg>
+            </div>
+            <div>
+              <div class="about-label">Height</div>
+              <div class="about-value">5'7"</div>
+            </div>
+          </li>
+          <li class="about-item">
+            <div class="about-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/>
+              </svg>
+            </div>
+            <div>
+              <div class="about-label">Education</div>
+              <div class="about-value">NYU, Art History</div>
+            </div>
+          </li>
+          <li class="about-item">
+            <div class="about-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+            </div>
+            <div>
+              <div class="about-label">Work</div>
+              <div class="about-value">Creative Director at Studio&Co</div>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Report / block -->
+      <div class="report-link">
+        <a href="#" role="button">Report or block this profile</a>
+      </div>
+    </div>
+
+    <!-- Sticky bottom action bar -->
+    <div class="bottom-action-bar">
+      <button class="btn btn--secondary" type="button" aria-label="Pass on Maya">Not for Me</button>
+      <button class="btn btn--primary" type="button" aria-label="Like Maya's profile">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Like Maya
+      </button>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      /* Photo carousel dots */
+      var dots = document.querySelectorAll('.hero-dots .dot');
+      var currentPhoto = 0;
+
+      dots.forEach(function(dot, index) {
+        dot.addEventListener('click', function() {
+          dots[currentPhoto].classList.remove('active');
+          dots[currentPhoto].setAttribute('aria-selected', 'false');
+          currentPhoto = index;
+          dots[currentPhoto].classList.add('active');
+          dots[currentPhoto].setAttribute('aria-selected', 'true');
+        });
+      });
+
+      /* Prompt like toggle */
+      document.querySelectorAll('.prompt-like').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          btn.classList.toggle('liked');
+          var isLiked = btn.classList.contains('liked');
+          btn.setAttribute('aria-label', isLiked ? 'Unlike this prompt response' : 'Like this prompt response');
+        });
+      });
+
+      /* Back button */
+      var backBtn = document.querySelector('.header-btn[aria-label="Go back"]');
+      if (backBtn) {
+        backBtn.addEventListener('click', function() {
+          if (window.history.length > 1) {
+            window.history.back();
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

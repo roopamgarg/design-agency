@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ember — Settings</title>
+  <link rel="stylesheet" href="../../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family-sans);
+      background: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .screen {
+      max-width: 390px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--color-bg-primary);
+      padding-bottom: var(--space-10);
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-5);
+      position: sticky;
+      top: 0;
+      background: var(--color-bg-primary);
+      z-index: 10;
+    }
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      border: none;
+      background: var(--color-bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: background 0.2s;
+    }
+
+    .back-btn:hover { background: #EBE5DD; }
+    .back-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    .back-btn svg { width: 20px; height: 20px; }
+
+    .header-title {
+      font-family: var(--font-family-display);
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    /* Section Group */
+    .section-group {
+      margin: 0 var(--space-5) var(--space-5);
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--color-text-tertiary);
+      padding: 0 var(--space-1);
+      margin-bottom: var(--space-2);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+
+    /* Setting Rows */
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--card-padding);
+      min-height: 52px;
+    }
+
+    .setting-row + .setting-row { border-top: 1px solid var(--color-bg-secondary); }
+
+    .setting-row-label {
+      font-size: 15px;
+      color: var(--color-text-primary);
+      flex: 1;
+    }
+
+    .setting-row-value {
+      font-size: 14px;
+      color: var(--color-text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .setting-row-value svg { width: 16px; height: 16px; color: var(--color-text-tertiary); }
+
+    .chevron-icon {
+      width: 16px;
+      height: 16px;
+      color: var(--color-text-tertiary);
+      flex-shrink: 0;
+    }
+
+    /* Slider Visualization */
+    .slider-viz {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      padding: 0 var(--card-padding) var(--space-4);
+    }
+
+    .slider-track {
+      position: relative;
+      height: 4px;
+      background: var(--color-bg-secondary);
+      border-radius: 2px;
+    }
+
+    .slider-fill {
+      position: absolute;
+      height: 100%;
+      background: var(--color-primary);
+      border-radius: 2px;
+    }
+
+    .slider-thumb {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      background: var(--color-bg-elevated);
+      border: 2px solid var(--color-primary);
+      border-radius: var(--radius-full);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
+
+    /* Toggle Switch */
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: #D0C8BD;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+
+    .toggle input:checked + .toggle-track { background: var(--color-primary); }
+
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: var(--radius-full);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transition: transform 0.25s;
+    }
+
+    .toggle input:checked + .toggle-track::after { transform: translateX(20px); }
+
+    .toggle input:focus-visible + .toggle-track { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+    /* Select-like */
+    .select-display {
+      padding: 6px 12px;
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-family-sans);
+    }
+
+    /* Badges */
+    .green-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(74, 124, 89, 0.1);
+      color: var(--color-verified);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+    }
+
+    .green-badge svg { width: 12px; height: 12px; }
+
+    /* Danger Zone */
+    .danger-card {
+      border: 1px solid rgba(155, 35, 53, 0.2);
+    }
+
+    .btn-secondary {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: var(--color-bg-secondary);
+      color: var(--color-text-secondary);
+      border: none;
+      border-radius: var(--btn-radius);
+      font-family: var(--font-family-sans);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:hover { background: #EBE5DD; }
+    .btn-secondary:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+    .delete-link {
+      display: block;
+      text-align: center;
+      padding: var(--space-3) 0 0;
+      color: var(--color-error);
+      font-size: 14px;
+      font-weight: 500;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-family-sans);
+    }
+
+    .delete-link:hover { text-decoration: underline; }
+    .delete-link:focus-visible { outline: 2px solid var(--color-error); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+    /* Footer */
+    .app-version {
+      text-align: center;
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+      padding: var(--space-8) 0 var(--space-4);
+    }
+
+    .manage-link {
+      color: var(--color-primary);
+      font-weight: 600;
+      font-size: 13px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .manage-link:hover { text-decoration: underline; }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: var(--space-2);
+      z-index: 100;
+      background: var(--color-primary);
+      color: #fff;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      left: var(--space-4);
+    }
+
+    @media (min-width: 768px) {
+      .screen { box-shadow: 0 0 40px rgba(0,0,0,0.08); }
+      body { background: #EDEAE6; display: flex; justify-content: center; }
+    }
+
+    @media (min-width: 1440px) {
+      body { background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%); }
+      .screen {
+        box-shadow: 0 0 60px rgba(0,0,0,0.06);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="screen" data-screen="settings">
+    <a href="#settings-discovery" class="skip-link">Skip to main content</a>
+
+    <!-- Header -->
+    <header class="header" role="banner">
+      <button class="back-btn" aria-label="Go back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <h1 class="header-title">Settings</h1>
+    </header>
+
+    <!-- Discovery Preferences -->
+    <section class="section-group" aria-label="Discovery preferences" id="settings-discovery">
+      <p class="section-label">Discovery Preferences</p>
+      <div class="card">
+        <div class="setting-row">
+          <span class="setting-row-label">Age Range</span>
+          <span class="setting-row-value">25 – 35</span>
+        </div>
+        <div class="slider-viz" aria-hidden="true">
+          <div class="slider-track">
+            <div class="slider-fill" style="left: 15%; width: 40%;"></div>
+            <div class="slider-thumb" style="left: 15%;"></div>
+            <div class="slider-thumb" style="left: 55%;"></div>
+          </div>
+        </div>
+        <div class="setting-row">
+          <span class="setting-row-label">Maximum Distance</span>
+          <span class="setting-row-value">10 miles</span>
+        </div>
+        <div class="slider-viz" aria-hidden="true">
+          <div class="slider-track">
+            <div class="slider-fill" style="left: 0; width: 20%;"></div>
+            <div class="slider-thumb" style="left: 20%;"></div>
+          </div>
+        </div>
+        <div class="setting-row">
+          <span class="setting-row-label">Show Me</span>
+          <button class="select-display" aria-label="Show me preference: Women">Women</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Notifications -->
+    <section class="section-group" aria-label="Notification settings">
+      <p class="section-label">Notifications</p>
+      <div class="card">
+        <div class="setting-row">
+          <span class="setting-row-label">New Matches</span>
+          <label class="toggle">
+            <input type="checkbox" checked aria-label="New Matches notifications">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <span class="setting-row-label">Messages</span>
+          <label class="toggle">
+            <input type="checkbox" checked aria-label="Messages notifications">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <span class="setting-row-label">Likes</span>
+          <label class="toggle">
+            <input type="checkbox" checked aria-label="Likes notifications">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <span class="setting-row-label">Daily Batch</span>
+          <label class="toggle">
+            <input type="checkbox" checked aria-label="Daily Batch notifications">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <span class="setting-row-label">Nudges</span>
+          <label class="toggle">
+            <input type="checkbox" aria-label="Nudges notifications">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <span class="setting-row-label">Quiet Hours</span>
+          <span class="setting-row-value">
+            10 PM – 8 AM
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy -->
+    <section class="section-group" aria-label="Privacy settings">
+      <p class="section-label">Privacy</p>
+      <div class="card">
+        <div class="setting-row">
+          <span class="setting-row-label">Profile Visibility</span>
+          <button class="select-display" aria-label="Profile visibility: Active">Active</button>
+        </div>
+        <div class="setting-row">
+          <span class="setting-row-label">Show Distance</span>
+          <label class="toggle">
+            <input type="checkbox" checked aria-label="Show Distance">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <span class="setting-row-label">Show Online Status</span>
+          <label class="toggle">
+            <input type="checkbox" aria-label="Show Online Status">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="setting-row" role="button" tabindex="0" aria-label="View block list">
+          <span class="setting-row-label">Block List</span>
+          <span class="setting-row-value">
+            3 blocked users
+            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Account -->
+    <section class="section-group" aria-label="Account settings">
+      <p class="section-label">Account</p>
+      <div class="card">
+        <div class="setting-row">
+          <span class="setting-row-label">Phone Number</span>
+          <span class="setting-row-value">
+            +1 (555) 123-4567
+            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        </div>
+        <div class="setting-row">
+          <span class="setting-row-label">Email</span>
+          <span class="setting-row-value">
+            alex@email.com
+            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        </div>
+        <div class="setting-row">
+          <span class="setting-row-label">Subscription</span>
+          <span class="setting-row-value" style="flex-direction:column;align-items:flex-end;gap:2px;">
+            <span>Premium · Renews Jun 10</span>
+            <a href="#" class="manage-link">Manage</a>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Safety -->
+    <section class="section-group" aria-label="Safety">
+      <p class="section-label">Safety</p>
+      <div class="card">
+        <div class="setting-row">
+          <span class="setting-row-label">Verification Status</span>
+          <span class="green-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Verified
+          </span>
+        </div>
+        <div class="setting-row" role="button" tabindex="0" aria-label="Community guidelines">
+          <span class="setting-row-label">Community Guidelines</span>
+          <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="setting-row" role="button" tabindex="0" aria-label="Help and support">
+          <span class="setting-row-label">Help &amp; Support</span>
+          <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Danger Zone -->
+    <section class="section-group" aria-label="Danger zone">
+      <p class="section-label">Danger Zone</p>
+      <div class="card danger-card" style="padding: var(--card-padding);">
+        <button class="btn-secondary" type="button">Pause Profile</button>
+        <button class="delete-link" type="button">Delete Account</button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p class="app-version">Ember v1.2.0</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding → Discovery → Match Flow — Dating App Prototype</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: var(--font-family-sans);
+        background: var(--color-bg-secondary);
+        color: var(--color-text-primary);
+        line-height: var(--line-height-normal);
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .device-frame {
+        width: 390px;
+        max-width: 100vw;
+        min-height: 100vh;
+        background: var(--color-bg-primary);
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+      }
+
+      /* ── Screen system ── */
+      [data-screen] {
+        display: none;
+        min-height: 100vh;
+        position: relative;
+        animation: screenFadeIn var(--transition-base) forwards;
+      }
+      [data-screen].active { display: flex; flex-direction: column; }
+
+      @keyframes screenFadeIn {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes celebrationPop {
+        0% { opacity: 0; transform: scale(0.3); }
+        60% { transform: scale(1.1); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+      @keyframes confettiFall {
+        0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+      @keyframes heartBeat {
+        0% { transform: scale(1); }
+        15% { transform: scale(1.3); }
+        30% { transform: scale(1); }
+        45% { transform: scale(1.15); }
+        60% { transform: scale(1); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        @keyframes screenFadeIn { from, to { opacity: 1; transform: none; } }
+        @keyframes slideUp { from, to { opacity: 1; transform: none; } }
+        @keyframes celebrationPop { from, to { opacity: 1; transform: none; } }
+        @keyframes confettiFall { from, to { opacity: 1; transform: none; } }
+        @keyframes pulse { from, to { transform: none; } }
+        @keyframes heartBeat { from, to { transform: none; } }
+        [data-screen] { animation: none; }
+        .confetti { animation: none; }
+        .chat-bubble { animation: none; }
+        .celebration-content { animation: none; }
+      }
+
+      /* ── Progress indicator ── */
+      .progress-bar {
+        display: flex;
+        gap: 6px;
+        padding: var(--space-4) var(--space-6);
+        padding-top: calc(var(--space-4) + env(safe-area-inset-top, 0px));
+        background: var(--color-bg-primary);
+      }
+      .progress-dot {
+        flex: 1;
+        height: 4px;
+        border-radius: var(--radius-full);
+        background: var(--color-border);
+        transition: background var(--transition-base);
+      }
+      .progress-dot.filled { background: var(--color-primary); }
+      .progress-dot.current { background: var(--color-accent); }
+
+      /* ── Common elements ── */
+      .screen-content {
+        flex: 1;
+        padding: var(--space-6);
+        display: flex;
+        flex-direction: column;
+      }
+      .screen-actions {
+        padding: var(--space-4) var(--space-6);
+        padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+      }
+
+      h1 {
+        font-family: var(--font-family-display);
+        font-size: var(--font-size-3xl);
+        font-weight: var(--font-weight-bold);
+        line-height: var(--line-height-tight);
+        color: var(--color-text-primary);
+      }
+      h2 {
+        font-family: var(--font-family-display);
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-semibold);
+        line-height: var(--line-height-tight);
+      }
+      .subtitle {
+        font-size: var(--font-size-base);
+        color: var(--color-text-secondary);
+        margin-top: var(--space-2);
+      }
+
+      .btn {
+        display: block;
+        width: 100%;
+        padding: var(--space-4);
+        border: none;
+        border-radius: var(--radius-full);
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-semibold);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        min-height: var(--touch-target-min);
+        text-align: center;
+      }
+      .btn:active { transform: scale(0.97); }
+      .btn-primary {
+        background: var(--color-primary);
+        color: var(--color-text-on-primary);
+      }
+      .btn-primary:hover { background: var(--color-primary-hover); }
+      .btn-secondary {
+        background: transparent;
+        color: var(--color-primary);
+        border: 1.5px solid var(--color-primary);
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--color-text-secondary);
+      }
+      .btn + .btn { margin-top: var(--space-3); }
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .input-field {
+        width: 100%;
+        padding: var(--space-3) var(--space-4);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-base);
+        background: var(--color-bg-primary);
+        color: var(--color-text-primary);
+        transition: border-color var(--transition-fast);
+        min-height: var(--touch-target-min);
+      }
+      .input-field:focus {
+        outline: none;
+        border-color: var(--color-border-focus);
+      }
+      .input-field::placeholder { color: var(--color-text-tertiary); }
+
+      .input-group { margin-bottom: var(--space-4); }
+      .input-label {
+        display: block;
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-1);
+      }
+
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        background: none;
+        border: none;
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-sm);
+        cursor: pointer;
+        padding: var(--space-2);
+        margin: var(--space-2) var(--space-4) 0;
+        min-height: var(--touch-target-min);
+        min-width: var(--touch-target-min);
+      }
+
+      .skip-btn {
+        background: none;
+        border: none;
+        color: var(--color-text-tertiary);
+        font-size: var(--font-size-sm);
+        cursor: pointer;
+        padding: var(--space-2) var(--space-4);
+        position: absolute;
+        top: var(--space-4);
+        right: var(--space-4);
+        min-height: var(--touch-target-min);
+      }
+
+      /* ── Selection cards ── */
+      .selection-card {
+        padding: var(--space-4) var(--space-5);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-xl);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        min-height: var(--touch-target-min);
+      }
+      .selection-card + .selection-card { margin-top: var(--space-3); }
+      .selection-card:hover { border-color: var(--color-accent); }
+      .selection-card.selected {
+        border-color: var(--color-primary);
+        background: var(--color-primary-light);
+      }
+      .selection-icon { font-size: var(--font-size-2xl); }
+      .selection-label { font-weight: var(--font-weight-medium); }
+      .selection-desc {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+      }
+
+      /* ── Photo grid ── */
+      .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-3);
+        margin-top: var(--space-6);
+      }
+      .photo-slot {
+        aspect-ratio: 3/4;
+        border: 2px dashed var(--color-border);
+        border-radius: var(--radius-lg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-1);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        color: var(--color-text-tertiary);
+        font-size: var(--font-size-xs);
+        position: relative;
+        overflow: hidden;
+      }
+      .photo-slot:hover { border-color: var(--color-primary); color: var(--color-primary); }
+      .photo-slot.filled {
+        border: none;
+        background: linear-gradient(135deg, var(--color-primary-light), var(--color-accent-light));
+      }
+      .photo-slot.filled::after {
+        content: '✓';
+        position: absolute;
+        bottom: var(--space-1);
+        right: var(--space-1);
+        background: var(--color-success);
+        color: white;
+        width: 20px;
+        height: 20px;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+      }
+      .photo-slot .plus { font-size: var(--font-size-2xl); font-weight: 300; }
+      .photo-slot:first-child {
+        grid-row: span 2;
+        aspect-ratio: auto;
+      }
+
+      /* ── Prompt cards ── */
+      .prompt-card {
+        padding: var(--space-4);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-xl);
+        margin-top: var(--space-3);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+      .prompt-card:hover { border-color: var(--color-accent); }
+      .prompt-card.selected {
+        border-color: var(--color-primary);
+        background: var(--color-primary-light);
+      }
+      .prompt-question {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-primary);
+        margin-bottom: var(--space-2);
+      }
+      .prompt-answer {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+      }
+
+      /* ── Range slider ── */
+      .range-control { margin-bottom: var(--space-6); }
+      .range-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--space-2);
+      }
+      .range-label {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+      }
+      .range-value {
+        font-size: var(--font-size-sm);
+        color: var(--color-primary);
+        font-weight: var(--font-weight-semibold);
+      }
+      input[type="range"] {
+        width: 100%;
+        -webkit-appearance: none;
+        height: 4px;
+        background: var(--color-border);
+        border-radius: var(--radius-full);
+        outline: none;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: var(--radius-full);
+        background: var(--color-primary);
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+      }
+
+      /* ── Toggle chips ── */
+      .chip-group { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+      .chip {
+        padding: var(--space-2) var(--space-4);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-sm);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        min-height: var(--touch-target-min);
+        display: flex;
+        align-items: center;
+      }
+      .chip:hover { border-color: var(--color-accent); }
+      .chip.selected {
+        background: var(--color-primary);
+        color: var(--color-text-on-primary);
+        border-color: var(--color-primary);
+      }
+
+      /* ── Discovery card ── */
+      .discovery-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-4) var(--space-6);
+        padding-top: calc(var(--space-4) + env(safe-area-inset-top, 0px));
+      }
+      .discovery-title {
+        font-family: var(--font-family-display);
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-semibold);
+      }
+      .header-icons { display: flex; gap: var(--space-3); }
+      .icon-btn {
+        width: var(--touch-target-min);
+        height: var(--touch-target-min);
+        border-radius: var(--radius-full);
+        border: none;
+        background: var(--color-bg-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--font-size-lg);
+        transition: background var(--transition-fast);
+        position: relative;
+      }
+      .icon-btn:hover { background: var(--color-bg-tertiary); }
+      .icon-btn .badge {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 10px;
+        height: 10px;
+        background: var(--color-like);
+        border-radius: var(--radius-full);
+        border: 2px solid var(--color-bg-primary);
+      }
+
+      .match-card {
+        margin: 0 var(--space-4);
+        border-radius: var(--radius-2xl);
+        overflow: hidden;
+        background: var(--color-bg-primary);
+        box-shadow: var(--shadow-lg);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .card-photo {
+        aspect-ratio: var(--card-aspect-ratio);
+        background: linear-gradient(135deg, #E8D5B7, #C9A96E, #B8860B);
+        position: relative;
+        overflow: hidden;
+      }
+      .card-photo-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 80px;
+        opacity: 0.3;
+      }
+      .card-gradient {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(transparent, rgba(0,0,0,0.7));
+      }
+      .card-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: var(--space-5);
+        color: white;
+      }
+      .card-name-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+      .card-name {
+        font-family: var(--font-family-display);
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+      }
+      .card-age {
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-regular);
+        opacity: 0.9;
+      }
+      .verified-badge {
+        background: var(--color-verified);
+        color: white;
+        width: 22px;
+        height: 22px;
+        border-radius: var(--radius-full);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+      .card-distance {
+        font-size: var(--font-size-sm);
+        opacity: 0.85;
+        margin-top: var(--space-1);
+      }
+      .card-prompt-preview {
+        padding: var(--space-4) var(--space-5);
+        background: var(--color-bg-secondary);
+        border-top: 1px solid var(--color-border-light);
+      }
+      .card-prompt-q {
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .card-prompt-a {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-primary);
+        margin-top: var(--space-1);
+      }
+
+      .card-actions {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-6);
+        padding: var(--space-4);
+      }
+      .action-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--radius-full);
+        border: 2px solid var(--color-border);
+        background: var(--color-bg-primary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        transition: all var(--transition-fast);
+        box-shadow: var(--shadow-sm);
+      }
+      .action-btn:hover { transform: scale(1.1); }
+      .action-btn.pass-btn:hover {
+        border-color: var(--color-pass);
+        background: #F3F4F6;
+      }
+      .action-btn.like-btn:hover {
+        border-color: var(--color-like);
+        background: #FDF2F8;
+      }
+      .action-btn.like-btn.liked {
+        border-color: var(--color-like);
+        background: var(--color-like);
+        color: white;
+        animation: heartBeat 0.6s ease;
+      }
+
+      .match-counter {
+        text-align: center;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-tertiary);
+        padding-bottom: var(--space-3);
+      }
+
+      /* ── Profile detail ── */
+      .profile-detail-scroll {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .profile-photos {
+        position: relative;
+      }
+      .photo-dots {
+        position: absolute;
+        top: var(--space-3);
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 6px;
+        z-index: 2;
+      }
+      .photo-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-full);
+        background: rgba(255,255,255,0.5);
+      }
+      .photo-dot.active { background: white; }
+
+      .profile-section {
+        padding: var(--space-5) var(--space-6);
+      }
+      .profile-name-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+      .profile-name {
+        font-family: var(--font-family-display);
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+      }
+      .profile-meta {
+        display: flex;
+        gap: var(--space-4);
+        margin-top: var(--space-2);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+      }
+      .intent-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: var(--space-1) var(--space-3);
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        margin-top: var(--space-3);
+      }
+
+      .interest-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        margin-top: var(--space-3);
+      }
+      .interest-tag {
+        padding: var(--space-1) var(--space-3);
+        background: var(--color-bg-secondary);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-xs);
+        color: var(--color-text-secondary);
+      }
+
+      .profile-prompt {
+        padding: var(--space-4);
+        background: var(--color-bg-secondary);
+        border-radius: var(--radius-xl);
+        margin-top: var(--space-3);
+        position: relative;
+      }
+      .profile-prompt .like-element-btn {
+        position: absolute;
+        top: var(--space-3);
+        right: var(--space-3);
+        width: var(--touch-target-min);
+        height: var(--touch-target-min);
+        border-radius: var(--radius-full);
+        border: 1.5px solid var(--color-border);
+        background: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: all var(--transition-fast);
+      }
+      .profile-prompt .like-element-btn:hover {
+        border-color: var(--color-like);
+        background: #FDF2F8;
+      }
+
+      .profile-sticky-actions {
+        position: sticky;
+        bottom: 0;
+        background: var(--color-bg-primary);
+        border-top: 1px solid var(--color-border-light);
+        padding: var(--space-3) var(--space-6);
+        display: flex;
+        gap: var(--space-3);
+      }
+      .profile-sticky-actions .btn { flex: 1; }
+
+      /* ── Match celebration ── */
+      .celebration-screen {
+        background: linear-gradient(135deg, #1A1A2E 0%, #2C3E50 50%, #1A1A2E 100%);
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .confetti-container {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        animation: confettiFall 3s ease-in forwards;
+      }
+      .celebration-content {
+        z-index: 2;
+        animation: celebrationPop var(--transition-celebration) forwards;
+      }
+      .match-photos {
+        display: flex;
+        justify-content: center;
+        gap: calc(-1 * var(--space-4));
+        margin-bottom: var(--space-8);
+      }
+      .match-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: var(--radius-full);
+        border: 4px solid var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        box-shadow: var(--shadow-glow-match);
+      }
+      .match-avatar:first-child {
+        background: linear-gradient(135deg, #E8D5B7, #C9A96E);
+        margin-right: -16px;
+        z-index: 1;
+      }
+      .match-avatar:last-child {
+        background: linear-gradient(135deg, #C9A96E, #B8860B);
+      }
+      .celebration-text {
+        font-family: var(--font-family-display);
+        font-size: var(--font-size-4xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-primary);
+        margin-bottom: var(--space-2);
+      }
+      .celebration-sub {
+        color: rgba(255,255,255,0.7);
+        font-size: var(--font-size-base);
+        margin-bottom: var(--space-10);
+      }
+      .celebration-actions { width: 280px; }
+      .celebration-actions .btn-primary {
+        background: var(--color-primary);
+        box-shadow: var(--shadow-glow-match);
+      }
+
+      /* ── Chat screen ── */
+      .chat-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        padding-top: calc(var(--space-3) + env(safe-area-inset-top, 0px));
+        border-bottom: 1px solid var(--color-border-light);
+        background: var(--color-bg-primary);
+      }
+      .chat-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-full);
+        background: linear-gradient(135deg, #E8D5B7, #C9A96E);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+      }
+      .chat-name {
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-base);
+      }
+      .chat-status {
+        font-size: var(--font-size-xs);
+        color: var(--color-success);
+      }
+      .chat-header-actions {
+        margin-left: auto;
+        display: flex;
+        gap: var(--space-2);
+      }
+
+      .chat-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-4);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+      }
+      .match-context-banner {
+        text-align: center;
+        padding: var(--space-4);
+        background: var(--color-primary-light);
+        border-radius: var(--radius-xl);
+        margin-bottom: var(--space-4);
+      }
+      .match-context-banner .emoji { font-size: 32px; }
+      .match-context-banner p {
+        font-size: var(--font-size-sm);
+        color: var(--color-primary);
+        font-weight: var(--font-weight-medium);
+        margin-top: var(--space-2);
+      }
+
+      .system-message {
+        text-align: center;
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        padding: var(--space-2) 0;
+      }
+      .chat-bubble {
+        max-width: 80%;
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--radius-xl);
+        font-size: var(--font-size-sm);
+        line-height: var(--line-height-normal);
+        animation: slideUp 0.3s ease forwards;
+      }
+      .chat-bubble.sent {
+        align-self: flex-end;
+        background: var(--color-primary);
+        color: var(--color-text-on-primary);
+        border-bottom-right-radius: var(--radius-sm);
+      }
+      .chat-bubble.received {
+        align-self: flex-start;
+        background: var(--color-bg-secondary);
+        color: var(--color-text-primary);
+        border-bottom-left-radius: var(--radius-sm);
+      }
+      .bubble-time {
+        font-size: 10px;
+        opacity: 0.6;
+        margin-top: var(--space-1);
+      }
+
+      .icebreaker-suggestions {
+        display: flex;
+        gap: var(--space-2);
+        overflow-x: auto;
+        padding: var(--space-2) 0;
+        -webkit-overflow-scrolling: touch;
+      }
+      .icebreaker-pill {
+        flex-shrink: 0;
+        padding: var(--space-2) var(--space-4);
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-xs);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        white-space: nowrap;
+      }
+      .icebreaker-pill:hover {
+        border-color: var(--color-primary);
+        background: var(--color-primary-light);
+      }
+
+      .chat-compose {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+        border-top: 1px solid var(--color-border-light);
+        background: var(--color-bg-primary);
+      }
+      .compose-input {
+        flex: 1;
+        padding: var(--space-3) var(--space-4);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-2xl);
+        font-size: var(--font-size-sm);
+        font-family: var(--font-family-sans);
+        background: var(--color-bg-secondary);
+        min-height: var(--touch-target-min);
+      }
+      .compose-input:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        background: var(--color-bg-primary);
+      }
+      .compose-btn {
+        width: var(--touch-target-min);
+        height: var(--touch-target-min);
+        border-radius: var(--radius-full);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        transition: all var(--transition-fast);
+      }
+      .send-btn {
+        background: var(--color-primary);
+        color: white;
+      }
+      .send-btn:hover { background: var(--color-primary-hover); }
+      .compose-icon-btn {
+        background: transparent;
+        color: var(--color-text-tertiary);
+      }
+      .compose-icon-btn:hover { color: var(--color-primary); }
+
+      /* ── Tab bar ── */
+      .tab-bar {
+        display: flex;
+        height: var(--tab-bar-height);
+        border-top: 1px solid var(--color-border-light);
+        background: var(--color-bg-primary);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      .tab-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: var(--color-text-tertiary);
+        font-size: 10px;
+        transition: color var(--transition-fast);
+        position: relative;
+        min-height: var(--touch-target-min);
+      }
+      .tab-item.active { color: var(--color-primary); }
+      .tab-icon { font-size: 22px; }
+      .tab-badge {
+        position: absolute;
+        top: 4px;
+        right: calc(50% - 18px);
+        width: 18px;
+        height: 18px;
+        background: var(--color-like);
+        color: white;
+        border-radius: var(--radius-full);
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: var(--font-weight-bold);
+      }
+
+      /* ── Welcome screen hero ── */
+      .welcome-hero {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: var(--space-8) var(--space-6);
+        background: linear-gradient(180deg, #F8F6F3 0%, #F5E6C8 50%, var(--color-bg-primary) 100%);
+        position: relative;
+      }
+      .welcome-logo {
+        font-family: var(--font-family-display);
+        font-size: 48px;
+        font-weight: var(--font-weight-bold);
+        color: var(--color-primary);
+        margin-bottom: var(--space-4);
+      }
+      .welcome-illustration {
+        position: absolute;
+        top: 15%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 120px;
+        opacity: 0.15;
+      }
+
+      .benefit-cards {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        margin: var(--space-6) 0;
+      }
+      .benefit-card {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        background: var(--color-bg-primary);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-xs);
+      }
+      .benefit-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-lg);
+        background: var(--color-primary-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .benefit-text {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+      }
+
+      /* ── OTP input ── */
+      .otp-row {
+        display: flex;
+        gap: var(--space-3);
+        justify-content: center;
+        margin: var(--space-8) 0;
+      }
+      .otp-digit {
+        width: 48px;
+        height: 56px;
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        text-align: center;
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-semibold);
+        font-family: var(--font-family-sans);
+        transition: border-color var(--transition-fast);
+      }
+      .otp-digit:focus {
+        outline: none;
+        border-color: var(--color-primary);
+      }
+      .otp-digit.filled { border-color: var(--color-primary); background: var(--color-primary-light); }
+
+      /* ── Prototype navigation ── */
+      .prototype-nav {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 390px;
+        max-width: 100vw;
+        padding: var(--space-3) var(--space-2);
+        background: var(--color-secondary);
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        flex-wrap: wrap;
+        z-index: var(--z-toast);
+        border-top: 2px solid var(--color-primary);
+      }
+      .prototype-nav button {
+        padding: 6px 10px;
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.08);
+        color: rgba(255,255,255,0.7);
+        cursor: pointer;
+        font-size: 11px;
+        font-family: var(--font-family-sans);
+        transition: all var(--transition-fast);
+        white-space: nowrap;
+      }
+      .prototype-nav button:hover {
+        background: rgba(255,255,255,0.15);
+        color: white;
+      }
+      .prototype-nav button.active-nav {
+        background: var(--color-primary);
+        color: white;
+        border-color: var(--color-primary);
+      }
+      .prototype-toggle {
+        position: fixed;
+        bottom: var(--space-2);
+        right: var(--space-2);
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-full);
+        background: var(--color-secondary);
+        color: var(--color-primary);
+        border: 2px solid var(--color-primary);
+        cursor: pointer;
+        z-index: calc(var(--z-toast) + 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+
+      /* Hide nav by default on small screens, show with toggle */
+      .prototype-nav.hidden { display: none; }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      .visually-hidden:focus {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: auto;
+        height: auto;
+        padding: var(--space-3) var(--space-5);
+        margin: 0;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
+        background: var(--color-primary);
+        color: var(--color-text-on-primary);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        z-index: calc(var(--z-toast) + 10);
+        border-radius: 0 0 var(--radius-md) 0;
+      }
+    </style>
+</head>
+<body>
+    <div class="device-frame">
+      <a href="#main-content" class="visually-hidden">Skip to main content</a>
+
+      <!-- ═══════════════════════════ SCREEN 1: Welcome ═══════════════════════════ -->
+      <section data-screen="welcome" class="active" aria-label="Welcome screen" id="main-content">
+        <div class="welcome-hero">
+          <div class="welcome-illustration">💛</div>
+          <div class="welcome-logo">Kindred</div>
+          <h1>Dating that<br>feels different</h1>
+          <p class="subtitle">Thoughtful connections, not endless swiping.</p>
+          <div class="benefit-cards">
+            <div class="benefit-card">
+              <div class="benefit-icon">🎯</div>
+              <span class="benefit-text">5–8 curated matches daily</span>
+            </div>
+            <div class="benefit-card">
+              <div class="benefit-icon">💬</div>
+              <span class="benefit-text">Like what you love about them</span>
+            </div>
+            <div class="benefit-card">
+              <div class="benefit-icon">🛡️</div>
+              <span class="benefit-text">Verified profiles, real people</span>
+            </div>
+          </div>
+        </div>
+        <div class="screen-actions">
+          <button class="btn btn-primary" onclick="showScreen('signup')">Get Started</button>
+          <button class="btn btn-ghost" onclick="showScreen('signup')">I already have an account</button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 2: Sign Up ═══════════════════════════ -->
+      <section data-screen="signup" aria-label="Sign up screen">
+        <div class="progress-bar">
+          <div class="progress-dot current"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+        </div>
+        <button class="back-btn" onclick="showScreen('welcome')" aria-label="Go back">← Back</button>
+        <div class="screen-content">
+          <h2>What's your number?</h2>
+          <p class="subtitle">We'll send you a verification code.</p>
+          <div style="margin-top: var(--space-8);">
+            <div class="input-group">
+              <label class="input-label" for="phone">Phone number</label>
+              <input type="tel" id="phone" class="input-field" placeholder="+1 (555) 000-0000" aria-required="true">
+            </div>
+          </div>
+          <div style="flex:1;"></div>
+          <p style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); text-align: center; margin-top: var(--space-4);">
+            By continuing, you agree to our Terms of Service and Privacy Policy.
+          </p>
+        </div>
+        <div class="screen-actions">
+          <button class="btn btn-primary" onclick="showScreen('verify')">Send Code</button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 3: Verify OTP ═══════════════════════════ -->
+      <section data-screen="verify" aria-label="Verification screen">
+        <div class="progress-bar">
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot current"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+        </div>
+        <button class="back-btn" onclick="showScreen('signup')" aria-label="Go back">← Back</button>
+        <div class="screen-content">
+          <h2>Enter your code</h2>
+          <p class="subtitle">Sent to +1 (555) 000-0000</p>
+          <div class="otp-row" role="group" aria-label="Verification code">
+            <input type="text" maxlength="1" class="otp-digit filled" value="4" aria-label="Digit 1">
+            <input type="text" maxlength="1" class="otp-digit filled" value="8" aria-label="Digit 2">
+            <input type="text" maxlength="1" class="otp-digit filled" value="2" aria-label="Digit 3">
+            <input type="text" maxlength="1" class="otp-digit" aria-label="Digit 4">
+            <input type="text" maxlength="1" class="otp-digit" aria-label="Digit 5">
+            <input type="text" maxlength="1" class="otp-digit" aria-label="Digit 6">
+          </div>
+          <p style="text-align:center;">
+            <button class="btn btn-ghost" style="display:inline; width:auto;">Resend code (0:47)</button>
+          </p>
+        </div>
+        <div class="screen-actions">
+          <button class="btn btn-primary" onclick="showScreen('intent')">Verify</button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 4: Intent Declaration ═══════════════════════════ -->
+      <section data-screen="intent" aria-label="Intent declaration screen">
+        <div class="progress-bar">
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot current"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+        </div>
+        <button class="back-btn" onclick="showScreen('verify')" aria-label="Go back">← Back</button>
+        <div class="screen-content">
+          <h2>What are you<br>looking for?</h2>
+          <p class="subtitle">This helps us find better matches for you.</p>
+          <div style="margin-top: var(--space-8);">
+            <div class="selection-card selected" onclick="selectIntent(this)" role="radio" aria-checked="true" tabindex="0">
+              <span class="selection-icon">💕</span>
+              <div>
+                <div class="selection-label">A relationship</div>
+                <div class="selection-desc">Something meaningful and lasting</div>
+              </div>
+            </div>
+            <div class="selection-card" onclick="selectIntent(this)" role="radio" aria-checked="false" tabindex="0">
+              <span class="selection-icon">✨</span>
+              <div>
+                <div class="selection-label">Something casual</div>
+                <div class="selection-desc">Low-pressure, see what happens</div>
+              </div>
+            </div>
+            <div class="selection-card" onclick="selectIntent(this)" role="radio" aria-checked="false" tabindex="0">
+              <span class="selection-icon">🤔</span>
+              <div>
+                <div class="selection-label">Still figuring it out</div>
+                <div class="selection-desc">Open to whatever feels right</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="screen-actions">
+          <button class="btn btn-primary" onclick="showScreen('basic-profile')">Continue</button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 5: Basic Profile ═══════════════════════════ -->
+      <section data-screen="basic-profile" aria-label="Basic profile screen">
+        <div class="progress-bar">
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot current"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+        </div>
+        <button class="back-btn" onclick="showScreen('intent')" aria-label="Go back">← Back</button>
+        <div class="screen-content">
+          <h2>The basics</h2>
+          <p class="subtitle">Tell us a little about yourself.</p>
+          <div style="margin-top: var(--space-6);">
+            <div class="input-group">
+              <label class="input-label" for="name">First name</label>
+              <input type="text" id="name" class="input-field" placeholder="Your first name" value="Alex">
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="birthday">Birthday</label>
+              <input type="text" id="birthday" class="input-field" placeholder="MM / DD / YYYY" value="03 / 15 / 1998">
+            </div>
+            <div class="input-group">
+              <label class="input-label">Gender</label>
+              <div class="chip-group">
+                <span class="chip" onclick="toggleChip(this)">Woman</span>
+                <span class="chip selected" onclick="toggleChip(this)">Man</span>
+                <span class="chip" onclick="toggleChip(this)">Non-binary</span>
+                <span class="chip" onclick="toggleChip(this)">More options</span>
+              </div>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="location">Location</label>
+              <input type="text" id="location" class="input-field" value="📍 San Francisco, CA" readonly style="color: var(--color-primary);">
+              <span style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-top: var(--space-1); display: block;">Auto-detected. You can change this.</span>
+            </div>
+          </div>
+        </div>
+        <div class="screen-actions">
+          <button class="btn btn-primary" onclick="showScreen('photos')">Continue</button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 6: Photo Upload ═══════════════════════════ -->
+      <section data-screen="photos" aria-label="Photo upload screen">
+        <div class="progress-bar">
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot current"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+        </div>
+        <button class="back-btn" onclick="showScreen('basic-profile')" aria-label="Go back">← Back</button>
+        <div class="screen-content">
+          <h2>Show yourself</h2>
+          <p class="subtitle">Add at least 3 photos. Your first photo is your profile picture.</p>
+          <div class="photo-grid" role="group" aria-label="Photo upload grid">
+            <div class="photo-slot filled" onclick="togglePhotoSlot(this)" tabindex="0" aria-label="Photo 1 (uploaded)">
+              <span style="font-size:40px;">😊</span>
+            </div>
+            <div class="photo-slot filled" onclick="togglePhotoSlot(this)" tabindex="0" aria-label="Photo 2 (uploaded)">
+              <span style="font-size:28px;">🏔️</span>
+            </div>
+            <div class="photo-slot filled" onclick="togglePhotoSlot(this)" tabindex="0" aria-label="Photo 3 (uploaded)">
+              <span style="font-size:28px;">🎸</span>
+            </div>
+            <div class="photo-slot" onclick="togglePhotoSlot(this)" tabindex="0" aria-label="Add photo 4">
+              <span class="plus">+</span>
+              <span>Add photo</span>
+            </div>
+            <div class="photo-slot" onclick="togglePhotoSlot(this)" tabindex="0" aria-label="Add photo 5">
+              <span class="plus">+</span>
+              <span>Add photo</span>
+            </div>
+          </div>
+          <p style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-top: var(--space-4); text-align: center;">
+            Tip: photos with good lighting and a clear view of your face get more likes.
+          </p>
+        </div>
+        <div class="screen-actions">
+          <button class="btn btn-primary" onclick="showScreen('prompts')">Continue</button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 7: Prompts ═══════════════════════════ -->
+      <section data-screen="prompts" aria-label="Prompts screen">
+        <div class="progress-bar">
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot current"></div>
+          <div class="progress-dot"></div>
+        </div>
+        <button class="back-btn" onclick="showScreen('photos')" aria-label="Go back">← Back</button>
+        <div class="screen-content" style="overflow-y: auto;">
+          <h2>Your personality</h2>
+          <p class="subtitle">Pick 2 prompts and answer them. These are conversation starters.</p>
+
+          <div class="prompt-card selected" onclick="togglePrompt(this)" tabindex="0">
+            <div class="prompt-question">A perfect day for me looks like...</div>
+            <div class="prompt-answer">"Morning surf, farmers market lunch, cooking dinner with friends, and a sunset hike. Bonus points if there's a golden retriever involved."</div>
+          </div>
+          <div class="prompt-card selected" onclick="togglePrompt(this)" tabindex="0">
+            <div class="prompt-question">I'm convinced that...</div>
+            <div class="prompt-answer">"The best conversations happen over homemade pasta. I'll make the sauce if you bring the wine."</div>
+          </div>
+          <div class="prompt-card" onclick="togglePrompt(this)" tabindex="0">
+            <div class="prompt-question">My most controversial opinion is...</div>
+            <div class="prompt-answer" style="font-style: italic; opacity: 0.5;">Tap to write your answer</div>
+          </div>
+          <div class="prompt-card" onclick="togglePrompt(this)" tabindex="0">
+            <div class="prompt-question">The way to my heart is...</div>
+            <div class="prompt-answer" style="font-style: italic; opacity: 0.5;">Tap to write your answer</div>
+          </div>
+          <div class="prompt-card" onclick="togglePrompt(this)" tabindex="0">
+            <div class="prompt-question">I recently discovered that...</div>
+            <div class="prompt-answer" style="font-style: italic; opacity: 0.5;">Tap to write your answer</div>
+          </div>
+        </div>
+        <div class="screen-actions">
+          <button class="btn btn-primary" onclick="showScreen('preferences')">Continue</button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 8: Preferences ═══════════════════════════ -->
+      <section data-screen="preferences" aria-label="Preferences screen">
+        <div class="progress-bar">
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot filled"></div>
+          <div class="progress-dot current"></div>
+        </div>
+        <button class="back-btn" onclick="showScreen('prompts')" aria-label="Go back">← Back</button>
+        <button class="skip-btn" onclick="showScreen('discovery')" aria-label="Skip preferences">Skip</button>
+        <div class="screen-content">
+          <h2>Your preferences</h2>
+          <p class="subtitle">We'll use these to find your best matches. You can change them anytime.</p>
+          <div style="margin-top: var(--space-8);">
+            <div class="range-control">
+              <div class="range-header">
+                <span class="range-label">Age range</span>
+                <span class="range-value">25 – 35</span>
+              </div>
+              <input type="range" min="18" max="50" value="30" aria-label="Age range">
+            </div>
+            <div class="range-control">
+              <div class="range-header">
+                <span class="range-label">Maximum distance</span>
+                <span class="range-value">15 miles</span>
+              </div>
+              <input type="range" min="1" max="100" value="15" aria-label="Maximum distance">
+            </div>
+            <div class="input-group">
+              <label class="input-label">Show me</label>
+              <div class="chip-group">
+                <span class="chip selected" onclick="toggleChip(this)">Women</span>
+                <span class="chip" onclick="toggleChip(this)">Men</span>
+                <span class="chip" onclick="toggleChip(this)">Everyone</span>
+              </div>
+            </div>
+            <div class="input-group" style="margin-top: var(--space-6);">
+              <label class="input-label">Dealbreakers</label>
+              <div class="chip-group">
+                <span class="chip" onclick="toggleChip(this)">Non-smoker</span>
+                <span class="chip selected" onclick="toggleChip(this)">No kids</span>
+                <span class="chip" onclick="toggleChip(this)">Drinks socially</span>
+                <span class="chip" onclick="toggleChip(this)">College degree</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="screen-actions">
+          <button class="btn btn-primary" onclick="showScreen('discovery')">Find My Matches</button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 9: Discovery ═══════════════════════════ -->
+      <section data-screen="discovery" aria-label="Discovery screen">
+        <div class="discovery-header">
+          <span class="discovery-title">Today's Picks</span>
+          <div class="header-icons">
+            <button class="icon-btn" aria-label="Notifications">
+              🔔
+              <span class="badge"></span>
+            </button>
+            <button class="icon-btn" aria-label="Filters">⚙️</button>
+          </div>
+        </div>
+
+        <div class="match-card" onclick="showScreen('profile-detail')" style="cursor: pointer;" role="button" aria-label="View Maya's full profile">
+          <div class="card-photo">
+            <div class="card-photo-placeholder">👩</div>
+            <div class="card-gradient"></div>
+            <div class="card-info">
+              <div class="card-name-row">
+                <span class="card-name">Maya</span>
+                <span class="card-age">, 28</span>
+                <span class="verified-badge" title="Verified">✓</span>
+              </div>
+              <div class="card-distance">📍 &lt; 5 miles away</div>
+            </div>
+          </div>
+          <div class="card-prompt-preview">
+            <div class="card-prompt-q">A perfect day for me looks like...</div>
+            <div class="card-prompt-a">"Sunrise yoga, exploring a new bookstore, and ending the night cooking something ambitious from a recipe I've never tried."</div>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button class="action-btn pass-btn" onclick="event.stopPropagation();" aria-label="Pass">✕</button>
+          <button class="action-btn like-btn" onclick="event.stopPropagation(); showScreen('profile-detail');" aria-label="Like">♡</button>
+        </div>
+        <div class="match-counter">3 of 6 remaining</div>
+
+        <nav class="tab-bar" aria-label="Main navigation">
+          <button class="tab-item active" aria-label="Discover" aria-current="page">
+            <span class="tab-icon">🧭</span>
+            <span>Discover</span>
+          </button>
+          <button class="tab-item" aria-label="Matches">
+            <span class="tab-icon">💛</span>
+            <span>Matches</span>
+            <span class="tab-badge">2</span>
+          </button>
+          <button class="tab-item" onclick="showScreen('chat')" aria-label="Messages">
+            <span class="tab-icon">💬</span>
+            <span>Messages</span>
+          </button>
+          <button class="tab-item" aria-label="Profile">
+            <span class="tab-icon">👤</span>
+            <span>Profile</span>
+          </button>
+        </nav>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 10: Profile Detail ═══════════════════════════ -->
+      <section data-screen="profile-detail" aria-label="Profile detail screen">
+        <div class="profile-detail-scroll">
+          <div class="profile-photos">
+            <div class="card-photo" style="aspect-ratio: 3/4;">
+              <div class="card-photo-placeholder" style="font-size: 100px;">👩</div>
+              <div class="photo-dots">
+                <span class="photo-dot active"></span>
+                <span class="photo-dot"></span>
+                <span class="photo-dot"></span>
+                <span class="photo-dot"></span>
+              </div>
+            </div>
+            <button class="back-btn" onclick="showScreen('discovery')" style="position:absolute;top:var(--space-3);left:var(--space-2);background:rgba(0,0,0,0.3);color:white;border-radius:var(--radius-full);width:40px;height:40px;display:flex;align-items:center;justify-content:center;padding:0;margin:0;" aria-label="Go back">←</button>
+          </div>
+
+          <div class="profile-section">
+            <div class="profile-name-row">
+              <span class="profile-name">Maya</span>
+              <span style="font-size: var(--font-size-xl); color: var(--color-text-secondary);">, 28</span>
+              <span class="verified-badge" title="Verified profile">✓</span>
+            </div>
+            <div class="profile-meta">
+              <span>📍 &lt; 5 miles</span>
+              <span>🎓 Stanford</span>
+              <span>💼 UX Designer</span>
+            </div>
+            <div class="intent-badge">💕 Looking for a relationship</div>
+          </div>
+
+          <div class="profile-section" style="padding-top: 0;">
+            <div class="profile-prompt">
+              <div class="prompt-question">A perfect day for me looks like...</div>
+              <div class="prompt-answer" style="margin-top: var(--space-2); color: var(--color-text-primary);">"Sunrise yoga, exploring a new bookstore, and ending the night cooking something ambitious from a recipe I've never tried."</div>
+              <button class="like-element-btn" onclick="likeElement(this, event)" aria-label="Like this prompt">♡</button>
+            </div>
+            <div class="profile-prompt">
+              <div class="prompt-question">I'm convinced that...</div>
+              <div class="prompt-answer" style="margin-top: var(--space-2); color: var(--color-text-primary);">"Everyone should learn to make at least one dish from scratch. Mine is my grandmother's tikka masala — it's a guaranteed mood lifter."</div>
+              <button class="like-element-btn" onclick="likeElement(this, event)" aria-label="Like this prompt">♡</button>
+            </div>
+            <div class="profile-prompt">
+              <div class="prompt-question">The way to my heart is...</div>
+              <div class="prompt-answer" style="margin-top: var(--space-2); color: var(--color-text-primary);">"Thoughtful questions. Ask me about my latest obsession and I'll talk for hours."</div>
+              <button class="like-element-btn" onclick="likeElement(this, event)" aria-label="Like this prompt">♡</button>
+            </div>
+          </div>
+
+          <div class="profile-section" style="padding-top: 0;">
+            <span class="input-label">Interests</span>
+            <div class="interest-tags">
+              <span class="interest-tag">🧘 Yoga</span>
+              <span class="interest-tag">📚 Reading</span>
+              <span class="interest-tag">🍳 Cooking</span>
+              <span class="interest-tag">🥾 Hiking</span>
+              <span class="interest-tag">🎨 Art</span>
+              <span class="interest-tag">✈️ Travel</span>
+              <span class="interest-tag">🎵 Live Music</span>
+            </div>
+          </div>
+
+          <div style="height: 100px;"></div>
+        </div>
+
+        <div class="profile-sticky-actions">
+          <button class="btn btn-secondary" onclick="showScreen('discovery')" style="flex:0.4;">Not for me</button>
+          <button class="btn btn-primary" onclick="showScreen('match-celebration')" style="flex:0.6;">♡ Like Maya</button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 11: Match Celebration ═══════════════════════════ -->
+      <section data-screen="match-celebration" class="celebration-screen" aria-label="Match celebration">
+        <div class="confetti-container" id="confetti-container"></div>
+        <div class="celebration-content">
+          <div class="match-photos">
+            <div class="match-avatar">😊</div>
+            <div class="match-avatar">👩</div>
+          </div>
+          <div class="celebration-text">It's a Match!</div>
+          <p class="celebration-sub">You and Maya liked each other</p>
+          <div class="celebration-actions">
+            <button class="btn btn-primary" onclick="showScreen('chat')">Send a Message</button>
+            <button class="btn btn-ghost" style="color: rgba(255,255,255,0.6);" onclick="showScreen('discovery')">Keep Browsing</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 12: Chat / First Message ═══════════════════════════ -->
+      <section data-screen="chat" aria-label="Chat screen">
+        <div class="chat-header">
+          <button class="back-btn" onclick="showScreen('discovery')" style="margin:0;padding:var(--space-1);" aria-label="Go back">←</button>
+          <div class="chat-avatar" onclick="showScreen('profile-detail')" style="cursor:pointer;" role="button" aria-label="View Maya's profile">👩</div>
+          <div>
+            <div class="chat-name">Maya</div>
+            <div class="chat-status">● Online now</div>
+          </div>
+          <div class="chat-header-actions">
+            <button class="icon-btn" aria-label="Video call">📹</button>
+            <button class="icon-btn" aria-label="More options">⋯</button>
+          </div>
+        </div>
+
+        <div class="chat-body">
+          <div class="match-context-banner">
+            <div class="emoji">🎉</div>
+            <p>You both liked each other! You liked Maya's prompt about cooking.</p>
+          </div>
+
+          <div class="system-message">Matched today at 2:34 PM</div>
+
+          <div class="icebreaker-suggestions" aria-label="Conversation starters">
+            <button class="icebreaker-pill" onclick="sendIcebreaker(this)">What's your latest cooking experiment? 🍳</button>
+            <button class="icebreaker-pill" onclick="sendIcebreaker(this)">Best bookstore you've discovered?</button>
+            <button class="icebreaker-pill" onclick="sendIcebreaker(this)">Morning yoga or evening yoga?</button>
+          </div>
+
+          <div class="chat-bubble sent" id="first-message" style="display:none;">
+            <span id="sent-text"></span>
+            <div class="bubble-time">2:35 PM · Delivered</div>
+          </div>
+
+          <div class="chat-bubble received" id="reply-message" style="display:none;">
+            Haha glad you noticed that prompt! I just tried making fresh pasta from scratch last weekend — total disaster but SO fun 😂 What about you, do you cook?
+            <div class="bubble-time">2:36 PM</div>
+          </div>
+        </div>
+
+        <div class="chat-compose">
+          <button class="compose-btn compose-icon-btn" aria-label="Send voice note">🎤</button>
+          <button class="compose-btn compose-icon-btn" aria-label="Icebreaker suggestions">💡</button>
+          <input type="text" class="compose-input" placeholder="Say something thoughtful..." id="chat-input" aria-label="Message input">
+          <button class="compose-btn send-btn" onclick="sendMessage()" aria-label="Send message">➤</button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Prototype navigation toggle -->
+    <button class="prototype-toggle" onclick="toggleNav()" aria-label="Toggle prototype navigation">☰</button>
+    <nav class="prototype-nav hidden" aria-label="Prototype screen navigation" id="proto-nav">
+      <button onclick="showScreen('welcome')">Welcome</button>
+      <button onclick="showScreen('signup')">Sign Up</button>
+      <button onclick="showScreen('verify')">Verify</button>
+      <button onclick="showScreen('intent')">Intent</button>
+      <button onclick="showScreen('basic-profile')">Profile</button>
+      <button onclick="showScreen('photos')">Photos</button>
+      <button onclick="showScreen('prompts')">Prompts</button>
+      <button onclick="showScreen('preferences')">Prefs</button>
+      <button onclick="showScreen('discovery')">Discovery</button>
+      <button onclick="showScreen('profile-detail')">Detail</button>
+      <button onclick="showScreen('match-celebration')">Match!</button>
+      <button onclick="showScreen('chat')">Chat</button>
+    </nav>
+
+    <script>
+      let currentScreen = 'welcome';
+
+      function showScreen(id) {
+        document.querySelectorAll('[data-screen]').forEach(function(s) {
+          s.classList.remove('active');
+        });
+        var target = document.querySelector('[data-screen="' + id + '"]');
+        if (target) {
+          target.classList.add('active');
+          currentScreen = id;
+          updateNavHighlight(id);
+
+          if (id === 'match-celebration') spawnConfetti();
+        }
+      }
+
+      function updateNavHighlight(id) {
+        document.querySelectorAll('.prototype-nav button').forEach(function(btn) {
+          btn.classList.remove('active-nav');
+        });
+        document.querySelectorAll('.prototype-nav button').forEach(function(btn) {
+          if (btn.textContent.trim().toLowerCase().includes(id.split('-')[0])) {
+            btn.classList.add('active-nav');
+          }
+        });
+      }
+
+      function selectIntent(el) {
+        el.parentElement.querySelectorAll('.selection-card').forEach(function(c) {
+          c.classList.remove('selected');
+          c.setAttribute('aria-checked', 'false');
+        });
+        el.classList.add('selected');
+        el.setAttribute('aria-checked', 'true');
+      }
+
+      function toggleChip(el) {
+        var group = el.parentElement;
+        if (group.dataset.multi !== 'true') {
+          group.querySelectorAll('.chip').forEach(function(c) {
+            c.classList.remove('selected');
+          });
+        }
+        el.classList.toggle('selected');
+      }
+
+      function togglePhotoSlot(el) {
+        if (!el.classList.contains('filled')) {
+          el.classList.add('filled');
+          el.innerHTML = '<span style="font-size:28px;">📷</span>';
+        }
+      }
+
+      function togglePrompt(el) {
+        el.classList.toggle('selected');
+      }
+
+      function likeElement(btn, e) {
+        e.stopPropagation();
+        btn.textContent = '♥';
+        btn.style.color = 'var(--color-like)';
+        btn.style.borderColor = 'var(--color-like)';
+        btn.style.background = '#FDF2F8';
+        btn.style.animation = 'heartBeat 0.6s ease';
+      }
+
+      function spawnConfetti() {
+        var container = document.getElementById('confetti-container');
+        container.innerHTML = '';
+        var colors = ['#B8860B', '#C9A96E', '#E84393', '#FFD700', '#FF6B6B', '#4ECDC4'];
+        for (var i = 0; i < 60; i++) {
+          var piece = document.createElement('div');
+          piece.className = 'confetti';
+          piece.style.left = Math.random() * 100 + '%';
+          piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+          piece.style.animationDelay = (Math.random() * 1.5) + 's';
+          piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+          piece.style.width = (6 + Math.random() * 8) + 'px';
+          piece.style.height = (6 + Math.random() * 8) + 'px';
+          if (Math.random() > 0.5) piece.style.borderRadius = '50%';
+          container.appendChild(piece);
+        }
+      }
+
+      function sendIcebreaker(el) {
+        var text = el.textContent;
+        var msgEl = document.getElementById('first-message');
+        document.getElementById('sent-text').textContent = text;
+        msgEl.style.display = 'block';
+        el.parentElement.style.display = 'none';
+        setTimeout(function() {
+          document.getElementById('reply-message').style.display = 'block';
+        }, 1500);
+      }
+
+      function sendMessage() {
+        var input = document.getElementById('chat-input');
+        if (!input.value.trim()) return;
+        var msgEl = document.getElementById('first-message');
+        document.getElementById('sent-text').textContent = input.value;
+        msgEl.style.display = 'block';
+        input.value = '';
+        var icebreakers = document.querySelector('.icebreaker-suggestions');
+        if (icebreakers) icebreakers.style.display = 'none';
+        setTimeout(function() {
+          document.getElementById('reply-message').style.display = 'block';
+        }, 1500);
+      }
+
+      function toggleNav() {
+        document.getElementById('proto-nav').classList.toggle('hidden');
+      }
+
+      document.getElementById('chat-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') sendMessage();
+      });
+    </script>
+</body>
+</html>

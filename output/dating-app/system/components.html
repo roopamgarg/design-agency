@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Library — Dating App</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Reset */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            color: var(--color-text-primary);
+            background: var(--color-bg-primary);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Page Layout */
+        .page-header {
+            padding: var(--space-12) var(--space-8) var(--space-8);
+            text-align: center;
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .page-header h1 {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            letter-spacing: var(--letter-spacing-tight);
+            margin-bottom: var(--space-2);
+        }
+        .page-header p {
+            font-size: var(--font-size-md);
+            color: var(--color-text-secondary);
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        section {
+            margin-bottom: var(--space-16);
+        }
+        section > h2 {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-2);
+            color: var(--color-text-primary);
+        }
+        section > .section-description {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-6);
+        }
+
+        .component-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            align-items: center;
+            margin-bottom: var(--space-6);
+        }
+        .component-row.vertical {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .component-label {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-widest);
+            margin-bottom: var(--space-3);
+        }
+
+        .component-group {
+            padding: var(--space-6);
+            background: var(--color-bg-elevated);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--color-border-subtle);
+            margin-bottom: var(--space-4);
+        }
+
+        .dark-preview {
+            background: var(--color-dark-bg-primary);
+            color: var(--color-dark-text-primary);
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            margin-top: var(--space-4);
+        }
+
+        /* ==========================================================================
+           BUTTONS
+           ========================================================================== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            font-family: var(--font-family-sans);
+            font-weight: var(--btn-font-weight);
+            letter-spacing: var(--btn-letter-spacing);
+            border: none;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .btn:focus-visible {
+            outline: 2px solid var(--color-border-focus);
+            outline-offset: 2px;
+        }
+
+        .btn-sm { height: var(--btn-height-sm); padding: 0 var(--space-4); font-size: var(--font-size-sm); }
+        .btn-md { height: var(--btn-height-md); padding: 0 var(--space-6); font-size: var(--font-size-base); }
+        .btn-lg { height: var(--btn-height-lg); padding: 0 var(--space-8); font-size: var(--font-size-md); }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+        }
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+            box-shadow: var(--shadow-glow-primary);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active { transform: translateY(0); box-shadow: none; }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--color-primary);
+            border: 1.5px solid var(--color-primary);
+        }
+        .btn-secondary:hover {
+            background: var(--color-primary-subtle);
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--color-text-secondary);
+        }
+        .btn-ghost:hover {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+        }
+
+        .btn-premium {
+            background: var(--color-premium);
+            color: var(--color-primary-contrast);
+            font-weight: var(--font-weight-bold);
+        }
+        .btn-premium:hover {
+            box-shadow: var(--shadow-glow-match);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--color-error);
+            color: #FFFFFF;
+        }
+        .btn-danger:hover { background: #7D1C2B; }
+
+        .btn:disabled, .btn-disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .btn-icon {
+            width: var(--btn-height-md);
+            height: var(--btn-height-md);
+            padding: 0;
+            border-radius: var(--radius-full);
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border-default);
+            color: var(--color-text-secondary);
+        }
+        .btn-icon:hover {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ==========================================================================
+           INPUTS
+           ========================================================================== */
+        .input-wrapper { width: 100%; max-width: 360px; }
+        .input-label {
+            display: block;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-2);
+        }
+        .input {
+            width: 100%;
+            height: var(--input-height);
+            padding: 0 var(--input-padding-x);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            color: var(--color-text-primary);
+            background: var(--input-bg);
+            border: 1.5px solid var(--input-border);
+            border-radius: var(--input-radius);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+        .input::placeholder { color: var(--color-text-disabled); }
+        .input:focus {
+            outline: none;
+            border-color: var(--input-border-focus);
+            box-shadow: 0 0 0 3px var(--color-primary-subtle);
+        }
+        .input-error {
+            border-color: var(--color-error);
+        }
+        .input-error:focus {
+            box-shadow: 0 0 0 3px var(--color-error-subtle);
+        }
+        .input-helper {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            margin-top: var(--space-1);
+        }
+        .input-error-msg {
+            font-size: var(--font-size-xs);
+            color: var(--color-error);
+            margin-top: var(--space-1);
+        }
+
+        .textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: var(--space-3) var(--input-padding-x);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            color: var(--color-text-primary);
+            background: var(--input-bg);
+            border: 1.5px solid var(--input-border);
+            border-radius: var(--input-radius);
+            resize: vertical;
+            transition: border-color var(--transition-fast);
+        }
+        .textarea:focus {
+            outline: none;
+            border-color: var(--input-border-focus);
+            box-shadow: 0 0 0 3px var(--color-primary-subtle);
+        }
+
+        /* Checkbox & Radio */
+        .checkbox-wrapper, .radio-wrapper {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            cursor: pointer;
+            min-height: var(--touch-target-min);
+        }
+        .checkbox, .radio {
+            width: 20px;
+            height: 20px;
+            border: 1.5px solid var(--color-border-strong);
+            background: var(--input-bg);
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .checkbox { border-radius: var(--radius-sm); }
+        .radio { border-radius: var(--radius-full); }
+        .checkbox.checked, .radio.checked {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+        .checkbox.checked::after {
+            content: '';
+            width: 10px;
+            height: 6px;
+            border-left: 2px solid white;
+            border-bottom: 2px solid white;
+            transform: rotate(-45deg) translateY(-1px);
+        }
+        .radio.checked::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: var(--radius-full);
+        }
+
+        /* Toggle/Switch */
+        .toggle {
+            width: 48px;
+            height: 28px;
+            background: var(--color-border-strong);
+            border-radius: var(--radius-full);
+            position: relative;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-normal);
+        }
+        .toggle.active {
+            background: var(--color-primary);
+        }
+        .toggle.active::after {
+            transform: translateX(20px);
+        }
+
+        /* ==========================================================================
+           CARDS
+           ========================================================================== */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        .card-body { padding: var(--card-padding); }
+
+        /* Profile Card */
+        .profile-card {
+            position: relative;
+            width: 320px;
+            aspect-ratio: var(--profile-card-aspect);
+            border-radius: var(--profile-card-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+        .profile-card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: var(--color-bg-tertiary);
+        }
+        .profile-card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: var(--space-6) var(--space-5);
+            background: var(--profile-card-overlay);
+            color: white;
+        }
+        .profile-card-name {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-1);
+        }
+        .profile-card-detail {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+        }
+        .profile-card-badges {
+            display: flex;
+            gap: var(--space-2);
+            margin-top: var(--space-3);
+        }
+
+        /* Match Card (smaller, for matches list) */
+        .match-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-4);
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--card-border);
+            transition: all var(--transition-fast);
+        }
+        .match-card:hover {
+            box-shadow: var(--shadow-sm);
+            border-color: var(--color-accent);
+        }
+
+        /* ==========================================================================
+           AVATARS
+           ========================================================================== */
+        .avatar {
+            border-radius: var(--radius-full);
+            object-fit: cover;
+            background: var(--color-bg-tertiary);
+            flex-shrink: 0;
+        }
+        .avatar-xs { width: var(--avatar-xs); height: var(--avatar-xs); }
+        .avatar-sm { width: var(--avatar-sm); height: var(--avatar-sm); }
+        .avatar-md { width: var(--avatar-md); height: var(--avatar-md); }
+        .avatar-lg { width: var(--avatar-lg); height: var(--avatar-lg); }
+        .avatar-xl { width: var(--avatar-xl); height: var(--avatar-xl); }
+        .avatar-2xl { width: var(--avatar-2xl); height: var(--avatar-2xl); }
+
+        .avatar-ring {
+            border: 3px solid var(--color-accent);
+            padding: 2px;
+        }
+        .avatar-verified {
+            position: relative;
+        }
+        .avatar-verified::after {
+            content: '✓';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            background: var(--color-verified);
+            color: white;
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--color-bg-elevated);
+        }
+
+        /* ==========================================================================
+           BADGES & CHIPS
+           ========================================================================== */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            height: var(--badge-height);
+            padding: 0 var(--badge-padding-x);
+            font-size: var(--badge-font-size);
+            font-weight: var(--font-weight-medium);
+            border-radius: var(--badge-radius);
+            white-space: nowrap;
+        }
+        .badge-primary {
+            background: var(--color-primary-subtle);
+            color: var(--color-primary-dark);
+        }
+        .badge-success {
+            background: var(--color-success-subtle);
+            color: var(--color-success);
+        }
+        .badge-warning {
+            background: var(--color-warning-subtle);
+            color: var(--color-warning);
+        }
+        .badge-error {
+            background: var(--color-error-subtle);
+            color: var(--color-error);
+        }
+        .badge-premium {
+            background: linear-gradient(135deg, rgba(184, 134, 11, 0.15), rgba(201, 169, 110, 0.15));
+            color: var(--color-primary-dark);
+        }
+        .badge-verified {
+            background: var(--color-success-subtle);
+            color: var(--color-success);
+            gap: var(--space-1);
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            height: 32px;
+            padding: 0 var(--space-3);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            border-radius: var(--radius-full);
+            border: 1px solid var(--color-border-default);
+            background: var(--color-bg-elevated);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        .chip:hover { border-color: var(--color-primary); color: var(--color-primary); }
+        .chip.selected {
+            background: var(--color-primary-subtle);
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+        .chip-closable { padding-right: var(--space-2); gap: var(--space-2); }
+
+        /* ==========================================================================
+           BOTTOM SHEET
+           ========================================================================== */
+        .bottom-sheet-demo {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 300px;
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+        }
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-bg-elevated);
+            border-radius: var(--sheet-radius);
+            box-shadow: var(--shadow-xl);
+            padding: var(--space-4) var(--space-5) var(--space-6);
+        }
+        .bottom-sheet-handle {
+            width: var(--sheet-handle-width);
+            height: var(--sheet-handle-height);
+            background: var(--color-border-strong);
+            border-radius: var(--sheet-handle-radius);
+            margin: 0 auto var(--space-4);
+        }
+
+        /* ==========================================================================
+           MODALS
+           ========================================================================== */
+        .modal-demo {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 400px;
+            background: var(--color-bg-scrim);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-6);
+        }
+        .modal {
+            width: 100%;
+            max-width: 360px;
+            background: var(--color-bg-elevated);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-2xl);
+            padding: var(--space-8) var(--space-6);
+            text-align: center;
+        }
+        .modal-title {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-2);
+        }
+        .modal-body {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-6);
+            line-height: var(--line-height-relaxed);
+        }
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        /* ==========================================================================
+           NAVIGATION
+           ========================================================================== */
+        .tab-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            height: 56px;
+            background: var(--color-bg-elevated);
+            border-top: 1px solid var(--color-border-subtle);
+            padding: 0 var(--space-4);
+            max-width: 420px;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            color: var(--color-text-tertiary);
+            font-size: 10px;
+            font-weight: var(--font-weight-medium);
+            min-width: var(--touch-target-min);
+            min-height: var(--touch-target-min);
+            justify-content: center;
+            cursor: pointer;
+            transition: color var(--transition-fast);
+        }
+        .tab-item.active { color: var(--color-primary); }
+        .tab-item-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .tab-item-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--color-primary);
+            border-radius: var(--radius-full);
+            position: absolute;
+            top: 4px;
+            right: 4px;
+        }
+
+        /* ==========================================================================
+           MESSAGES / CHAT
+           ========================================================================== */
+        .chat-demo {
+            max-width: 420px;
+            padding: var(--space-4);
+            background: var(--color-bg-primary);
+            border-radius: var(--radius-xl);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+        .message {
+            max-width: 75%;
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-lg);
+            font-size: var(--font-size-sm);
+            line-height: var(--line-height-normal);
+        }
+        .message-sent {
+            align-self: flex-end;
+            background: var(--color-primary);
+            color: white;
+            border-bottom-right-radius: var(--radius-sm);
+        }
+        .message-received {
+            align-self: flex-start;
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border-subtle);
+            color: var(--color-text-primary);
+            border-bottom-left-radius: var(--radius-sm);
+        }
+        .message-time {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            margin-top: var(--space-1);
+        }
+        .message-icebreaker {
+            align-self: center;
+            background: var(--color-accent-subtle);
+            border: 1px dashed var(--color-accent);
+            color: var(--color-text-secondary);
+            font-style: italic;
+            text-align: center;
+            max-width: 85%;
+            border-radius: var(--radius-lg);
+            padding: var(--space-3) var(--space-4);
+            font-size: var(--font-size-sm);
+        }
+
+        /* ==========================================================================
+           COMPATIBILITY SCORE
+           ========================================================================== */
+        .compatibility {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+        .compatibility-ring {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            background: conic-gradient(var(--color-accent) 0% 78%, var(--color-border-subtle) 78% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .compatibility-ring-inner {
+            width: 34px;
+            height: 34px;
+            background: var(--color-bg-elevated);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary);
+        }
+
+        /* ==========================================================================
+           TOAST / NOTIFICATION
+           ========================================================================== */
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-secondary);
+            color: var(--color-secondary-contrast);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            font-size: var(--font-size-sm);
+            max-width: 360px;
+        }
+        .toast-match {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+        }
+        .toast-icon { font-size: 20px; flex-shrink: 0; }
+
+        /* ==========================================================================
+           LOADING STATES
+           ========================================================================== */
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                var(--color-bg-secondary) 25%,
+                var(--color-bg-tertiary) 50%,
+                var(--color-bg-secondary) 75%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: var(--radius-md);
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton-avatar { width: 48px; height: 48px; border-radius: var(--radius-full); }
+        .skeleton-text { height: 16px; margin-bottom: var(--space-2); }
+        .skeleton-text-short { width: 60%; }
+        .skeleton-text-long { width: 90%; }
+
+        /* ==========================================================================
+           UTILITY: Demo spacing
+           ========================================================================== */
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-6);
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <h1>Component Library</h1>
+        <p>A premium, luxury dating app — visual components with interaction states, designed for intentional connections.</p>
+    </header>
+
+    <main>
+        <!-- BUTTONS -->
+        <section data-component="buttons">
+            <h2>Buttons</h2>
+            <p class="section-description">All buttons use pill radius for a refined feel. Minimum 44px touch target on mobile.</p>
+
+            <div class="component-group">
+                <div class="component-label">Primary Variants</div>
+                <div class="component-row">
+                    <button class="btn btn-sm btn-primary">Small</button>
+                    <button class="btn btn-md btn-primary">Medium</button>
+                    <button class="btn btn-lg btn-primary">Large</button>
+                </div>
+
+                <div class="component-label">Secondary & Ghost</div>
+                <div class="component-row">
+                    <button class="btn btn-md btn-secondary">Secondary</button>
+                    <button class="btn btn-md btn-ghost">Ghost</button>
+                    <button class="btn btn-md btn-premium">Premium</button>
+                    <button class="btn btn-md btn-danger">Report</button>
+                </div>
+
+                <div class="component-label">States</div>
+                <div class="component-row">
+                    <button class="btn btn-md btn-primary">Default</button>
+                    <button class="btn btn-md btn-primary" style="background: var(--color-primary-dark); box-shadow: var(--shadow-glow-primary);">Hover</button>
+                    <button class="btn btn-md btn-primary btn-disabled">Disabled</button>
+                </div>
+
+                <div class="component-label">Icon Buttons</div>
+                <div class="component-row">
+                    <button class="btn btn-icon" aria-label="Pass">✕</button>
+                    <button class="btn btn-icon" style="border-color: var(--color-primary); color: var(--color-primary);" aria-label="Like">♥</button>
+                    <button class="btn btn-icon" style="border-color: var(--color-super-like); color: var(--color-super-like);" aria-label="Super Like">★</button>
+                    <button class="btn btn-icon" aria-label="More">⋯</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- INPUTS -->
+        <section data-component="inputs">
+            <h2>Inputs</h2>
+            <p class="section-description">Form controls use generous height (48px) for comfortable touch targets and a warm border treatment.</p>
+
+            <div class="component-group">
+                <div class="demo-grid">
+                    <div>
+                        <div class="component-label">Text Input</div>
+                        <div class="input-wrapper">
+                            <label class="input-label">Display Name</label>
+                            <input class="input" type="text" placeholder="Your name" value="Alexandra">
+                            <div class="input-helper">This is how you'll appear to matches</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="component-label">Error State</div>
+                        <div class="input-wrapper">
+                            <label class="input-label">Email</label>
+                            <input class="input input-error" type="email" value="invalid-email">
+                            <div class="input-error-msg">Please enter a valid email address</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="component-label">Textarea (Prompt Response)</div>
+                        <div class="input-wrapper">
+                            <label class="input-label">What makes a great first date?</label>
+                            <textarea class="textarea" placeholder="Share something meaningful..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-label" style="margin-top: var(--space-6);">Checkbox & Radio</div>
+                <div class="component-row">
+                    <label class="checkbox-wrapper">
+                        <div class="checkbox checked"></div>
+                        <span>Photo verified</span>
+                    </label>
+                    <label class="checkbox-wrapper">
+                        <div class="checkbox"></div>
+                        <span>Show distance</span>
+                    </label>
+                </div>
+                <div class="component-row">
+                    <label class="radio-wrapper">
+                        <div class="radio checked"></div>
+                        <span>Relationship</span>
+                    </label>
+                    <label class="radio-wrapper">
+                        <div class="radio"></div>
+                        <span>Casual</span>
+                    </label>
+                    <label class="radio-wrapper">
+                        <div class="radio"></div>
+                        <span>Friendship</span>
+                    </label>
+                </div>
+
+                <div class="component-label" style="margin-top: var(--space-6);">Toggle</div>
+                <div class="component-row">
+                    <div class="toggle active"></div>
+                    <span style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Push Notifications</span>
+                </div>
+                <div class="component-row">
+                    <div class="toggle"></div>
+                    <span style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Show Online Status</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- CARDS -->
+        <section data-component="cards">
+            <h2>Cards</h2>
+            <p class="section-description">Photography-centric profile cards with subtle overlays. Cards use warm shadows for the luxury feel.</p>
+
+            <div class="component-group">
+                <div class="component-label">Profile Card (Discovery)</div>
+                <div class="component-row">
+                    <div class="profile-card">
+                        <div class="profile-card-image" style="background: linear-gradient(135deg, #3a3a3a 0%, #5a4a3a 100%);"></div>
+                        <div class="profile-card-overlay">
+                            <div class="profile-card-name">Maya, 28</div>
+                            <div class="profile-card-detail">Product Manager · 3 miles away</div>
+                            <div class="profile-card-badges">
+                                <span class="badge badge-verified">✓ Verified</span>
+                                <span class="badge badge-premium">★ Premium</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-label" style="margin-top: var(--space-6);">Match Card (List View)</div>
+                <div style="max-width: 420px;">
+                    <div class="match-card">
+                        <div class="avatar avatar-lg" style="background: linear-gradient(135deg, #4a3a3a, #5a4a4a);"></div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-base);">James, 33</div>
+                            <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary); margin-top: 2px;">Matched 2 hours ago</div>
+                        </div>
+                        <div class="compatibility">
+                            <div class="compatibility-ring">
+                                <div class="compatibility-ring-inner">78%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-label" style="margin-top: var(--space-6);">Content Card</div>
+                <div style="max-width: 420px;">
+                    <div class="card">
+                        <div class="card-body">
+                            <div style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-2);">Daily Matches</div>
+                            <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-4);">You have 5 new curated matches waiting for you today.</div>
+                            <button class="btn btn-md btn-primary" style="width: 100%;">View Matches</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AVATARS -->
+        <section data-component="avatars">
+            <h2>Avatars</h2>
+            <p class="section-description">Circular avatars with optional ring (active/premium) and verification badge overlay.</p>
+
+            <div class="component-group">
+                <div class="component-label">Sizes</div>
+                <div class="component-row">
+                    <div class="avatar avatar-xs" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
+                    <div class="avatar avatar-sm" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
+                    <div class="avatar avatar-md" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
+                    <div class="avatar avatar-lg" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
+                    <div class="avatar avatar-xl" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
+                </div>
+
+                <div class="component-label">With Ring & Verified Badge</div>
+                <div class="component-row">
+                    <div class="avatar avatar-lg avatar-ring" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
+                    <div style="position: relative; display: inline-block;">
+                        <div class="avatar avatar-lg avatar-verified" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BADGES & CHIPS -->
+        <section data-component="badges-chips">
+            <h2>Badges & Chips</h2>
+            <p class="section-description">Badges for status indicators, chips for selectable interests and filters.</p>
+
+            <div class="component-group">
+                <div class="component-label">Badges</div>
+                <div class="component-row">
+                    <span class="badge badge-primary">New Match</span>
+                    <span class="badge badge-success">Online</span>
+                    <span class="badge badge-verified">✓ Verified</span>
+                    <span class="badge badge-premium">★ Premium</span>
+                    <span class="badge badge-warning">Inactive</span>
+                    <span class="badge badge-error">Reported</span>
+                </div>
+
+                <div class="component-label">Interest Chips</div>
+                <div class="component-row">
+                    <span class="chip selected">Travel</span>
+                    <span class="chip selected">Photography</span>
+                    <span class="chip">Cooking</span>
+                    <span class="chip">Yoga</span>
+                    <span class="chip">Reading</span>
+                    <span class="chip">Wine</span>
+                </div>
+
+                <div class="component-label">Filter Chips (Closable)</div>
+                <div class="component-row">
+                    <span class="chip chip-closable selected">25-35 ✕</span>
+                    <span class="chip chip-closable selected">&lt; 10 miles ✕</span>
+                    <span class="chip chip-closable selected">Verified only ✕</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODALS -->
+        <section data-component="modals">
+            <h2>Modals</h2>
+            <p class="section-description">Centered modals for confirmations and celebrations. Match celebration modal uses warm glow effects.</p>
+
+            <div class="component-group">
+                <div class="demo-grid">
+                    <div>
+                        <div class="component-label">Match Celebration</div>
+                        <div class="modal-demo">
+                            <div class="modal" style="box-shadow: var(--shadow-glow-match), var(--shadow-2xl);">
+                                <div style="font-size: 48px; margin-bottom: var(--space-4);">✨</div>
+                                <div class="modal-title">It's a Match!</div>
+                                <div class="modal-body">You and Maya both expressed interest. Start a conversation to get to know each other.</div>
+                                <div class="modal-actions">
+                                    <button class="btn btn-md btn-primary" style="width: 100%;">Send a Message</button>
+                                    <button class="btn btn-md btn-ghost" style="width: 100%;">Keep Browsing</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="component-label">Confirmation</div>
+                        <div class="modal-demo">
+                            <div class="modal">
+                                <div class="modal-title">Report User?</div>
+                                <div class="modal-body">This will flag the profile for review. You can also block them to prevent further contact.</div>
+                                <div class="modal-actions">
+                                    <button class="btn btn-md btn-danger" style="width: 100%;">Report & Block</button>
+                                    <button class="btn btn-md btn-secondary" style="width: 100%;">Report Only</button>
+                                    <button class="btn btn-md btn-ghost" style="width: 100%;">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BOTTOM SHEET -->
+        <section data-component="bottom-sheets">
+            <h2>Bottom Sheets</h2>
+            <p class="section-description">Mobile-native sheets for contextual actions. Smooth drag-to-dismiss with a handle indicator.</p>
+
+            <div class="component-group">
+                <div class="bottom-sheet-demo">
+                    <div class="bottom-sheet">
+                        <div class="bottom-sheet-handle"></div>
+                        <div style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3);">Profile Actions</div>
+                        <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+                            <button class="btn btn-md btn-ghost" style="justify-content: flex-start; width: 100%;">🔗 Share Profile</button>
+                            <button class="btn btn-md btn-ghost" style="justify-content: flex-start; width: 100%;">🚫 Block User</button>
+                            <button class="btn btn-md btn-ghost" style="justify-content: flex-start; width: 100%; color: var(--color-error);">⚠️ Report</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAT / MESSAGES -->
+        <section data-component="messages">
+            <h2>Messages</h2>
+            <p class="section-description">Chat interface with guided icebreakers, voice note indicators, and typing states.</p>
+
+            <div class="component-group">
+                <div class="chat-demo">
+                    <div class="message-icebreaker">💬 Conversation starter: "What's the best trip you've ever taken?"</div>
+                    <div class="message message-sent">
+                        That's a great question! I'd have to say my solo trip to Japan last spring. The food alone was life-changing.
+                        <div class="message-time" style="color: rgba(255,255,255,0.7); text-align: right;">2:34 PM</div>
+                    </div>
+                    <div class="message message-received">
+                        Oh I've been wanting to go! Did you do Tokyo or more rural areas?
+                        <div class="message-time">2:36 PM</div>
+                    </div>
+                    <div class="message message-sent">
+                        Both! Started in Tokyo, then took the train down to Kyoto and some smaller towns. Highly recommend it.
+                        <div class="message-time" style="color: rgba(255,255,255,0.7); text-align: right;">2:38 PM ✓✓</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NAVIGATION -->
+        <section data-component="navigation">
+            <h2>Navigation</h2>
+            <p class="section-description">Bottom tab bar for primary navigation. Minimal icons with subtle active state.</p>
+
+            <div class="component-group">
+                <div class="component-label">Tab Bar</div>
+                <div class="tab-bar">
+                    <div class="tab-item active">
+                        <div class="tab-item-icon">◇</div>
+                        <span>Discover</span>
+                    </div>
+                    <div class="tab-item" style="position: relative;">
+                        <div class="tab-item-icon">♥</div>
+                        <span>Matches</span>
+                        <div class="tab-item-dot" style="position: absolute; top: 6px; right: 8px;"></div>
+                    </div>
+                    <div class="tab-item">
+                        <div class="tab-item-icon">💬</div>
+                        <span>Messages</span>
+                    </div>
+                    <div class="tab-item">
+                        <div class="tab-item-icon">○</div>
+                        <span>Profile</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOASTS -->
+        <section data-component="toasts">
+            <h2>Toasts & Notifications</h2>
+            <p class="section-description">Non-intrusive feedback for system events and match notifications.</p>
+
+            <div class="component-group">
+                <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+                    <div class="toast toast-match">
+                        <span class="toast-icon">✨</span>
+                        <span>You matched with Maya! Say hello.</span>
+                    </div>
+                    <div class="toast">
+                        <span class="toast-icon">📷</span>
+                        <span>Photo verification complete</span>
+                    </div>
+                    <div class="toast" style="background: var(--color-success); color: white;">
+                        <span class="toast-icon">✓</span>
+                        <span>Profile updated successfully</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOADING STATES -->
+        <section data-component="loading">
+            <h2>Loading States</h2>
+            <p class="section-description">Warm-tinted skeleton loaders maintain layout stability during data fetches.</p>
+
+            <div class="component-group">
+                <div class="component-label">Profile Card Skeleton</div>
+                <div style="max-width: 320px;">
+                    <div class="match-card" style="border: none; box-shadow: none;">
+                        <div class="skeleton skeleton-avatar"></div>
+                        <div style="flex: 1;">
+                            <div class="skeleton skeleton-text skeleton-text-short" style="width: 120px;"></div>
+                            <div class="skeleton skeleton-text" style="width: 180px; height: 12px;"></div>
+                        </div>
+                    </div>
+                    <div class="match-card" style="border: none; box-shadow: none; margin-top: var(--space-3);">
+                        <div class="skeleton skeleton-avatar"></div>
+                        <div style="flex: 1;">
+                            <div class="skeleton skeleton-text skeleton-text-short" style="width: 100px;"></div>
+                            <div class="skeleton skeleton-text" style="width: 160px; height: 12px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPATIBILITY SCORE -->
+        <section data-component="compatibility">
+            <h2>Compatibility Indicators</h2>
+            <p class="section-description">Visual compatibility scores help users make informed decisions. Uses the accent gold ring.</p>
+
+            <div class="component-group">
+                <div class="component-row">
+                    <div class="compatibility">
+                        <div class="compatibility-ring">
+                            <div class="compatibility-ring-inner">78%</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">High Compatibility</div>
+                            <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">Based on shared interests & values</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="component-row">
+                    <div class="compatibility">
+                        <div class="compatibility-ring" style="background: conic-gradient(var(--color-accent) 0% 45%, var(--color-border-subtle) 45% 100%);">
+                            <div class="compatibility-ring-inner">45%</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">Moderate</div>
+                            <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">Some shared interests</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DARK MODE PREVIEW -->
+        <section data-component="dark-mode">
+            <h2>Dark Mode</h2>
+            <p class="section-description">Luxury dark mode with warm undertones. Not pure black — uses deep warm grays.</p>
+
+            <div class="dark-preview">
+                <div class="component-row" style="margin-bottom: var(--space-4);">
+                    <button class="btn btn-md" style="background: var(--color-dark-primary); color: #1A1A1A; border-radius: var(--btn-radius);">Primary</button>
+                    <button class="btn btn-md" style="background: transparent; color: var(--color-dark-primary); border: 1.5px solid var(--color-dark-primary); border-radius: var(--btn-radius);">Secondary</button>
+                    <button class="btn btn-md" style="background: transparent; color: var(--color-dark-text-secondary); border-radius: var(--btn-radius);">Ghost</button>
+                </div>
+                <div style="background: var(--color-dark-bg-secondary); border-radius: var(--radius-lg); padding: var(--space-4); border: 1px solid var(--color-dark-border-default);">
+                    <div style="display: flex; align-items: center; gap: var(--space-3);">
+                        <div class="avatar avatar-md" style="background: linear-gradient(135deg, #5a4a3a, #7a6a5a);"></div>
+                        <div>
+                            <div style="font-weight: var(--font-weight-semibold); color: var(--color-dark-text-primary);">Priya, 24</div>
+                            <div style="font-size: var(--font-size-sm); color: var(--color-dark-text-tertiary);">Matched yesterday</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: var(--space-4); display: flex; gap: var(--space-2); flex-wrap: wrap;">
+                    <span class="chip" style="background: var(--color-dark-bg-tertiary); border-color: var(--color-dark-border-default); color: var(--color-dark-text-secondary);">Travel</span>
+                    <span class="chip" style="background: rgba(212, 168, 85, 0.1); border-color: var(--color-dark-primary); color: var(--color-dark-primary);">Photography</span>
+                    <span class="chip" style="background: var(--color-dark-bg-tertiary); border-color: var(--color-dark-border-default); color: var(--color-dark-text-secondary);">Cooking</span>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

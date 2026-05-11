@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ember — Notifications</title>
+  <link rel="stylesheet" href="../../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family-sans);
+      background: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .screen {
+      max-width: 390px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--color-bg-primary);
+      padding-bottom: var(--space-10);
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-5);
+      position: sticky;
+      top: 0;
+      background: var(--color-bg-primary);
+      z-index: 10;
+    }
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      border: none;
+      background: var(--color-bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: background 0.2s;
+    }
+
+    .back-btn:hover { background: #EBE5DD; }
+    .back-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    .back-btn svg { width: 20px; height: 20px; }
+
+    .header-title {
+      font-family: var(--font-family-display);
+      font-size: 22px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .mark-read-btn {
+      font-family: var(--font-family-sans);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-primary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: var(--space-2);
+      border-radius: var(--radius-sm);
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .mark-read-btn:hover { background: rgba(184, 134, 11, 0.08); }
+    .mark-read-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+    /* Section headings */
+    .section-heading {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--color-text-tertiary);
+      padding: var(--space-4) var(--space-5) var(--space-2);
+    }
+
+    /* Notification list */
+    .notif-list {
+      list-style: none;
+    }
+
+    .notif-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-5);
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .notif-item:hover { background: var(--color-bg-secondary); }
+    .notif-item:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; border-radius: var(--radius-sm); }
+
+    .notif-item.read { opacity: 0.6; }
+
+    .notif-item + .notif-item { border-top: 1px solid var(--color-bg-secondary); }
+
+    /* Match notification gold accent */
+    .notif-item.match-notif {
+      border-left: 3px solid var(--color-match);
+      padding-left: calc(var(--space-5) - 3px);
+    }
+
+    /* Icon containers */
+    .notif-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notif-icon svg { width: 20px; height: 20px; }
+
+    .notif-icon.match {
+      background: rgba(201, 169, 110, 0.15);
+      color: var(--color-match);
+    }
+
+    .notif-icon.like {
+      background: rgba(155, 35, 53, 0.08);
+      color: var(--color-error);
+    }
+
+    .notif-icon.message {
+      background: rgba(44, 62, 80, 0.08);
+      color: var(--color-secondary);
+    }
+
+    .notif-icon.compass {
+      background: rgba(184, 134, 11, 0.1);
+      color: var(--color-primary);
+    }
+
+    .notif-icon.shield {
+      background: rgba(74, 124, 89, 0.1);
+      color: var(--color-verified);
+    }
+
+    .notif-icon.sparkle {
+      background: rgba(201, 169, 110, 0.12);
+      color: var(--color-accent);
+    }
+
+    .notif-icon.chart {
+      background: rgba(44, 62, 80, 0.08);
+      color: var(--color-secondary);
+    }
+
+    .notif-icon.check {
+      background: rgba(74, 124, 89, 0.1);
+      color: var(--color-verified);
+    }
+
+    /* Overlapping avatars for match */
+    .match-avatars {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+
+    .match-avatars .mini-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      position: absolute;
+      border: 2px solid var(--color-bg-primary);
+    }
+
+    .match-avatars .mini-avatar:first-child {
+      top: 0;
+      left: 0;
+      background: linear-gradient(135deg, #C9A96E, #8B6914);
+    }
+
+    .match-avatars .mini-avatar:last-child {
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(135deg, #2C3E50, #5D8AA8);
+    }
+
+    /* Message avatar */
+    .msg-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #4A7C59, #7CB891);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-family: var(--font-family-display);
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    /* Blurred avatar thumbnail for like */
+    .blurred-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, #C9A96E, #8B6914);
+      filter: blur(6px);
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    /* Content */
+    .notif-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notif-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      line-height: 1.4;
+    }
+
+    .notif-body {
+      font-size: 13px;
+      color: var(--color-text-tertiary);
+      line-height: 1.4;
+      margin-top: 2px;
+    }
+
+    .notif-preview {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      line-height: 1.4;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .notif-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-1);
+    }
+
+    .notif-time {
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+      white-space: nowrap;
+    }
+
+    /* Unread dot */
+    .unread-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      flex-shrink: 0;
+      margin-top: var(--space-2);
+      margin-left: auto;
+    }
+
+    /* Premium CTA badge */
+    .premium-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    /* Right side wrapper */
+    .notif-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--space-1);
+      flex-shrink: 0;
+    }
+
+    /* Trust level badge */
+    .trust-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(74, 124, 89, 0.1);
+      color: var(--color-verified);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      margin-top: var(--space-1);
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: var(--space-2);
+      z-index: 100;
+      background: var(--color-primary);
+      color: #fff;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      left: var(--space-4);
+    }
+
+    @media (min-width: 768px) {
+      .screen { box-shadow: 0 0 40px rgba(0,0,0,0.08); }
+      body { background: #EDEAE6; display: flex; justify-content: center; }
+    }
+
+    @media (min-width: 1440px) {
+      body { background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%); }
+      .screen {
+        box-shadow: 0 0 60px rgba(0,0,0,0.06);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="screen" data-screen="notifications">
+    <a href="#notif-today" class="skip-link">Skip to main content</a>
+
+    <!-- Header -->
+    <header class="header" role="banner">
+      <button class="back-btn" aria-label="Go back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <h1 class="header-title">Notifications</h1>
+      <button class="mark-read-btn" type="button">Mark all read</button>
+    </header>
+
+    <!-- Today -->
+    <h2 class="section-heading" id="notif-today">Today</h2>
+    <ul class="notif-list" aria-label="Today's notifications">
+
+      <!-- Match -->
+      <li class="notif-item match-notif" tabindex="0" role="article" aria-label="You matched with Maya, 2 hours ago">
+        <div class="match-avatars" aria-hidden="true">
+          <div class="mini-avatar"></div>
+          <div class="mini-avatar"></div>
+        </div>
+        <div class="notif-content">
+          <p class="notif-title">You matched with Maya!</p>
+          <div class="notif-meta">
+            <span class="notif-time">2 hours ago</span>
+          </div>
+        </div>
+        <div class="unread-dot" aria-label="Unread"></div>
+      </li>
+
+      <!-- Like -->
+      <li class="notif-item" tabindex="0" role="article" aria-label="Someone liked your photo, 5 hours ago">
+        <div class="notif-icon like" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div class="notif-content">
+          <p class="notif-title">Someone liked your photo</p>
+          <div class="notif-meta">
+            <span class="notif-time">5 hours ago</span>
+            <span class="premium-cta">See who</span>
+          </div>
+        </div>
+        <div class="blurred-avatar" aria-hidden="true"></div>
+        <div class="unread-dot" aria-label="Unread"></div>
+      </li>
+
+      <!-- Message -->
+      <li class="notif-item" tabindex="0" role="article" aria-label="Liam sent you a message, 6 hours ago">
+        <div class="msg-avatar" aria-hidden="true">L</div>
+        <div class="notif-content">
+          <p class="notif-title">Liam sent you a message</p>
+          <p class="notif-preview">"Let me know when..."</p>
+          <div class="notif-meta">
+            <span class="notif-time">6 hours ago</span>
+          </div>
+        </div>
+        <div class="unread-dot" aria-label="Unread"></div>
+      </li>
+    </ul>
+
+    <!-- This Week -->
+    <h2 class="section-heading">This Week</h2>
+    <ul class="notif-list" aria-label="This week's notifications">
+
+      <!-- Daily batch -->
+      <li class="notif-item" tabindex="0" role="article" aria-label="Your daily matches are ready, yesterday">
+        <div class="notif-icon compass" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        </div>
+        <div class="notif-content">
+          <p class="notif-title">Your daily matches are ready!</p>
+          <p class="notif-body">5 new profiles</p>
+          <div class="notif-meta">
+            <span class="notif-time">Yesterday, 9:00 AM</span>
+          </div>
+        </div>
+      </li>
+
+      <!-- Trust level up -->
+      <li class="notif-item" tabindex="0" role="article" aria-label="Trust level up with Maya, 2 days ago">
+        <div class="notif-icon shield" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="notif-content">
+          <p class="notif-title">Trust level up with Maya!</p>
+          <p class="notif-body">Voice notes now unlocked</p>
+          <div class="notif-meta">
+            <span class="notif-time">2 days ago</span>
+            <span class="trust-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg>
+              Level Up
+            </span>
+          </div>
+        </div>
+      </li>
+
+      <!-- Profile tip -->
+      <li class="notif-item" tabindex="0" role="article" aria-label="Your profile was viewed 12 times this week, 3 days ago">
+        <div class="notif-icon sparkle" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.09 6.26L20.18 9l-4.91 3.82L16.82 19 12 15.27 7.18 19l1.55-6.18L3.82 9l6.09-.74Z"/></svg>
+        </div>
+        <div class="notif-content">
+          <p class="notif-title">Your profile was viewed 12 times this week</p>
+          <p class="notif-body">Add a video intro to get more views</p>
+          <div class="notif-meta">
+            <span class="notif-time">3 days ago</span>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <!-- Earlier -->
+    <h2 class="section-heading">Earlier</h2>
+    <ul class="notif-list" aria-label="Earlier notifications">
+
+      <!-- Weekly digest -->
+      <li class="notif-item read" tabindex="0" role="article" aria-label="Weekly digest: 8 people liked you, last Monday">
+        <div class="notif-icon chart" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="notif-content">
+          <p class="notif-title">Weekly Digest: 8 people liked you</p>
+          <div class="notif-meta">
+            <span class="notif-time">Last Monday</span>
+          </div>
+        </div>
+      </li>
+
+      <!-- Verification complete -->
+      <li class="notif-item read" tabindex="0" role="article" aria-label="Photo verification complete, May 2">
+        <div class="notif-icon check" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="notif-content">
+          <p class="notif-title">Photo verification complete!</p>
+          <p class="notif-body">Your profile now shows the verified badge</p>
+          <div class="notif-meta">
+            <span class="notif-time">May 2</span>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>

@@ -18,6 +18,7 @@ All project design deliverables live in `output/<project-name>/`. See [`output/R
 ### Current Projects
 
 - **[storycraft](output/storycraft/)** — Voice coaching app UI (16 screens)
+- **[dating-app](output/dating-app/)** — Dating app UI (12 screens, 2 interactive prototypes, design system)
 
 ## Quick Start
 

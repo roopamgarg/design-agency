@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ember — Connections</title>
+  <link rel="stylesheet" href="../../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-family-sans);
+      background: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      line-height: var(--line-height-normal);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .app-shell {
+      max-width: var(--content-width-base);
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-bg-primary);
+      position: relative;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-page-x-mobile);
+      padding-top: var(--space-8);
+      background: var(--color-bg-primary);
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+    }
+
+    .header-title {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      letter-spacing: var(--letter-spacing-tight);
+    }
+
+    .header-action {
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      border-radius: var(--radius-full);
+      transition: background var(--transition-fast);
+    }
+
+    .header-action:hover { background: var(--color-bg-secondary); }
+    .header-action:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+
+    /* Scrollable content */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: calc(56px + var(--space-6));
+    }
+
+    /* Section */
+    .section {
+      padding: var(--space-4) var(--space-page-x-mobile);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .section-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+    }
+
+    .count-badge {
+      height: var(--badge-height);
+      min-width: var(--badge-height);
+      padding: 0 var(--badge-padding-x);
+      border-radius: var(--badge-radius);
+      background: var(--color-primary);
+      color: var(--color-primary-contrast);
+      font-size: var(--badge-font-size);
+      font-weight: var(--font-weight-semibold);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Likes Section */
+    .likes-scroll {
+      display: flex;
+      gap: var(--space-3);
+      overflow-x: auto;
+      padding-bottom: var(--space-2);
+      scrollbar-width: none;
+    }
+    .likes-scroll::-webkit-scrollbar { display: none; }
+
+    .like-avatar-wrap {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .like-avatar {
+      width: var(--avatar-lg);
+      height: var(--avatar-lg);
+      border-radius: var(--radius-full);
+      border: 2.5px solid var(--color-accent);
+      padding: 2px;
+      position: relative;
+      cursor: pointer;
+      transition: transform var(--transition-fast);
+    }
+
+    .like-avatar:hover { transform: scale(1.06); }
+    .like-avatar:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+
+    .like-avatar img,
+    .like-avatar .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-full);
+      object-fit: cover;
+      display: block;
+    }
+
+    .avatar-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-inverse);
+      font-size: var(--font-size-sm);
+    }
+
+    .like-avatar .more-overlay {
+      position: absolute;
+      inset: 2px;
+      border-radius: var(--radius-full);
+      background: rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .premium-hint {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-1);
+    }
+
+    /* New Matches */
+    .matches-scroll {
+      display: flex;
+      gap: var(--space-3);
+      overflow-x: auto;
+      padding-bottom: var(--space-2);
+      scrollbar-width: none;
+    }
+    .matches-scroll::-webkit-scrollbar { display: none; }
+
+    .match-card {
+      flex-shrink: 0;
+      width: 110px;
+      cursor: pointer;
+      transition: transform var(--transition-fast);
+    }
+
+    .match-card:hover { transform: translateY(-2px); }
+    .match-card:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+
+    .match-card-img {
+      width: 110px;
+      height: 130px;
+      border-radius: var(--card-radius);
+      object-fit: cover;
+      display: block;
+      position: relative;
+    }
+
+    .match-card-img-wrap {
+      position: relative;
+      width: 110px;
+      height: 130px;
+      border-radius: var(--card-radius);
+      overflow: hidden;
+    }
+
+    .match-card-img-wrap .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+      font-size: var(--font-size-lg);
+    }
+
+    .match-badge {
+      position: absolute;
+      top: var(--space-2);
+      left: var(--space-2);
+      height: var(--badge-height);
+      padding: 0 var(--badge-padding-x);
+      border-radius: var(--badge-radius);
+      background: var(--color-primary);
+      color: #fff;
+      font-size: var(--badge-font-size);
+      font-weight: var(--font-weight-semibold);
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .online-dot {
+      position: absolute;
+      bottom: var(--space-2);
+      right: var(--space-2);
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-full);
+      background: var(--color-online);
+      border: 2px solid var(--color-bg-elevated);
+    }
+
+    .match-card-name {
+      margin-top: var(--space-2);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      text-align: center;
+      color: var(--color-text-primary);
+    }
+
+    /* Active Conversations */
+    .conversation-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .conversation-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-page-x-mobile);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .conversation-row:hover { background: var(--color-bg-secondary); }
+    .conversation-row:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: -2px; }
+
+    .conv-avatar {
+      width: var(--avatar-md);
+      height: var(--avatar-md);
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .conv-avatar img,
+    .conv-avatar .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-full);
+      object-fit: cover;
+    }
+
+    .conv-avatar .online-dot {
+      bottom: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+    }
+
+    .conv-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .conv-name {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+
+    .conv-preview {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-tertiary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .conv-meta {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--space-1);
+    }
+
+    .conv-time {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .unread-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+    }
+
+    /* Match Celebration Overlay */
+    .match-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: var(--z-modal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-bg-overlay);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      animation: overlayFadeIn var(--transition-slow) ease-out;
+    }
+
+    @keyframes overlayFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .match-overlay-content {
+      text-align: center;
+      padding: var(--space-8);
+      max-width: 320px;
+      animation: overlaySlideUp var(--transition-deliberate) var(--ease-spring);
+    }
+
+    @keyframes overlaySlideUp {
+      from { opacity: 0; transform: translateY(24px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .match-overlay-title {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: #fff;
+      margin-bottom: var(--space-6);
+      text-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    }
+
+    .match-photos {
+      display: flex;
+      justify-content: center;
+      margin-bottom: var(--space-5);
+      position: relative;
+    }
+
+    .match-photo {
+      width: var(--avatar-xl);
+      height: var(--avatar-xl);
+      border-radius: var(--radius-full);
+      border: 3px solid var(--color-accent);
+      object-fit: cover;
+      box-shadow: var(--shadow-glow-match);
+    }
+
+    .match-photo.avatar-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-xl);
+      color: #fff;
+      font-weight: var(--font-weight-bold);
+    }
+
+    .match-photo:nth-child(2) {
+      margin-left: -20px;
+    }
+
+    .match-overlay-subtitle {
+      font-size: var(--font-size-sm);
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: var(--space-8);
+    }
+
+    .match-overlay-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .btn-primary {
+      height: var(--btn-height-lg);
+      border: none;
+      border-radius: var(--btn-radius);
+      background: var(--color-primary);
+      color: var(--color-primary-contrast);
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-base);
+      font-weight: var(--btn-font-weight);
+      letter-spacing: var(--btn-letter-spacing);
+      cursor: pointer;
+      transition: background var(--transition-fast), box-shadow var(--transition-fast);
+      width: 100%;
+      padding: 0 var(--space-6);
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-dark);
+      box-shadow: var(--shadow-glow-primary);
+    }
+
+    .btn-primary:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+
+    .btn-ghost {
+      height: var(--btn-height-lg);
+      border: 1.5px solid rgba(255,255,255,0.4);
+      border-radius: var(--btn-radius);
+      background: transparent;
+      color: #fff;
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-base);
+      font-weight: var(--btn-font-weight);
+      letter-spacing: var(--btn-letter-spacing);
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast);
+      width: 100%;
+      padding: 0 var(--space-6);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.6);
+    }
+
+    .btn-ghost:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+
+    /* Tab Bar */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: var(--content-width-base);
+      height: 56px;
+      background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: var(--z-fixed);
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: var(--space-1) var(--space-3);
+      min-width: var(--touch-target-min);
+      min-height: var(--touch-target-min);
+      justify-content: center;
+      color: var(--color-text-tertiary);
+      transition: color var(--transition-fast);
+      text-decoration: none;
+    }
+
+    .tab-item:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: -2px; }
+
+    .tab-item.active { color: var(--color-primary); }
+
+    .tab-item svg { width: 24px; height: 24px; }
+
+    .tab-label {
+      font-size: 10px;
+      font-weight: var(--font-weight-medium);
+      letter-spacing: var(--letter-spacing-wide);
+    }
+
+    /* Responsive */
+    @media (min-width: 768px) {
+      .section { padding-left: var(--space-page-x-tablet); padding-right: var(--space-page-x-tablet); }
+      .header { padding-left: var(--space-page-x-tablet); padding-right: var(--space-page-x-tablet); }
+      .conversation-row { padding-left: var(--space-page-x-tablet); padding-right: var(--space-page-x-tablet); }
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: var(--space-2);
+      z-index: 100;
+      background: var(--color-primary);
+      color: #fff;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      left: var(--space-4);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .match-overlay,
+      .match-overlay-content,
+      .like-avatar,
+      .match-card,
+      .conversation-row {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    @media (min-width: 1440px) {
+      body { background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%); }
+      .app-shell {
+        box-shadow: 0 0 60px rgba(0,0,0,0.06);
+        border-radius: 24px 24px 0 0;
+        margin-top: var(--space-8);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" data-screen="matches">
+    <a href="#matches-content" class="skip-link">Skip to main content</a>
+
+    <header class="header" role="banner">
+      <h1 class="header-title">Connections</h1>
+      <button class="header-action" aria-label="Filter connections">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      </button>
+    </header>
+
+    <main class="content" role="main" id="matches-content">
+
+      <!-- Likes Section -->
+      <section class="section" aria-label="People who like you">
+        <div class="section-header">
+          <span class="section-label">Likes You</span>
+          <span class="count-badge" aria-label="12 likes">12</span>
+        </div>
+        <div class="likes-scroll" role="list">
+          <div class="like-avatar-wrap" role="listitem">
+            <div class="like-avatar" tabindex="0" role="button" aria-label="View who likes you, 8 more people">
+              <div class="avatar-placeholder" style="background: linear-gradient(135deg, #D4A855, #8B6508);">?</div>
+              <div class="more-overlay">+8</div>
+            </div>
+          </div>
+          <div class="like-avatar-wrap" role="listitem">
+            <div class="like-avatar" tabindex="0" role="button" aria-label="Someone who likes you">
+              <div class="avatar-placeholder" style="background: linear-gradient(135deg, #6B8FBF, #4A6FA5);">?</div>
+            </div>
+          </div>
+          <div class="like-avatar-wrap" role="listitem">
+            <div class="like-avatar" tabindex="0" role="button" aria-label="Someone who likes you">
+              <div class="avatar-placeholder" style="background: linear-gradient(135deg, #6B9E7A, #4A7C59);">?</div>
+            </div>
+          </div>
+          <div class="like-avatar-wrap" role="listitem">
+            <div class="like-avatar" tabindex="0" role="button" aria-label="Someone who likes you">
+              <div class="avatar-placeholder" style="background: linear-gradient(135deg, #C04050, #9B2335);">?</div>
+            </div>
+          </div>
+        </div>
+        <p class="premium-hint">See who likes you</p>
+      </section>
+
+      <!-- New Matches -->
+      <section class="section" aria-label="New matches">
+        <div class="section-header">
+          <span class="section-label">New Matches</span>
+          <span class="count-badge" aria-label="3 new matches">3</span>
+        </div>
+        <div class="matches-scroll" role="list">
+          <div class="match-card" role="listitem" tabindex="0" aria-label="Priya, new match">
+            <div class="match-card-img-wrap">
+              <div class="avatar-placeholder" style="background: linear-gradient(145deg, #E2CFA0, #B8860B);">P</div>
+              <span class="match-badge">New</span>
+            </div>
+            <div class="match-card-name">Priya</div>
+          </div>
+          <div class="match-card" role="listitem" tabindex="0" aria-label="James, match, online">
+            <div class="match-card-img-wrap">
+              <div class="avatar-placeholder" style="background: linear-gradient(145deg, #6B8FBF, #2C3E50);">J</div>
+              <span class="online-dot" aria-label="Online"></span>
+            </div>
+            <div class="match-card-name">James</div>
+          </div>
+          <div class="match-card" role="listitem" tabindex="0" aria-label="Sofia, match">
+            <div class="match-card-img-wrap">
+              <div class="avatar-placeholder" style="background: linear-gradient(145deg, #C04050, #9B2335);">S</div>
+            </div>
+            <div class="match-card-name">Sofia</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Active Conversations -->
+      <section aria-label="Active conversations">
+        <div class="section" style="padding-bottom: 0;">
+          <div class="section-header">
+            <span class="section-label">Active</span>
+          </div>
+        </div>
+        <div class="conversation-list" role="list">
+          <a class="conversation-row" href="#" role="listitem" aria-label="Maya, 28, unread message: That sounds amazing, 2 hours ago">
+            <div class="conv-avatar">
+              <div class="avatar-placeholder" style="background: linear-gradient(145deg, #E2CFA0, #C9A96E);">M</div>
+              <span class="online-dot" aria-label="Online"></span>
+            </div>
+            <div class="conv-body">
+              <div class="conv-name">Maya, 28</div>
+              <div class="conv-preview">That sounds amazing! I'd love to...</div>
+            </div>
+            <div class="conv-meta">
+              <span class="conv-time">2h ago</span>
+              <span class="unread-dot" aria-label="Unread"></span>
+            </div>
+          </a>
+          <a class="conversation-row" href="#" role="listitem" aria-label="Liam, 31, last message: Let me know when you're free, yesterday">
+            <div class="conv-avatar">
+              <div class="avatar-placeholder" style="background: linear-gradient(145deg, #6B8FBF, #4A6FA5);">L</div>
+            </div>
+            <div class="conv-body">
+              <div class="conv-name">Liam, 31</div>
+              <div class="conv-preview">Let me know when you're free for...</div>
+            </div>
+            <div class="conv-meta">
+              <span class="conv-time">Yesterday</span>
+            </div>
+          </a>
+          <a class="conversation-row" href="#" role="listitem" aria-label="Aisha, 26, sent a photo, 2 days ago">
+            <div class="conv-avatar">
+              <div class="avatar-placeholder" style="background: linear-gradient(145deg, #6B9E7A, #4A7C59);">A</div>
+            </div>
+            <div class="conv-body">
+              <div class="conv-name">Aisha, 26</div>
+              <div class="conv-preview">📸 Sent a photo</div>
+            </div>
+            <div class="conv-meta">
+              <span class="conv-time">2 days ago</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Match Celebration Overlay -->
+    <div class="match-overlay" id="matchOverlay" role="dialog" aria-modal="true" aria-label="It's a Match!">
+      <div class="match-overlay-content">
+        <h2 class="match-overlay-title">It's a Match!</h2>
+        <div class="match-photos">
+          <div class="match-photo avatar-placeholder" style="background: linear-gradient(145deg, #B8860B, #D4A855);">Y</div>
+          <div class="match-photo avatar-placeholder" style="background: linear-gradient(145deg, #E2CFA0, #C9A96E);">M</div>
+        </div>
+        <p class="match-overlay-subtitle">You and Maya both expressed interest</p>
+        <div class="match-overlay-actions">
+          <button class="btn-primary" id="btnSendMessage">Send a Message</button>
+          <button class="btn-ghost" id="btnKeepBrowsing">Keep Browsing</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Bar -->
+    <nav class="tab-bar" role="navigation" aria-label="Main navigation">
+      <a class="tab-item" href="#" aria-label="Discover">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        <span class="tab-label">Discover</span>
+      </a>
+      <a class="tab-item active" href="#" aria-label="Matches" aria-current="page">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span class="tab-label">Matches</span>
+      </a>
+      <a class="tab-item" href="messages.html" aria-label="Messages">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="tab-label">Messages</span>
+      </a>
+      <a class="tab-item" href="#" aria-label="Profile">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span class="tab-label">Profile</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <script>
+    const overlay = document.getElementById('matchOverlay');
+    const btnKeep = document.getElementById('btnKeepBrowsing');
+    const btnSend = document.getElementById('btnSendMessage');
+
+    function closeOverlay() {
+      overlay.style.opacity = '0';
+      overlay.style.transition = 'opacity 300ms ease';
+      setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    }
+
+    btnKeep.addEventListener('click', closeOverlay);
+    btnSend.addEventListener('click', closeOverlay);
+
+    overlay.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeOverlay();
+    });
+  </script>
+</body>
+</html>

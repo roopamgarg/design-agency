@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ember — Profile Creation</title>
+  <link rel="stylesheet" href="../../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family-sans);
+      background: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .app-container {
+      max-width: 390px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--color-bg-primary);
+    }
+
+    /* --- Step Section --- */
+    .step-section {
+      padding: var(--space-6);
+      padding-top: var(--space-4);
+      border-bottom: 8px solid var(--color-border-subtle);
+    }
+    .step-section:last-child {
+      border-bottom: none;
+      padding-bottom: var(--space-16);
+    }
+
+    /* --- Header --- */
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) 0 var(--space-5);
+      position: relative;
+    }
+    .back-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--touch-target);
+      height: var(--touch-target);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: var(--radius-full);
+      color: var(--color-secondary);
+      transition: background 0.2s;
+    }
+    .back-button:hover {
+      background: rgba(0,0,0,0.05);
+    }
+    .back-button:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+    .back-button svg {
+      width: 22px;
+      height: 22px;
+    }
+    .header-spacer {
+      width: var(--touch-target);
+    }
+
+    /* --- Step Dots --- */
+    .step-dots {
+      display: flex;
+      gap: var(--space-2);
+      justify-content: center;
+      flex: 1;
+    }
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--color-border-default);
+      transition: all 0.3s;
+    }
+    .step-dot.completed {
+      background: var(--color-accent);
+    }
+    .step-dot.active {
+      background: var(--color-primary);
+      width: 24px;
+    }
+
+    /* --- Typography --- */
+    .step-title {
+      font-family: var(--font-family-display);
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--color-secondary);
+      margin-bottom: var(--space-2);
+      line-height: 1.25;
+    }
+    .step-subtitle {
+      font-size: 15px;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+      line-height: 1.5;
+    }
+
+    /* --- Intent Cards (Step 3) --- */
+    .intent-cards {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-top: var(--space-5);
+    }
+    .intent-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-5);
+      background: var(--color-bg-elevated);
+      border: 1.5px solid var(--color-border-default);
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 80px;
+    }
+    .intent-card:hover {
+      border-color: var(--color-accent);
+      box-shadow: 0 2px 12px rgba(184, 134, 11, 0.08);
+    }
+    .intent-card:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+    .intent-card[aria-checked="true"] {
+      border-color: var(--color-primary);
+      background: var(--color-gold-bg);
+      box-shadow: 0 2px 16px rgba(184, 134, 11, 0.12);
+    }
+    .intent-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 24px;
+      background: var(--color-gold-bg);
+    }
+    .intent-card[aria-checked="true"] .intent-icon {
+      background: rgba(184, 134, 11, 0.14);
+    }
+    .intent-text h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-secondary);
+      margin-bottom: 2px;
+    }
+    .intent-text p {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      line-height: 1.4;
+    }
+
+    /* --- Form Fields (Step 4) --- */
+    .form-group {
+      margin-bottom: var(--space-5);
+    }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-secondary);
+      margin-bottom: var(--space-2);
+      letter-spacing: 0.02em;
+    }
+    .form-input {
+      width: 100%;
+      height: var(--input-height);
+      border: 1.5px solid var(--color-border-default);
+      border-radius: var(--input-radius);
+      padding: 0 var(--space-4);
+      font-family: var(--font-family-sans);
+      font-size: 15px;
+      color: var(--color-text-primary);
+      background: var(--color-bg-elevated);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.12);
+    }
+    .form-input::placeholder {
+      color: var(--color-text-tertiary);
+    }
+    .form-select-wrapper {
+      position: relative;
+    }
+    .form-select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: var(--space-4);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid var(--color-text-secondary);
+      pointer-events: none;
+    }
+    select.form-input {
+      padding-right: var(--space-10);
+      color: var(--color-text-primary);
+    }
+    .location-input-wrapper {
+      position: relative;
+    }
+    .location-input-wrapper .form-input {
+      padding-right: var(--space-12);
+    }
+    .location-edit-btn {
+      position: absolute;
+      right: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      cursor: pointer;
+      padding: var(--space-2);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .location-edit-btn:hover {
+      background: var(--color-gold-bg);
+    }
+    .location-edit-btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+    .location-edit-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* --- Photo Grid (Step 5) --- */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: var(--space-3);
+      margin-top: var(--space-5);
+      margin-bottom: var(--space-4);
+    }
+    .photo-slot {
+      aspect-ratio: 3 / 4;
+      border-radius: var(--radius-lg);
+      border: 1.5px dashed var(--color-border-default);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      background: var(--color-bg-elevated);
+    }
+    .photo-slot:hover {
+      border-color: var(--color-accent);
+      background: var(--color-gold-bg);
+    }
+    .photo-slot:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+    .photo-slot.primary {
+      grid-column: 1 / 3;
+      grid-row: 1 / 3;
+    }
+    .photo-slot.filled {
+      border-style: solid;
+      border-color: transparent;
+    }
+    .photo-slot.filled .photo-placeholder-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, #D4C5A9, #B8A88A);
+      opacity: 0.5;
+    }
+    .photo-slot.filled .photo-silhouette {
+      position: relative;
+      z-index: 1;
+      width: 40%;
+      height: 40%;
+      background: rgba(255,255,255,0.3);
+      border-radius: var(--radius-full);
+    }
+    .photo-slot.primary .photo-silhouette {
+      width: 30%;
+      height: 30%;
+    }
+    .photo-check {
+      position: absolute;
+      top: var(--space-2);
+      right: var(--space-2);
+      width: 22px;
+      height: 22px;
+      background: var(--color-success);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+    .photo-check svg {
+      width: 14px;
+      height: 14px;
+      color: white;
+    }
+    .photo-primary-badge {
+      position: absolute;
+      bottom: var(--space-2);
+      left: var(--space-2);
+      background: var(--color-primary);
+      color: white;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-full);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+    .photo-add-icon {
+      color: var(--color-text-tertiary);
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 1;
+    }
+    .photo-tip {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      background: var(--color-gold-bg);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-3);
+    }
+    .photo-tip strong {
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* --- Prompts (Step 6) --- */
+    .prompt-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+      margin-bottom: var(--space-5);
+    }
+    .prompt-chip {
+      padding: var(--space-2) var(--space-4);
+      border: 1.5px solid var(--color-border-default);
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-secondary);
+      background: var(--color-bg-elevated);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .prompt-chip:hover {
+      border-color: var(--color-accent);
+    }
+    .prompt-chip:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+    .prompt-chip[aria-selected="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+    .prompt-response {
+      margin-bottom: var(--space-5);
+    }
+    .prompt-response-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-secondary);
+      margin-bottom: var(--space-2);
+    }
+    .prompt-textarea {
+      width: 100%;
+      min-height: 100px;
+      border: 1.5px solid var(--color-border-default);
+      border-radius: var(--input-radius);
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-family-sans);
+      font-size: 15px;
+      color: var(--color-text-primary);
+      background: var(--color-bg-elevated);
+      resize: vertical;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      line-height: 1.5;
+    }
+    .prompt-textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.12);
+    }
+    .prompt-textarea::placeholder {
+      color: var(--color-text-tertiary);
+    }
+    .char-counter {
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+      text-align: right;
+      margin-top: var(--space-1);
+    }
+
+    /* --- Verification (Step 7) --- */
+    .verify-illustration {
+      width: 100%;
+      max-width: 240px;
+      margin: var(--space-6) auto;
+      aspect-ratio: 3 / 4;
+      background: linear-gradient(135deg, #F5F0E8, #EDE5D8);
+      border-radius: var(--radius-2xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .verify-frame {
+      width: 70%;
+      height: 60%;
+      border: 2.5px dashed var(--color-accent);
+      border-radius: 50% 50% 45% 45%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .verify-face-outline {
+      width: 50%;
+      height: 55%;
+      border: 2px solid var(--color-accent);
+      border-radius: 50%;
+      opacity: 0.5;
+      position: relative;
+    }
+    .verify-face-outline::before {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      left: 10%;
+      right: 10%;
+      height: 30%;
+      border: 2px solid var(--color-accent);
+      border-radius: 0 0 40% 40%;
+      border-top: none;
+      opacity: 0.5;
+    }
+    .verify-crosshair {
+      position: absolute;
+      top: var(--space-4);
+      left: var(--space-4);
+      right: var(--space-4);
+      bottom: var(--space-4);
+    }
+    .verify-crosshair::before,
+    .verify-crosshair::after {
+      content: '';
+      position: absolute;
+      background: var(--color-accent);
+      opacity: 0.25;
+    }
+    .verify-crosshair::before {
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 1px;
+    }
+    .verify-crosshair::after {
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 1px;
+    }
+    .verify-instruction {
+      text-align: center;
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+    }
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-5);
+    }
+    .trust-badge svg {
+      width: 14px;
+      height: 14px;
+      color: var(--color-success);
+      flex-shrink: 0;
+    }
+
+    /* --- Preferences (Step 8) --- */
+    .pref-section {
+      margin-bottom: var(--space-6);
+    }
+    .pref-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-secondary);
+      margin-bottom: var(--space-3);
+    }
+    .pref-value {
+      font-size: 14px;
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+    .slider-track {
+      width: 100%;
+      height: 4px;
+      background: var(--color-border-default);
+      border-radius: var(--radius-full);
+      position: relative;
+      margin: var(--space-4) 0 var(--space-2);
+    }
+    .slider-fill {
+      position: absolute;
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+      border-radius: var(--radius-full);
+    }
+    .slider-thumb {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 22px;
+      height: 22px;
+      background: var(--color-bg-elevated);
+      border: 2.5px solid var(--color-primary);
+      border-radius: var(--radius-full);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+    }
+    .dealbreaker-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--color-border-default);
+      min-height: var(--touch-target);
+    }
+    .dealbreaker-row:last-child {
+      border-bottom: none;
+    }
+    .dealbreaker-label {
+      font-size: 15px;
+      color: var(--color-text-primary);
+    }
+    .toggle {
+      width: 48px;
+      height: 28px;
+      background: var(--color-border-default);
+      border-radius: var(--radius-full);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: none;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .toggle[aria-checked="true"] {
+      background: var(--color-primary);
+    }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: var(--radius-full);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+    .toggle[aria-checked="true"]::after {
+      transform: translateX(20px);
+    }
+    .dealbreaker-select {
+      height: 36px;
+      padding: 0 var(--space-8) 0 var(--space-3);
+      font-size: 14px;
+      border: 1.5px solid var(--color-border-default);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-elevated);
+      color: var(--color-text-primary);
+      font-family: var(--font-family-sans);
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      cursor: pointer;
+    }
+    .dealbreaker-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+    .pref-note {
+      font-size: 13px;
+      color: var(--color-text-tertiary);
+      text-align: center;
+      margin-top: var(--space-6);
+    }
+
+    /* --- Buttons --- */
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: var(--btn-height-lg);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      color: white;
+      border: none;
+      border-radius: var(--btn-radius);
+      font-family: var(--font-family-sans);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.01em;
+      margin-top: var(--space-6);
+    }
+    .btn-primary:hover {
+      opacity: 0.92;
+    }
+    .btn-primary:active {
+      transform: scale(0.985);
+    }
+    .btn-primary:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 3px;
+    }
+    .btn-ghost {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: var(--btn-height-md);
+      background: transparent;
+      color: var(--color-text-secondary);
+      border: none;
+      border-radius: var(--btn-radius);
+      font-family: var(--font-family-sans);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.2s, background 0.2s;
+      margin-top: var(--space-2);
+    }
+    .btn-ghost:hover {
+      color: var(--color-primary);
+      background: var(--color-gold-bg);
+    }
+    .btn-ghost:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+    .btn-group {
+      margin-top: var(--space-6);
+    }
+    .btn-group .btn-primary {
+      margin-top: 0;
+    }
+
+    /* --- Responsive --- */
+    @media (min-width: 640px) {
+      .app-container {
+        max-width: 480px;
+        margin-top: var(--space-8);
+        border-radius: var(--radius-2xl);
+        box-shadow: 0 4px 40px rgba(0,0,0,0.08);
+        min-height: auto;
+      }
+      .step-section:first-child {
+        border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+      }
+      .step-section:last-child {
+        border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+      }
+    }
+    @media (min-width: 1024px) {
+      .app-container {
+        max-width: 520px;
+        margin-top: var(--space-12);
+      }
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: var(--space-2);
+      z-index: 100;
+      background: var(--color-primary);
+      color: #fff;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      left: var(--space-4);
+    }
+
+    @media (min-width: 1440px) {
+      body {
+        background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%);
+      }
+      .app-container {
+        max-width: 520px;
+        box-shadow: 0 0 60px rgba(0,0,0,0.06);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-container" data-screen="onboarding-profile">
+    <a href="#step3-title" class="skip-link">Skip to main content</a>
+
+    <!-- ============ STEP 3 — Intent Declaration ============ -->
+    <section class="step-section" aria-labelledby="step3-title">
+      <header class="step-header">
+        <button class="back-button" aria-label="Go back" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        </button>
+        <nav class="step-dots" aria-label="Step 3 of 8">
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot active" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+        </nav>
+        <div class="header-spacer" aria-hidden="true"></div>
+      </header>
+
+      <h1 id="step3-title" class="step-title">What are you looking for?</h1>
+
+      <div class="intent-cards" role="radiogroup" aria-labelledby="step3-title">
+        <div class="intent-card" role="radio" aria-checked="true" tabindex="0">
+          <div class="intent-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="#B8860B" opacity="0.85"/></svg>
+          </div>
+          <div class="intent-text">
+            <h3>A Relationship</h3>
+            <p>Someone to build something real with</p>
+          </div>
+        </div>
+        <div class="intent-card" role="radio" aria-checked="false" tabindex="0">
+          <div class="intent-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.09 6.26L20.18 9l-5 4.27L16.82 20 12 16.77 7.18 20l1.64-6.73L4 9l5.91-.74L12 2z" stroke="#B8860B" stroke-width="1.5" fill="none"/></svg>
+          </div>
+          <div class="intent-text">
+            <h3>Something Casual</h3>
+            <p>Open to connection without pressure</p>
+          </div>
+        </div>
+        <div class="intent-card" role="radio" aria-checked="false" tabindex="0">
+          <div class="intent-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#B8860B" stroke-width="1.5"/><path d="M12 8v1" stroke="#B8860B" stroke-width="2" stroke-linecap="round"/><path d="M12 11v5" stroke="#B8860B" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="intent-text">
+            <h3>Still Figuring It Out</h3>
+            <p>Just exploring for now</p>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" type="button">Continue</button>
+    </section>
+
+    <!-- ============ STEP 4 — Basic Profile ============ -->
+    <section class="step-section" aria-labelledby="step4-title">
+      <header class="step-header">
+        <button class="back-button" aria-label="Go back" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        </button>
+        <nav class="step-dots" aria-label="Step 4 of 8">
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot active" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+        </nav>
+        <div class="header-spacer" aria-hidden="true"></div>
+      </header>
+
+      <h1 id="step4-title" class="step-title">The Basics</h1>
+
+      <form class="profile-form" onsubmit="return false" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="display-name">Display Name</label>
+          <input class="form-input" type="text" id="display-name" placeholder="What should people call you?" value="Alexandra" autocomplete="given-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="birthday">Birthday</label>
+          <input class="form-input" type="date" id="birthday" value="1996-03-15">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="gender">Gender</label>
+          <div class="form-select-wrapper">
+            <select class="form-input" id="gender">
+              <option value="woman" selected>Woman</option>
+              <option value="man">Man</option>
+              <option value="nonbinary">Non-binary</option>
+              <option value="prefer-not">Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="location">Location</label>
+          <div class="location-input-wrapper">
+            <input class="form-input" type="text" id="location" value="San Francisco, CA" readonly>
+            <button class="location-edit-btn" type="button" aria-label="Edit location">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <button class="btn-primary" type="button">Continue</button>
+    </section>
+
+    <!-- ============ STEP 5 — Photo Upload ============ -->
+    <section class="step-section" aria-labelledby="step5-title">
+      <header class="step-header">
+        <button class="back-button" aria-label="Go back" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        </button>
+        <nav class="step-dots" aria-label="Step 5 of 8">
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot active" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+        </nav>
+        <div class="header-spacer" aria-hidden="true"></div>
+      </header>
+
+      <h1 id="step5-title" class="step-title">Show Your Best Self</h1>
+      <p class="step-subtitle">Add 3-6 photos. Your first photo is your primary.</p>
+
+      <div class="photo-grid" role="list" aria-label="Photo upload slots">
+        <!-- Slot 1: Primary, filled -->
+        <div class="photo-slot primary filled" role="listitem" tabindex="0" aria-label="Primary photo, uploaded">
+          <div class="photo-placeholder-bg"></div>
+          <div class="photo-silhouette"></div>
+          <span class="photo-check" aria-label="Photo verified">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span class="photo-primary-badge">Primary</span>
+        </div>
+        <!-- Slot 2: filled -->
+        <div class="photo-slot filled" role="listitem" tabindex="0" aria-label="Photo 2, uploaded">
+          <div class="photo-placeholder-bg"></div>
+          <div class="photo-silhouette"></div>
+          <span class="photo-check" aria-label="Photo verified">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+        </div>
+        <!-- Slot 3: filled -->
+        <div class="photo-slot filled" role="listitem" tabindex="0" aria-label="Photo 3, uploaded">
+          <div class="photo-placeholder-bg"></div>
+          <div class="photo-silhouette"></div>
+          <span class="photo-check" aria-label="Photo verified">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+        </div>
+        <!-- Slot 4: empty -->
+        <div class="photo-slot" role="listitem" tabindex="0" aria-label="Add photo 4">
+          <span class="photo-add-icon" aria-hidden="true">+</span>
+        </div>
+        <!-- Slot 5: empty -->
+        <div class="photo-slot" role="listitem" tabindex="0" aria-label="Add photo 5">
+          <span class="photo-add-icon" aria-hidden="true">+</span>
+        </div>
+      </div>
+
+      <div class="photo-tip">
+        <strong>Tip:</strong> Include a clear face photo, a full-body shot, and something that shows your personality
+      </div>
+
+      <button class="btn-primary" type="button">Continue</button>
+    </section>
+
+    <!-- ============ STEP 6 — Prompt Responses ============ -->
+    <section class="step-section" aria-labelledby="step6-title">
+      <header class="step-header">
+        <button class="back-button" aria-label="Go back" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        </button>
+        <nav class="step-dots" aria-label="Step 6 of 8">
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot active" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+        </nav>
+        <div class="header-spacer" aria-hidden="true"></div>
+      </header>
+
+      <h1 id="step6-title" class="step-title">Express Yourself</h1>
+      <p class="step-subtitle">Choose 2 prompts and write your responses</p>
+
+      <div class="prompt-chips" role="listbox" aria-label="Available prompts" aria-multiselectable="true">
+        <span class="prompt-chip" role="option" aria-selected="true" tabindex="0">What makes a great first date?</span>
+        <span class="prompt-chip" role="option" aria-selected="false" tabindex="0">I'm looking for someone who...</span>
+        <span class="prompt-chip" role="option" aria-selected="false" tabindex="0">My most controversial opinion is...</span>
+        <span class="prompt-chip" role="option" aria-selected="true" tabindex="0">The way to win me over is...</span>
+        <span class="prompt-chip" role="option" aria-selected="false" tabindex="0">A life goal of mine...</span>
+        <span class="prompt-chip" role="option" aria-selected="false" tabindex="0">I geek out about...</span>
+      </div>
+
+      <div class="prompt-response">
+        <label class="prompt-response-label" for="prompt1-response">What makes a great first date?</label>
+        <textarea class="prompt-textarea" id="prompt1-response" maxlength="150">Something spontaneous — maybe a walk through a new neighborhood, stopping at whatever catches our eye.</textarea>
+        <div class="char-counter"><span id="prompt1-count">42</span>/150 minimum</div>
+      </div>
+
+      <div class="prompt-response">
+        <label class="prompt-response-label" for="prompt2-response">The way to win me over is...</label>
+        <textarea class="prompt-textarea" id="prompt2-response" maxlength="150" placeholder="Write your response..."></textarea>
+        <div class="char-counter"><span id="prompt2-count">0</span>/150 minimum</div>
+      </div>
+
+      <button class="btn-primary" type="button">Continue</button>
+    </section>
+
+    <!-- ============ STEP 7 — Photo Verification ============ -->
+    <section class="step-section" aria-labelledby="step7-title">
+      <header class="step-header">
+        <button class="back-button" aria-label="Go back" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        </button>
+        <nav class="step-dots" aria-label="Step 7 of 8">
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot active" aria-hidden="true"></span>
+          <span class="step-dot" aria-hidden="true"></span>
+        </nav>
+        <div class="header-spacer" aria-hidden="true"></div>
+      </header>
+
+      <h1 id="step7-title" class="step-title">Get Verified</h1>
+      <p class="step-subtitle">Verified profiles get 3x more matches</p>
+
+      <div class="verify-illustration" role="img" aria-label="Selfie verification frame showing face outline">
+        <div class="verify-crosshair"></div>
+        <div class="verify-frame">
+          <div class="verify-face-outline"></div>
+        </div>
+      </div>
+
+      <p class="verify-instruction">Take a selfie matching the pose shown</p>
+
+      <div class="btn-group">
+        <button class="btn-primary" type="button">Verify Now</button>
+        <button class="btn-ghost" type="button">Skip for Now</button>
+      </div>
+
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Your biometric data is processed, never stored</span>
+      </div>
+    </section>
+
+    <!-- ============ STEP 8 — Preferences ============ -->
+    <section class="step-section" aria-labelledby="step8-title">
+      <header class="step-header">
+        <button class="back-button" aria-label="Go back" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        </button>
+        <nav class="step-dots" aria-label="Step 8 of 8">
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot completed" aria-hidden="true"></span>
+          <span class="step-dot active" aria-hidden="true"></span>
+        </nav>
+        <div class="header-spacer" aria-hidden="true"></div>
+      </header>
+
+      <h1 id="step8-title" class="step-title">Your Preferences</h1>
+
+      <!-- Age Range -->
+      <div class="pref-section">
+        <div class="pref-label">Age Range <span class="pref-value">25 – 35</span></div>
+        <div class="slider-track" role="slider" aria-label="Age range" aria-valuemin="18" aria-valuemax="65" aria-valuetext="25 to 35" tabindex="0">
+          <div class="slider-fill" style="left: 14.9%; width: 21.3%;"></div>
+          <div class="slider-thumb" style="left: 14.9%;"></div>
+          <div class="slider-thumb" style="left: 36.2%;"></div>
+        </div>
+        <div class="slider-labels">
+          <span>18</span>
+          <span>65</span>
+        </div>
+      </div>
+
+      <!-- Distance Radius -->
+      <div class="pref-section">
+        <div class="pref-label">Distance <span class="pref-value">&lt; 10 miles</span></div>
+        <div class="slider-track" role="slider" aria-label="Distance radius" aria-valuemin="1" aria-valuemax="100" aria-valuenow="10" tabindex="0">
+          <div class="slider-fill" style="left: 0; width: 10%;"></div>
+          <div class="slider-thumb" style="left: 10%;"></div>
+        </div>
+        <div class="slider-labels">
+          <span>1 mi</span>
+          <span>100 mi</span>
+        </div>
+      </div>
+
+      <!-- Dealbreakers -->
+      <div class="pref-section">
+        <div class="pref-label">Dealbreakers</div>
+
+        <div class="dealbreaker-row">
+          <span class="dealbreaker-label" id="deal-smoking-label">Smoking</span>
+          <button class="toggle" role="switch" aria-checked="false" aria-labelledby="deal-smoking-label" type="button"></button>
+        </div>
+        <div class="dealbreaker-row">
+          <span class="dealbreaker-label" id="deal-children-label">Has Children</span>
+          <button class="toggle" role="switch" aria-checked="false" aria-labelledby="deal-children-label" type="button"></button>
+        </div>
+        <div class="dealbreaker-row">
+          <label class="dealbreaker-label" for="deal-religion">Religion</label>
+          <select class="dealbreaker-select" id="deal-religion">
+            <option value="">No preference</option>
+            <option value="christian">Christian</option>
+            <option value="muslim">Muslim</option>
+            <option value="jewish">Jewish</option>
+            <option value="hindu">Hindu</option>
+            <option value="buddhist">Buddhist</option>
+            <option value="spiritual">Spiritual</option>
+            <option value="agnostic">Agnostic</option>
+            <option value="atheist">Atheist</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="pref-note">These can be changed anytime in Settings</p>
+
+      <button class="btn-primary" type="button">Finish Setup</button>
+    </section>
+
+  </main>
+
+  <script>
+    (function() {
+      // Intent card selection
+      document.querySelectorAll('.intent-cards').forEach(function(group) {
+        var cards = group.querySelectorAll('.intent-card');
+        cards.forEach(function(card) {
+          card.addEventListener('click', function() {
+            cards.forEach(function(c) { c.setAttribute('aria-checked', 'false'); });
+            card.setAttribute('aria-checked', 'true');
+          });
+          card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              card.click();
+            }
+          });
+        });
+      });
+
+      // Prompt chip selection
+      document.querySelectorAll('.prompt-chip').forEach(function(chip) {
+        chip.addEventListener('click', function() {
+          var current = chip.getAttribute('aria-selected') === 'true';
+          chip.setAttribute('aria-selected', String(!current));
+        });
+        chip.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            chip.click();
+          }
+        });
+      });
+
+      // Toggle switches
+      document.querySelectorAll('.toggle').forEach(function(toggle) {
+        toggle.addEventListener('click', function() {
+          var current = toggle.getAttribute('aria-checked') === 'true';
+          toggle.setAttribute('aria-checked', String(!current));
+        });
+      });
+
+      // Character counters
+      var prompt1 = document.getElementById('prompt1-response');
+      var prompt1Count = document.getElementById('prompt1-count');
+      if (prompt1 && prompt1Count) {
+        prompt1Count.textContent = prompt1.value.length;
+        prompt1.addEventListener('input', function() {
+          prompt1Count.textContent = prompt1.value.length;
+        });
+      }
+
+      var prompt2 = document.getElementById('prompt2-response');
+      var prompt2Count = document.getElementById('prompt2-count');
+      if (prompt2 && prompt2Count) {
+        prompt2.addEventListener('input', function() {
+          prompt2Count.textContent = prompt2.value.length;
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

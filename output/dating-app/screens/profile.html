@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ember — Profile</title>
+  <link rel="stylesheet" href="../../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family-sans);
+      background: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .screen {
+      max-width: 390px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--color-bg-primary);
+      position: relative;
+      padding-bottom: 80px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-5);
+      position: sticky;
+      top: 0;
+      background: var(--color-bg-primary);
+      z-index: 10;
+    }
+
+    .header-title {
+      font-family: var(--font-family-display);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      border: none;
+      background: var(--color-bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: background 0.2s;
+    }
+
+    .icon-btn:hover { background: #EBE5DD; }
+    .icon-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+    .icon-btn svg { width: 20px; height: 20px; }
+
+    .crown-icon { color: var(--color-primary); }
+
+    /* Profile Hero */
+    .profile-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-4) var(--space-5) var(--space-6);
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: var(--avatar-2xl);
+      height: var(--avatar-2xl);
+      margin-bottom: var(--space-4);
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, #C9A96E 0%, #B8860B 50%, #8B6914 100%);
+      border: 3px solid var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-family-display);
+      font-size: 40px;
+      color: white;
+      overflow: hidden;
+    }
+
+    .verified-badge {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 32px;
+      height: 32px;
+      background: var(--color-verified);
+      border-radius: var(--radius-full);
+      border: 3px solid var(--color-bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .verified-badge svg { width: 16px; height: 16px; }
+
+    .profile-name {
+      font-family: var(--font-family-display);
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .verified-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(74, 124, 89, 0.1);
+      color: var(--color-verified);
+      font-family: var(--font-family-sans);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+    }
+
+    .verified-inline svg { width: 12px; height: 12px; }
+
+    /* Completeness Ring */
+    .completeness {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+
+    .completeness-ring {
+      width: 44px;
+      height: 44px;
+      position: relative;
+    }
+
+    .completeness-ring svg { transform: rotate(-90deg); }
+
+    .completeness-ring .track { stroke: var(--color-bg-secondary); }
+    .completeness-ring .fill { stroke: var(--color-primary); transition: stroke-dasharray 0.6s ease; }
+
+    .completeness-label {
+      font-size: 13px;
+      color: var(--color-text-tertiary);
+      font-weight: 500;
+    }
+
+    .completeness-label strong {
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+
+    /* Edit Profile Button */
+    .btn-primary {
+      display: block;
+      width: calc(100% - var(--space-5) * 2);
+      margin: 0 var(--space-5) var(--space-6);
+      padding: 14px;
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--btn-radius);
+      font-family: var(--font-family-sans);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover { background: #A0750A; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+    /* Section titles */
+    .section-title {
+      font-family: var(--font-family-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      padding: 0 var(--space-5);
+      margin-bottom: var(--space-3);
+    }
+
+    /* Photo Grid */
+    .photo-grid-section { margin-bottom: var(--space-6); }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+      padding: 0 var(--space-5);
+    }
+
+    .photo-cell {
+      aspect-ratio: 3 / 4;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .photo-cell.filled {
+      background-size: cover;
+      background-position: center;
+    }
+
+    .photo-cell.empty {
+      background: var(--color-bg-secondary);
+      border: 2px dashed #D0C8BD;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .photo-cell.empty:hover { border-color: var(--color-primary); }
+
+    .photo-cell.empty svg { width: 28px; height: 28px; color: var(--color-text-tertiary); }
+
+    .reorder-hint {
+      text-align: center;
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+      padding: var(--space-2) var(--space-5) 0;
+    }
+
+    /* Video Intro */
+    .video-intro-card {
+      margin: 0 var(--space-5) var(--space-6);
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .video-placeholder {
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, var(--color-bg-secondary) 0%, #E8E0D6 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .video-placeholder:hover { background: linear-gradient(135deg, #EBE5DD 0%, #DDD4C8 100%); }
+
+    .play-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-full);
+      background: rgba(184, 134, 11, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+    }
+
+    .play-circle svg { width: 24px; height: 24px; }
+
+    .video-cta {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    /* Prompt Cards */
+    .prompts-section { margin-bottom: var(--space-6); }
+
+    .prompt-card {
+      margin: 0 var(--space-5) var(--space-3);
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      position: relative;
+    }
+
+    .prompt-question {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-2);
+    }
+
+    .prompt-answer {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--color-text-primary);
+    }
+
+    .prompt-edit {
+      position: absolute;
+      top: var(--space-4);
+      right: var(--space-4);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      border: none;
+      background: var(--color-bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-text-tertiary);
+      transition: background 0.2s;
+    }
+
+    .prompt-edit:hover { background: #EBE5DD; color: var(--color-text-secondary); }
+    .prompt-edit:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+    .prompt-edit svg { width: 14px; height: 14px; }
+
+    /* Interests */
+    .interests-section { margin-bottom: var(--space-6); }
+
+    .interests-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-5);
+      margin-bottom: var(--space-3);
+    }
+
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      padding: 0 var(--space-5);
+    }
+
+    .chip {
+      padding: 8px 16px;
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+    }
+
+    /* Profile Insights */
+    .insights-card {
+      margin: 0 var(--space-5) var(--space-6);
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .insights-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+    }
+
+    .insights-title {
+      font-family: var(--font-family-display);
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .premium-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .insight-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-2) 0;
+    }
+
+    .insight-row + .insight-row { border-top: 1px solid var(--color-bg-secondary); }
+
+    .insight-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: 14px;
+      color: var(--color-text-secondary);
+    }
+
+    .insight-label svg { width: 18px; height: 18px; color: var(--color-primary); }
+
+    .insight-value {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .trend-up { color: var(--color-verified); }
+    .trend-up svg { width: 14px; height: 14px; }
+
+    /* Discovery Preferences */
+    .discovery-row {
+      margin: 0 var(--space-5) var(--space-6);
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: var(--space-4) var(--card-padding);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .discovery-row:hover { background: var(--color-bg-secondary); }
+
+    .discovery-label {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+    }
+
+    .discovery-value {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+
+    .discovery-value svg { width: 16px; height: 16px; color: var(--color-text-tertiary); }
+
+    /* Bottom Tab Bar */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 390px;
+      background: var(--color-bg-elevated);
+      border-top: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: var(--space-2) 0 calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+      z-index: 20;
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: var(--space-1) var(--space-3);
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--color-text-tertiary);
+      font-size: 10px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .tab-item:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+    .tab-item svg { width: 24px; height: 24px; }
+
+    .tab-item.active { color: var(--color-primary); }
+
+    @media (min-width: 768px) {
+      .screen { box-shadow: 0 0 40px rgba(0,0,0,0.08); min-height: 100vh; }
+      body { background: #EDEAE6; display: flex; justify-content: center; }
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: var(--space-2);
+      z-index: 100;
+      background: var(--color-primary);
+      color: #fff;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      left: var(--space-4);
+    }
+
+    @media (min-width: 1440px) {
+      body {
+        background: linear-gradient(135deg, #F5F0EB 0%, #FAF8F5 100%);
+      }
+      .screen {
+        box-shadow: 0 0 60px rgba(0,0,0,0.06);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="screen" data-screen="profile">
+    <a href="#profile-hero" class="skip-link">Skip to main content</a>
+    <!-- Header -->
+    <header class="header" role="banner">
+      <h1 class="header-title">Profile</h1>
+      <div class="header-actions">
+        <button class="icon-btn crown-icon" aria-label="Premium membership">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 12h14l3-12-5 4-5-4-5 4z"/><path d="M5 16h14v2H5z"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Profile Hero -->
+    <section class="profile-hero" id="profile-hero" aria-label="Profile overview">
+      <div class="avatar-wrapper">
+        <div class="avatar" role="img" aria-label="Alexandra's profile photo">A</div>
+        <div class="verified-badge" aria-label="Verified profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+      <h2 class="profile-name">
+        Alexandra, 27
+        <span class="verified-inline">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Verified
+        </span>
+      </h2>
+      <div class="completeness">
+        <div class="completeness-ring" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" aria-label="Profile 85% complete">
+          <svg width="44" height="44" viewBox="0 0 44 44">
+            <circle class="track" cx="22" cy="22" r="18" fill="none" stroke-width="4"/>
+            <circle class="fill" cx="22" cy="22" r="18" fill="none" stroke-width="4" stroke-dasharray="96.13 113.1" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="completeness-label"><strong>85%</strong> complete</span>
+      </div>
+    </section>
+
+    <!-- Edit Profile -->
+    <button class="btn-primary" type="button">Edit Profile</button>
+
+    <!-- Photo Grid -->
+    <section class="photo-grid-section" aria-label="Profile photos">
+      <h3 class="section-title">Photos</h3>
+      <div class="photo-grid">
+        <div class="photo-cell filled" style="background: linear-gradient(135deg, #C9A96E, #8B6914);" role="img" aria-label="Photo 1"></div>
+        <div class="photo-cell filled" style="background: linear-gradient(135deg, #2C3E50, #4A6C8B);" role="img" aria-label="Photo 2"></div>
+        <div class="photo-cell filled" style="background: linear-gradient(135deg, #4A7C59, #7CB891);" role="img" aria-label="Photo 3"></div>
+        <div class="photo-cell filled" style="background: linear-gradient(135deg, #9B2335, #C4546A);" role="img" aria-label="Photo 4"></div>
+        <div class="photo-cell empty" role="button" aria-label="Add photo" tabindex="0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="photo-cell empty" role="button" aria-label="Add photo" tabindex="0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+      </div>
+      <p class="reorder-hint">Hold and drag to reorder</p>
+    </section>
+
+    <!-- Video Intro -->
+    <section aria-label="Video introduction">
+      <h3 class="section-title">Video Intro</h3>
+      <div class="video-intro-card">
+        <div class="video-placeholder" role="button" tabindex="0" aria-label="Add a video intro">
+          <div class="play-circle">
+            <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <span class="video-cta">Add a video intro</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prompts -->
+    <section class="prompts-section" aria-label="Profile prompts">
+      <h3 class="section-title">Prompts</h3>
+      <article class="prompt-card">
+        <p class="prompt-question">What makes a great first date?</p>
+        <p class="prompt-answer">A cozy wine bar with great conversation and zero phone checking.</p>
+        <button class="prompt-edit" aria-label="Edit prompt">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        </button>
+      </article>
+      <article class="prompt-card">
+        <p class="prompt-question">I geek out about...</p>
+        <p class="prompt-answer">Architectural history and mid-century modern design.</p>
+        <button class="prompt-edit" aria-label="Edit prompt">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        </button>
+      </article>
+      <article class="prompt-card">
+        <p class="prompt-question">A life goal of mine...</p>
+        <p class="prompt-answer">Living abroad for a year — maybe Lisbon or Tokyo.</p>
+        <button class="prompt-edit" aria-label="Edit prompt">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        </button>
+      </article>
+    </section>
+
+    <!-- Interests -->
+    <section class="interests-section" aria-label="Interests">
+      <div class="interests-header">
+        <h3 class="section-title" style="padding:0;margin:0;">Interests</h3>
+        <button class="icon-btn" aria-label="Edit interests" style="width:32px;height:32px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        </button>
+      </div>
+      <div class="chips-row">
+        <span class="chip">Travel</span>
+        <span class="chip">Photography</span>
+        <span class="chip">Architecture</span>
+        <span class="chip">Wine</span>
+        <span class="chip">Reading</span>
+      </div>
+    </section>
+
+    <!-- Profile Insights -->
+    <section aria-label="Profile insights">
+      <div class="insights-card">
+        <div class="insights-header">
+          <h3 class="insights-title">Profile Insights</h3>
+          <span class="premium-badge">Premium</span>
+        </div>
+        <div class="insight-row">
+          <span class="insight-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Views this week
+          </span>
+          <span class="insight-value">
+            12
+            <span class="trend-up">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </span>
+          </span>
+        </div>
+        <div class="insight-row">
+          <span class="insight-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Likes this week
+          </span>
+          <span class="insight-value">8</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Discovery Preferences -->
+    <section aria-label="Discovery preferences">
+      <div class="discovery-row" role="button" tabindex="0" aria-label="Edit discovery preferences">
+        <span class="discovery-label">Discovery Preferences</span>
+        <span class="discovery-value">
+          Age 25–35 · &lt; 10 miles
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </div>
+    </section>
+
+    <!-- Tab Bar -->
+    <nav class="tab-bar" role="navigation" aria-label="Main navigation">
+      <button class="tab-item" aria-label="Discover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        <span>Discover</span>
+      </button>
+      <button class="tab-item" aria-label="Matches">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span>Matches</span>
+      </button>
+      <button class="tab-item" aria-label="Messages">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Messages</span>
+      </button>
+      <button class="tab-item active" aria-label="Profile" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+  </div>
+</body>
+</html>

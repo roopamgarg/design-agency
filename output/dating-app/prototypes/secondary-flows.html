@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secondary Flows — Dating App Prototype</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: var(--font-family-sans);
+        background: var(--color-bg-secondary);
+        color: var(--color-text-primary);
+        line-height: var(--line-height-normal);
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .device-frame {
+        width: 390px;
+        max-width: 100vw;
+        min-height: 100vh;
+        background: var(--color-bg-primary);
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+      }
+
+      [data-screen] {
+        display: none;
+        min-height: 100vh;
+        position: relative;
+        animation: screenFadeIn var(--transition-base) forwards;
+        flex-direction: column;
+      }
+      [data-screen].active { display: flex; }
+
+      @keyframes screenFadeIn {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-3px); }
+        75% { transform: translateX(3px); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        @keyframes screenFadeIn { from, to { opacity: 1; transform: none; } }
+        @keyframes slideUp { from, to { opacity: 1; transform: none; } }
+        @keyframes shake { from, to { transform: none; } }
+        @keyframes fadeIn { from, to { opacity: 1; } }
+        [data-screen] { animation: none; }
+        .bottom-sheet { animation: none; }
+        .toast { animation: none; }
+        .modal-overlay { animation: none; }
+      }
+
+      /* ── Common elements ── */
+      .screen-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        padding-top: calc(var(--space-3) + env(safe-area-inset-top, 0px));
+        border-bottom: 1px solid var(--color-border-light);
+        background: var(--color-bg-primary);
+        min-height: var(--header-height);
+      }
+      .screen-header h2 {
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+        flex: 1;
+      }
+      .screen-header-action {
+        color: var(--color-primary);
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-sm);
+        background: none;
+        border: none;
+        cursor: pointer;
+        min-height: var(--touch-target-min);
+        display: flex;
+        align-items: center;
+      }
+
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-lg);
+        cursor: pointer;
+        min-height: var(--touch-target-min);
+        min-width: var(--touch-target-min);
+      }
+
+      .screen-body {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .section-title {
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: var(--space-4) var(--space-6) var(--space-2);
+      }
+
+      .btn {
+        display: block;
+        width: 100%;
+        padding: var(--space-4);
+        border: none;
+        border-radius: var(--radius-full);
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-semibold);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        min-height: var(--touch-target-min);
+        text-align: center;
+      }
+      .btn:active { transform: scale(0.97); }
+      .btn-primary { background: var(--color-primary); color: var(--color-text-on-primary); }
+      .btn-primary:hover { background: var(--color-primary-hover); }
+      .btn-secondary { background: transparent; color: var(--color-primary); border: 1.5px solid var(--color-primary); }
+      .btn-danger { background: var(--color-error); color: white; }
+      .btn-ghost { background: transparent; color: var(--color-text-secondary); }
+      .btn + .btn { margin-top: var(--space-3); }
+
+      .input-field {
+        width: 100%;
+        padding: var(--space-3) var(--space-4);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-base);
+        background: var(--color-bg-primary);
+        color: var(--color-text-primary);
+        transition: border-color var(--transition-fast);
+        min-height: var(--touch-target-min);
+      }
+      .input-field:focus { outline: none; border-color: var(--color-border-focus); }
+      .input-group { margin-bottom: var(--space-4); padding: 0 var(--space-6); }
+      .input-label {
+        display: block;
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-1);
+      }
+
+      /* ── Chip ── */
+      .chip-group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+      .chip {
+        padding: var(--space-2) var(--space-4);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-sm);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        min-height: var(--touch-target-min);
+        display: flex;
+        align-items: center;
+      }
+      .chip:hover { border-color: var(--color-accent); }
+      .chip.selected { background: var(--color-primary); color: var(--color-text-on-primary); border-color: var(--color-primary); }
+
+      /* ── Profile view (own) ── */
+      .own-profile-hero {
+        text-align: center;
+        padding: var(--space-8) var(--space-6) var(--space-6);
+        background: linear-gradient(180deg, var(--color-primary-light) 0%, var(--color-bg-primary) 100%);
+      }
+      .own-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: var(--radius-full);
+        margin: 0 auto var(--space-3);
+        background: linear-gradient(135deg, #E8D5B7, #C9A96E);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 44px;
+        border: 3px solid var(--color-primary);
+      }
+      .own-name {
+        font-family: var(--font-family-display);
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+      }
+      .own-meta {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        margin-top: var(--space-1);
+      }
+      .verified-badge-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: var(--space-1) var(--space-3);
+        background: rgba(59, 130, 246, 0.1);
+        color: #3B82F6;
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        margin-top: var(--space-2);
+      }
+      .profile-completeness {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        margin-top: var(--space-4);
+        padding: var(--space-3) var(--space-4);
+        background: var(--color-bg-secondary);
+        border-radius: var(--radius-lg);
+      }
+      .completeness-ring {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-full);
+        border: 3px solid var(--color-border);
+        border-top-color: var(--color-primary);
+        border-right-color: var(--color-primary);
+        border-bottom-color: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: var(--font-weight-bold);
+        color: var(--color-primary);
+      }
+      .completeness-text {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+      }
+
+      /* ── Photo grid edit ── */
+      .photo-edit-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-3);
+        padding: var(--space-4) var(--space-6);
+      }
+      .photo-edit-slot {
+        aspect-ratio: 3/4;
+        border-radius: var(--radius-lg);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+      }
+      .photo-edit-slot.filled {
+        background: linear-gradient(135deg, #E8D5B7, #C9A96E);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+      }
+      .photo-edit-slot.empty {
+        border: 2px dashed var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-tertiary);
+        font-size: var(--font-size-2xl);
+      }
+      .photo-edit-slot:first-child {
+        grid-row: span 2;
+        aspect-ratio: auto;
+      }
+      .photo-badge {
+        position: absolute;
+        top: var(--space-1);
+        left: var(--space-1);
+        background: var(--color-primary);
+        color: white;
+        font-size: 9px;
+        padding: 2px 6px;
+        border-radius: var(--radius-sm);
+        font-weight: var(--font-weight-semibold);
+      }
+      .photo-remove {
+        position: absolute;
+        top: var(--space-1);
+        right: var(--space-1);
+        width: var(--touch-target-min);
+        height: var(--touch-target-min);
+        border-radius: var(--radius-full);
+        background: rgba(0,0,0,0.6);
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+
+      /* ── Prompt edit ── */
+      .prompt-edit-card {
+        margin: 0 var(--space-6) var(--space-3);
+        padding: var(--space-4);
+        background: var(--color-bg-secondary);
+        border-radius: var(--radius-xl);
+        position: relative;
+      }
+      .prompt-edit-q {
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .prompt-edit-a {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-primary);
+        margin-top: var(--space-2);
+      }
+      .prompt-edit-btn {
+        position: absolute;
+        top: var(--space-3);
+        right: var(--space-3);
+        width: var(--touch-target-min);
+        height: var(--touch-target-min);
+        border-radius: var(--radius-full);
+        border: 1px solid var(--color-border);
+        background: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+      }
+
+      /* ── Settings list ── */
+      .settings-list { list-style: none; }
+      .settings-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-4) var(--space-6);
+        border-bottom: 1px solid var(--color-border-light);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        min-height: var(--touch-target-min);
+      }
+      .settings-item:hover { background: var(--color-bg-secondary); }
+      .settings-item:active { background: var(--color-bg-tertiary); }
+      .settings-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      .settings-icon.blue { background: rgba(59, 130, 246, 0.1); }
+      .settings-icon.green { background: rgba(16, 185, 129, 0.1); }
+      .settings-icon.amber { background: rgba(245, 158, 11, 0.1); }
+      .settings-icon.rose { background: rgba(232, 67, 147, 0.1); }
+      .settings-icon.gray { background: var(--color-bg-secondary); }
+      .settings-icon.red { background: rgba(239, 68, 68, 0.1); }
+      .settings-icon.gold { background: var(--color-primary-light); }
+      .settings-text { flex: 1; }
+      .settings-label {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+      }
+      .settings-desc {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+      }
+      .settings-chevron {
+        color: var(--color-text-tertiary);
+        font-size: var(--font-size-sm);
+      }
+      .settings-toggle {
+        width: 48px;
+        height: 28px;
+        border-radius: var(--radius-full);
+        background: var(--color-border);
+        border: none;
+        cursor: pointer;
+        position: relative;
+        transition: background var(--transition-fast);
+        flex-shrink: 0;
+      }
+      .settings-toggle.on { background: var(--color-primary); }
+      .settings-toggle::after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 22px;
+        height: 22px;
+        border-radius: var(--radius-full);
+        background: white;
+        box-shadow: var(--shadow-xs);
+        transition: transform var(--transition-fast);
+      }
+      .settings-toggle.on::after { transform: translateX(20px); }
+
+      /* ── Tab bar ── */
+      .tab-bar {
+        display: flex;
+        height: var(--tab-bar-height);
+        border-top: 1px solid var(--color-border-light);
+        background: var(--color-bg-primary);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        margin-top: auto;
+      }
+      .tab-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: var(--color-text-tertiary);
+        font-size: 10px;
+        transition: color var(--transition-fast);
+        min-height: var(--touch-target-min);
+      }
+      .tab-item.active { color: var(--color-primary); }
+      .tab-icon { font-size: 22px; }
+
+      /* ── Bottom sheet / modal ── */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: var(--color-bg-overlay);
+        z-index: var(--z-overlay);
+        animation: fadeIn var(--transition-base) forwards;
+      }
+      .modal-overlay.visible { display: flex; align-items: flex-end; justify-content: center; }
+
+      .bottom-sheet {
+        width: 390px;
+        max-width: 100vw;
+        background: var(--color-bg-primary);
+        border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+        padding: var(--space-6);
+        padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
+        animation: slideUp var(--transition-modal) forwards;
+      }
+      .sheet-handle {
+        width: 36px;
+        height: 4px;
+        border-radius: var(--radius-full);
+        background: var(--color-border);
+        margin: 0 auto var(--space-5);
+      }
+      .sheet-title {
+        font-family: var(--font-family-display);
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-semibold);
+        margin-bottom: var(--space-2);
+      }
+      .sheet-desc {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-6);
+      }
+
+      .report-option {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-4);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        min-height: var(--touch-target-min);
+      }
+      .report-option + .report-option { margin-top: var(--space-2); }
+      .report-option:hover { border-color: var(--color-accent); background: var(--color-bg-secondary); }
+      .report-option.selected { border-color: var(--color-primary); background: var(--color-primary-light); }
+      .report-icon { font-size: var(--font-size-lg); }
+      .report-label { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+
+      /* ── Toast ── */
+      .toast {
+        display: none;
+        position: fixed;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: var(--space-3) var(--space-5);
+        background: var(--color-secondary);
+        color: white;
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        z-index: var(--z-toast);
+        box-shadow: var(--shadow-lg);
+        animation: slideUp var(--transition-base) forwards;
+        white-space: nowrap;
+      }
+      .toast.visible { display: block; }
+
+      /* ── Range ── */
+      .range-control { margin-bottom: var(--space-6); padding: 0 var(--space-6); }
+      .range-header { display: flex; justify-content: space-between; margin-bottom: var(--space-2); }
+      .range-label { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+      .range-value { font-size: var(--font-size-sm); color: var(--color-primary); font-weight: var(--font-weight-semibold); }
+      input[type="range"] {
+        width: 100%;
+        -webkit-appearance: none;
+        height: 4px;
+        background: var(--color-border);
+        border-radius: var(--radius-full);
+        outline: none;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: var(--radius-full);
+        background: var(--color-primary);
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+      }
+
+      /* ── Prototype navigation ── */
+      .prototype-nav {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 390px;
+        max-width: 100vw;
+        padding: var(--space-3) var(--space-2);
+        background: var(--color-secondary);
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        flex-wrap: wrap;
+        z-index: var(--z-toast);
+        border-top: 2px solid var(--color-primary);
+      }
+      .prototype-nav button {
+        padding: 6px 10px;
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.08);
+        color: rgba(255,255,255,0.7);
+        cursor: pointer;
+        font-size: 11px;
+        font-family: var(--font-family-sans);
+        transition: all var(--transition-fast);
+        white-space: nowrap;
+      }
+      .prototype-nav button:hover { background: rgba(255,255,255,0.15); color: white; }
+      .prototype-nav button.active-nav { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+      .prototype-toggle {
+        position: fixed;
+        bottom: var(--space-2);
+        right: var(--space-2);
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-full);
+        background: var(--color-secondary);
+        color: var(--color-primary);
+        border: 2px solid var(--color-primary);
+        cursor: pointer;
+        z-index: calc(var(--z-toast) + 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+      .prototype-nav.hidden { display: none; }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      .visually-hidden:focus {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: auto;
+        height: auto;
+        padding: var(--space-3) var(--space-5);
+        margin: 0;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
+        background: var(--color-primary);
+        color: var(--color-text-on-primary);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        z-index: calc(var(--z-toast) + 10);
+        border-radius: 0 0 var(--radius-md) 0;
+      }
+
+      /* ── Confirmation dialog ── */
+      .confirm-dialog {
+        background: var(--color-bg-primary);
+        border-radius: var(--radius-2xl);
+        padding: var(--space-8) var(--space-6);
+        width: 320px;
+        text-align: center;
+        animation: slideUp var(--transition-modal) forwards;
+      }
+      .confirm-icon {
+        font-size: 48px;
+        margin-bottom: var(--space-4);
+      }
+      .confirm-title {
+        font-family: var(--font-family-display);
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-semibold);
+        margin-bottom: var(--space-2);
+      }
+      .confirm-desc {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-6);
+      }
+
+      /* ── Pause profile ── */
+      .pause-banner {
+        display: none;
+        background: var(--color-warning);
+        color: white;
+        padding: var(--space-3) var(--space-6);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        text-align: center;
+      }
+      .pause-banner.visible { display: block; }
+    </style>
+</head>
+<body>
+    <div class="device-frame">
+      <a href="#main-content" class="visually-hidden">Skip to main content</a>
+
+      <!-- ═══════════════════════════ SCREEN 1: Own Profile View ═══════════════════════════ -->
+      <section data-screen="profile-view" class="active" aria-label="Your profile" id="main-content">
+        <div class="screen-header">
+          <h2>Profile</h2>
+          <button class="screen-header-action" onclick="showScreen('settings')" aria-label="Settings">⚙️</button>
+        </div>
+        <div id="pause-banner" class="pause-banner">⏸ Your profile is paused</div>
+        <div class="screen-body">
+          <div class="own-profile-hero">
+            <div class="own-avatar">😊</div>
+            <div class="own-name">Alex, 27</div>
+            <div class="own-meta">📍 San Francisco, CA</div>
+            <div class="verified-badge-inline">✓ Verified</div>
+            <div class="profile-completeness">
+              <div class="completeness-ring">85%</div>
+              <span class="completeness-text">Profile completeness — <strong style="color:var(--color-primary);cursor:pointer;" onclick="showScreen('profile-edit')">Improve</strong></span>
+            </div>
+          </div>
+
+          <div class="section-title">Photos</div>
+          <div class="photo-edit-grid">
+            <div class="photo-edit-slot filled" onclick="showScreen('profile-edit')">
+              <span class="photo-badge">Primary</span>
+              😊
+            </div>
+            <div class="photo-edit-slot filled" onclick="showScreen('profile-edit')">🏔️</div>
+            <div class="photo-edit-slot filled" onclick="showScreen('profile-edit')">🎸</div>
+            <div class="photo-edit-slot empty" onclick="showScreen('profile-edit')">+</div>
+            <div class="photo-edit-slot empty" onclick="showScreen('profile-edit')">+</div>
+          </div>
+
+          <div class="section-title">Prompts</div>
+          <div class="prompt-edit-card" onclick="showScreen('profile-edit')">
+            <div class="prompt-edit-q">A perfect day for me looks like...</div>
+            <div class="prompt-edit-a">"Morning surf, farmers market lunch, cooking dinner with friends, and a sunset hike."</div>
+            <button class="prompt-edit-btn" aria-label="Edit prompt">✏️</button>
+          </div>
+          <div class="prompt-edit-card" onclick="showScreen('profile-edit')">
+            <div class="prompt-edit-q">I'm convinced that...</div>
+            <div class="prompt-edit-a">"The best conversations happen over homemade pasta. I'll make the sauce if you bring the wine."</div>
+            <button class="prompt-edit-btn" aria-label="Edit prompt">✏️</button>
+          </div>
+
+          <div class="section-title">Quick Links</div>
+          <ul class="settings-list">
+            <li class="settings-item" onclick="showScreen('profile-edit')">
+              <div class="settings-icon gold">✏️</div>
+              <div class="settings-text"><div class="settings-label">Edit Profile</div></div>
+              <span class="settings-chevron">›</span>
+            </li>
+            <li class="settings-item" onclick="showScreen('discovery-prefs')">
+              <div class="settings-icon blue">🎯</div>
+              <div class="settings-text"><div class="settings-label">Discovery Preferences</div><div class="settings-desc">Age 25-35, &lt; 15 miles</div></div>
+              <span class="settings-chevron">›</span>
+            </li>
+          </ul>
+          <div style="height:80px;"></div>
+        </div>
+
+        <nav class="tab-bar" aria-label="Main navigation">
+          <button class="tab-item" aria-label="Discover"><span class="tab-icon">🧭</span><span>Discover</span></button>
+          <button class="tab-item" aria-label="Matches"><span class="tab-icon">💛</span><span>Matches</span></button>
+          <button class="tab-item" aria-label="Messages"><span class="tab-icon">💬</span><span>Messages</span></button>
+          <button class="tab-item active" aria-label="Profile" aria-current="page"><span class="tab-icon">👤</span><span>Profile</span></button>
+        </nav>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 2: Profile Edit ═══════════════════════════ -->
+      <section data-screen="profile-edit" aria-label="Edit profile">
+        <div class="screen-header">
+          <button class="back-btn" onclick="showScreen('profile-view')" aria-label="Go back">←</button>
+          <h2>Edit Profile</h2>
+          <button class="screen-header-action" onclick="saveProfile()">Save</button>
+        </div>
+        <div class="screen-body">
+          <div class="section-title">Photos</div>
+          <div class="photo-edit-grid">
+            <div class="photo-edit-slot filled">
+              <span class="photo-badge">Primary</span>
+              <button class="photo-remove" aria-label="Remove photo">✕</button>
+              😊
+            </div>
+            <div class="photo-edit-slot filled">
+              <button class="photo-remove" aria-label="Remove photo">✕</button>
+              🏔️
+            </div>
+            <div class="photo-edit-slot filled">
+              <button class="photo-remove" aria-label="Remove photo">✕</button>
+              🎸
+            </div>
+            <div class="photo-edit-slot empty">+</div>
+            <div class="photo-edit-slot empty">+</div>
+          </div>
+          <p style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); text-align: center; padding: 0 var(--space-6);">
+            Hold and drag to reorder. First photo is your profile picture.
+          </p>
+
+          <div class="section-title" style="margin-top: var(--space-4);">About you</div>
+          <div class="input-group">
+            <label class="input-label" for="edit-name">First name</label>
+            <input type="text" id="edit-name" class="input-field" value="Alex">
+          </div>
+          <div class="input-group">
+            <label class="input-label" for="edit-bio">Bio</label>
+            <textarea id="edit-bio" class="input-field" rows="3" style="resize:none;">UX-curious engineer who cooks to unwind. Surf mornings, pasta nights.</textarea>
+          </div>
+          <div class="input-group">
+            <label class="input-label" for="edit-job">Job title</label>
+            <input type="text" id="edit-job" class="input-field" value="Software Engineer">
+          </div>
+          <div class="input-group">
+            <label class="input-label" for="edit-company">Company</label>
+            <input type="text" id="edit-company" class="input-field" value="Acme Corp">
+          </div>
+          <div class="input-group">
+            <label class="input-label" for="edit-school">School</label>
+            <input type="text" id="edit-school" class="input-field" value="UC Berkeley">
+          </div>
+
+          <div class="section-title">Prompts</div>
+          <div class="prompt-edit-card">
+            <div class="prompt-edit-q">A perfect day for me looks like...</div>
+            <div class="prompt-edit-a">"Morning surf, farmers market lunch, cooking dinner with friends, and a sunset hike."</div>
+            <button class="prompt-edit-btn" aria-label="Edit prompt">✏️</button>
+          </div>
+          <div class="prompt-edit-card">
+            <div class="prompt-edit-q">I'm convinced that...</div>
+            <div class="prompt-edit-a">"The best conversations happen over homemade pasta."</div>
+            <button class="prompt-edit-btn" aria-label="Edit prompt">✏️</button>
+          </div>
+
+          <div class="section-title">Interests</div>
+          <div style="padding: 0 var(--space-6); margin-bottom: var(--space-6);">
+            <div class="chip-group">
+              <span class="chip selected" onclick="toggleChip(this)">🏄 Surfing</span>
+              <span class="chip selected" onclick="toggleChip(this)">🍳 Cooking</span>
+              <span class="chip selected" onclick="toggleChip(this)">🥾 Hiking</span>
+              <span class="chip selected" onclick="toggleChip(this)">📚 Reading</span>
+              <span class="chip selected" onclick="toggleChip(this)">🎸 Guitar</span>
+              <span class="chip" onclick="toggleChip(this)">✈️ Travel</span>
+              <span class="chip" onclick="toggleChip(this)">🧘 Yoga</span>
+              <span class="chip" onclick="toggleChip(this)">🎨 Art</span>
+            </div>
+          </div>
+
+          <div class="section-title">Intent</div>
+          <div style="padding: 0 var(--space-6); margin-bottom: var(--space-8);">
+            <div class="chip-group">
+              <span class="chip selected" onclick="toggleChip(this)">💕 Relationship</span>
+              <span class="chip" onclick="toggleChip(this)">✨ Casual</span>
+              <span class="chip" onclick="toggleChip(this)">🤔 Figuring it out</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 3: Settings ═══════════════════════════ -->
+      <section data-screen="settings" aria-label="Settings">
+        <div class="screen-header">
+          <button class="back-btn" onclick="showScreen('profile-view')" aria-label="Go back">←</button>
+          <h2>Settings</h2>
+        </div>
+        <div class="screen-body">
+          <div class="section-title">Discovery</div>
+          <ul class="settings-list">
+            <li class="settings-item" onclick="showScreen('discovery-prefs')">
+              <div class="settings-icon blue">🎯</div>
+              <div class="settings-text">
+                <div class="settings-label">Discovery Preferences</div>
+                <div class="settings-desc">Age, distance, dealbreakers</div>
+              </div>
+              <span class="settings-chevron">›</span>
+            </li>
+          </ul>
+
+          <div class="section-title">Notifications</div>
+          <ul class="settings-list">
+            <li class="settings-item">
+              <div class="settings-icon amber">🔔</div>
+              <div class="settings-text"><div class="settings-label">New matches</div></div>
+              <button class="settings-toggle on" onclick="this.classList.toggle('on')" aria-label="Toggle new match notifications"></button>
+            </li>
+            <li class="settings-item">
+              <div class="settings-icon amber">💬</div>
+              <div class="settings-text"><div class="settings-label">Messages</div></div>
+              <button class="settings-toggle on" onclick="this.classList.toggle('on')" aria-label="Toggle message notifications"></button>
+            </li>
+            <li class="settings-item">
+              <div class="settings-icon amber">📦</div>
+              <div class="settings-text"><div class="settings-label">Daily matches ready</div></div>
+              <button class="settings-toggle on" onclick="this.classList.toggle('on')" aria-label="Toggle daily batch notifications"></button>
+            </li>
+          </ul>
+
+          <div class="section-title">Privacy</div>
+          <ul class="settings-list">
+            <li class="settings-item" onclick="openModal('pause-modal')">
+              <div class="settings-icon green">⏸</div>
+              <div class="settings-text">
+                <div class="settings-label">Pause Profile</div>
+                <div class="settings-desc">Hide from discovery, keep matches</div>
+              </div>
+              <span class="settings-chevron">›</span>
+            </li>
+            <li class="settings-item">
+              <div class="settings-icon green">👁️</div>
+              <div class="settings-text">
+                <div class="settings-label">Profile Visibility</div>
+                <div class="settings-desc">Active</div>
+              </div>
+              <span class="settings-chevron">›</span>
+            </li>
+            <li class="settings-item" onclick="showScreen('blocked-users')">
+              <div class="settings-icon gray">🚫</div>
+              <div class="settings-text">
+                <div class="settings-label">Blocked Users</div>
+                <div class="settings-desc">2 blocked</div>
+              </div>
+              <span class="settings-chevron">›</span>
+            </li>
+          </ul>
+
+          <div class="section-title">Account</div>
+          <ul class="settings-list">
+            <li class="settings-item">
+              <div class="settings-icon gray">📱</div>
+              <div class="settings-text"><div class="settings-label">Phone Number</div><div class="settings-desc">+1 (555) ***-0000</div></div>
+              <span class="settings-chevron">›</span>
+            </li>
+            <li class="settings-item">
+              <div class="settings-icon gold">👑</div>
+              <div class="settings-text"><div class="settings-label">Subscription</div><div class="settings-desc">Free tier</div></div>
+              <span class="settings-chevron">›</span>
+            </li>
+            <li class="settings-item">
+              <div class="settings-icon gray">📥</div>
+              <div class="settings-text"><div class="settings-label">Download My Data</div></div>
+              <span class="settings-chevron">›</span>
+            </li>
+          </ul>
+
+          <div class="section-title">Safety</div>
+          <ul class="settings-list">
+            <li class="settings-item">
+              <div class="settings-icon rose">🛡️</div>
+              <div class="settings-text"><div class="settings-label">Safety Center</div></div>
+              <span class="settings-chevron">›</span>
+            </li>
+            <li class="settings-item">
+              <div class="settings-icon gray">📜</div>
+              <div class="settings-text"><div class="settings-label">Community Guidelines</div></div>
+              <span class="settings-chevron">›</span>
+            </li>
+          </ul>
+
+          <div class="section-title">Danger zone</div>
+          <ul class="settings-list">
+            <li class="settings-item" onclick="openModal('delete-modal')">
+              <div class="settings-icon red">🗑️</div>
+              <div class="settings-text"><div class="settings-label" style="color: var(--color-error);">Delete Account</div></div>
+              <span class="settings-chevron">›</span>
+            </li>
+          </ul>
+
+          <div style="padding: var(--space-6); text-align: center;">
+            <p style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">Kindred v1.0.0</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 4: Discovery Preferences ═══════════════════════════ -->
+      <section data-screen="discovery-prefs" aria-label="Discovery preferences">
+        <div class="screen-header">
+          <button class="back-btn" onclick="showScreen('settings')" aria-label="Go back">←</button>
+          <h2>Discovery Preferences</h2>
+          <button class="screen-header-action" onclick="savePrefs()">Save</button>
+        </div>
+        <div class="screen-body">
+          <div style="padding-top: var(--space-4);"></div>
+          <div class="range-control">
+            <div class="range-header">
+              <span class="range-label">Age range</span>
+              <span class="range-value" id="age-value">25 – 35</span>
+            </div>
+            <input type="range" min="18" max="50" value="30" aria-label="Age range" oninput="document.getElementById('age-value').textContent = (this.value - 5) + ' – ' + (parseInt(this.value) + 5)">
+          </div>
+          <div class="range-control">
+            <div class="range-header">
+              <span class="range-label">Maximum distance</span>
+              <span class="range-value" id="dist-value">15 miles</span>
+            </div>
+            <input type="range" min="1" max="100" value="15" aria-label="Maximum distance" oninput="document.getElementById('dist-value').textContent = this.value + ' miles'">
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">Show me</label>
+            <div class="chip-group">
+              <span class="chip selected" onclick="selectGender(this)">Women</span>
+              <span class="chip" onclick="selectGender(this)">Men</span>
+              <span class="chip" onclick="selectGender(this)">Everyone</span>
+            </div>
+          </div>
+
+          <div class="section-title" style="padding-top: var(--space-4);">Dealbreakers</div>
+          <div style="padding: 0 var(--space-6);">
+            <div class="chip-group" data-multi="true">
+              <span class="chip" onclick="toggleChip(this)">Non-smoker</span>
+              <span class="chip selected" onclick="toggleChip(this)">No kids</span>
+              <span class="chip" onclick="toggleChip(this)">Drinks socially</span>
+              <span class="chip" onclick="toggleChip(this)">College degree</span>
+              <span class="chip" onclick="toggleChip(this)">Same religion</span>
+              <span class="chip" onclick="toggleChip(this)">Wants kids</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 5: Blocked Users ═══════════════════════════ -->
+      <section data-screen="blocked-users" aria-label="Blocked users">
+        <div class="screen-header">
+          <button class="back-btn" onclick="showScreen('settings')" aria-label="Go back">←</button>
+          <h2>Blocked Users</h2>
+        </div>
+        <div class="screen-body">
+          <ul class="settings-list">
+            <li class="settings-item">
+              <div style="width:40px;height:40px;border-radius:var(--radius-full);background:var(--color-bg-tertiary);display:flex;align-items:center;justify-content:center;font-size:18px;">👤</div>
+              <div class="settings-text">
+                <div class="settings-label">Jordan</div>
+                <div class="settings-desc">Blocked on May 8</div>
+              </div>
+              <button style="padding:var(--space-2) var(--space-3);border:1px solid var(--color-border);border-radius:var(--radius-full);background:none;font-size:var(--font-size-xs);cursor:pointer;font-family:var(--font-family-sans);" onclick="openModal('unblock-modal')">Unblock</button>
+            </li>
+            <li class="settings-item">
+              <div style="width:40px;height:40px;border-radius:var(--radius-full);background:var(--color-bg-tertiary);display:flex;align-items:center;justify-content:center;font-size:18px;">👤</div>
+              <div class="settings-text">
+                <div class="settings-label">Sam</div>
+                <div class="settings-desc">Blocked on May 3</div>
+              </div>
+              <button style="padding:var(--space-2) var(--space-3);border:1px solid var(--color-border);border-radius:var(--radius-full);background:none;font-size:var(--font-size-xs);cursor:pointer;font-family:var(--font-family-sans);" onclick="openModal('unblock-modal')">Unblock</button>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 6: Conversation (with report/unmatch) ═══════════════════════════ -->
+      <section data-screen="conversation" aria-label="Conversation">
+        <div class="screen-header" style="border-bottom: 1px solid var(--color-border-light);">
+          <button class="back-btn" onclick="showScreen('profile-view')" aria-label="Go back">←</button>
+          <div style="width:36px;height:36px;border-radius:var(--radius-full);background:linear-gradient(135deg, #E8D5B7, #C9A96E);display:flex;align-items:center;justify-content:center;font-size:16px;">👩</div>
+          <div style="flex:1;">
+            <div style="font-weight:var(--font-weight-semibold);font-size:var(--font-size-sm);">Maya</div>
+            <div style="font-size:var(--font-size-xs);color:var(--color-text-tertiary);">Last active 2h ago</div>
+          </div>
+          <button class="back-btn" style="font-size:var(--font-size-xl);" onclick="openModal('action-sheet')" aria-label="More options">⋯</button>
+        </div>
+        <div class="screen-body" style="padding: var(--space-4); display:flex; flex-direction:column; gap: var(--space-3);">
+          <div style="text-align:center;font-size:var(--font-size-xs);color:var(--color-text-tertiary);padding:var(--space-2);">Matched May 10</div>
+          <div style="max-width:80%;padding:var(--space-3) var(--space-4);border-radius:var(--radius-xl);background:var(--color-primary);color:white;align-self:flex-end;border-bottom-right-radius:var(--radius-sm);font-size:var(--font-size-sm);">
+            What's your latest cooking experiment? 🍳
+            <div style="font-size:10px;opacity:0.6;margin-top:var(--space-1);">10:34 AM · Read</div>
+          </div>
+          <div style="max-width:80%;padding:var(--space-3) var(--space-4);border-radius:var(--radius-xl);background:var(--color-bg-secondary);align-self:flex-start;border-bottom-left-radius:var(--radius-sm);font-size:var(--font-size-sm);">
+            Fresh pasta from scratch! Total disaster but SO fun 😂
+            <div style="font-size:10px;color:var(--color-text-tertiary);margin-top:var(--space-1);">10:36 AM</div>
+          </div>
+          <div style="max-width:80%;padding:var(--space-3) var(--space-4);border-radius:var(--radius-xl);background:var(--color-primary);color:white;align-self:flex-end;border-bottom-right-radius:var(--radius-sm);font-size:var(--font-size-sm);">
+            Haha I love that! I make a mean tikka masala, maybe we can trade recipes sometime
+            <div style="font-size:10px;opacity:0.6;margin-top:var(--space-1);">10:38 AM · Delivered</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-4);border-top:1px solid var(--color-border-light);background:var(--color-bg-primary);">
+          <button style="width:var(--touch-target-min);height:var(--touch-target-min);border-radius:var(--radius-full);border:none;background:none;cursor:pointer;font-size:18px;">🎤</button>
+          <input type="text" class="input-field" placeholder="Say something thoughtful..." style="flex:1;border-radius:var(--radius-2xl);font-size:var(--font-size-sm);">
+          <button style="width:var(--touch-target-min);height:var(--touch-target-min);border-radius:var(--radius-full);border:none;background:var(--color-primary);color:white;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">➤</button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════ SCREEN 7: Report Confirmation ═══════════════════════════ -->
+      <section data-screen="report-confirm" aria-label="Report confirmation">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--space-8);text-align:center;">
+          <div style="width:80px;height:80px;border-radius:var(--radius-full);background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:var(--space-6);">✓</div>
+          <h2 style="font-family:var(--font-family-display);font-size:var(--font-size-2xl);margin-bottom:var(--space-3);">Report Received</h2>
+          <p style="color:var(--color-text-secondary);font-size:var(--font-size-sm);margin-bottom:var(--space-2);">We review all reports within 4 hours.</p>
+          <p style="color:var(--color-text-secondary);font-size:var(--font-size-sm);margin-bottom:var(--space-8);">This user has been hidden from your experience.</p>
+          <div style="width:100%;max-width:280px;">
+            <button class="btn btn-primary" onclick="showScreen('profile-view')">Back to App</button>
+            <button class="btn btn-ghost" onclick="showScreen('profile-view')">Also Block This User</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ═══════════════════════════ MODALS ═══════════════════════════ -->
+
+    <!-- Action sheet (from conversation) -->
+    <div class="modal-overlay" id="action-sheet" onclick="closeModal('action-sheet')">
+      <div class="bottom-sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Maya</div>
+        <div class="sheet-desc">Choose an action</div>
+        <ul class="settings-list" style="margin: 0 calc(-1 * var(--space-6));">
+          <li class="settings-item" onclick="closeModal('action-sheet'); showScreen('profile-view');">
+            <div class="settings-icon blue">👤</div>
+            <div class="settings-text"><div class="settings-label">View Profile</div></div>
+          </li>
+          <li class="settings-item" onclick="closeModal('action-sheet'); openModal('unmatch-modal');">
+            <div class="settings-icon amber">💔</div>
+            <div class="settings-text"><div class="settings-label">Unmatch</div><div class="settings-desc">Remove this match and conversation</div></div>
+          </li>
+          <li class="settings-item" onclick="closeModal('action-sheet'); openModal('report-modal');">
+            <div class="settings-icon red">⚠️</div>
+            <div class="settings-text"><div class="settings-label" style="color:var(--color-error);">Report</div><div class="settings-desc">Report inappropriate behavior</div></div>
+          </li>
+          <li class="settings-item" onclick="closeModal('action-sheet'); openModal('block-modal');">
+            <div class="settings-icon red">🚫</div>
+            <div class="settings-text"><div class="settings-label" style="color:var(--color-error);">Block</div><div class="settings-desc">Prevent all future contact</div></div>
+          </li>
+        </ul>
+        <button class="btn btn-ghost" style="margin-top:var(--space-3);" onclick="closeModal('action-sheet')">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Unmatch confirmation -->
+    <div class="modal-overlay" id="unmatch-modal" onclick="closeModal('unmatch-modal')">
+      <div class="bottom-sheet" onclick="event.stopPropagation()" style="display:flex;flex-direction:column;align-items:center;text-align:center;">
+        <div class="sheet-handle"></div>
+        <div class="confirm-icon">💔</div>
+        <div class="confirm-title">Unmatch Maya?</div>
+        <div class="confirm-desc">This will permanently remove your match and delete the conversation. This can't be undone.</div>
+        <div style="width:100%;">
+          <button class="btn btn-danger" onclick="closeModal('unmatch-modal'); showToast('Maya has been unmatched');">Unmatch</button>
+          <button class="btn btn-ghost" onclick="closeModal('unmatch-modal')">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report modal -->
+    <div class="modal-overlay" id="report-modal" onclick="closeModal('report-modal')">
+      <div class="bottom-sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Report Maya</div>
+        <div class="sheet-desc">Select a reason for your report</div>
+        <div class="report-option" onclick="selectReport(this)" role="radio" tabindex="0" aria-checked="false">
+          <span class="report-icon">😤</span>
+          <span class="report-label">Harassment or threatening behavior</span>
+        </div>
+        <div class="report-option" onclick="selectReport(this)" role="radio" tabindex="0" aria-checked="false">
+          <span class="report-icon">🎭</span>
+          <span class="report-label">Fake profile / Catfishing</span>
+        </div>
+        <div class="report-option" onclick="selectReport(this)" role="radio" tabindex="0" aria-checked="false">
+          <span class="report-icon">📷</span>
+          <span class="report-label">Inappropriate photos</span>
+        </div>
+        <div class="report-option" onclick="selectReport(this)" role="radio" tabindex="0" aria-checked="false">
+          <span class="report-icon">📢</span>
+          <span class="report-label">Spam or solicitation</span>
+        </div>
+        <div class="report-option" onclick="selectReport(this)" role="radio" tabindex="0" aria-checked="false">
+          <span class="report-icon">⚠️</span>
+          <span class="report-label">Underage user</span>
+        </div>
+        <div class="report-option" onclick="selectReport(this)" role="radio" tabindex="0" aria-checked="false">
+          <span class="report-icon">❓</span>
+          <span class="report-label">Other</span>
+        </div>
+        <div style="margin-top:var(--space-4);">
+          <button class="btn btn-danger" id="submit-report-btn" disabled onclick="closeModal('report-modal'); showScreen('report-confirm');">Submit Report</button>
+          <button class="btn btn-ghost" onclick="closeModal('report-modal')">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Block confirmation -->
+    <div class="modal-overlay" id="block-modal" onclick="closeModal('block-modal')">
+      <div class="bottom-sheet" onclick="event.stopPropagation()" style="display:flex;flex-direction:column;align-items:center;text-align:center;">
+        <div class="sheet-handle"></div>
+        <div class="confirm-icon">🚫</div>
+        <div class="confirm-title">Block Maya?</div>
+        <div class="confirm-desc">Maya won't be able to see your profile or message you. They won't be notified that you blocked them.</div>
+        <div style="width:100%;">
+          <button class="btn btn-danger" onclick="closeModal('block-modal'); showToast('Maya has been blocked');">Block</button>
+          <button class="btn btn-ghost" onclick="closeModal('block-modal')">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pause profile modal -->
+    <div class="modal-overlay" id="pause-modal" onclick="closeModal('pause-modal')">
+      <div class="bottom-sheet" onclick="event.stopPropagation()" style="display:flex;flex-direction:column;align-items:center;text-align:center;">
+        <div class="sheet-handle"></div>
+        <div class="confirm-icon">⏸</div>
+        <div class="confirm-title">Pause Your Profile?</div>
+        <div class="confirm-desc">You'll be hidden from discovery but keep all your matches and conversations. You can unpause anytime.</div>
+        <div style="width:100%;">
+          <button class="btn btn-primary" onclick="closeModal('pause-modal'); pauseProfile();">Pause Profile</button>
+          <button class="btn btn-ghost" onclick="closeModal('pause-modal')">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete account modal -->
+    <div class="modal-overlay" id="delete-modal" onclick="closeModal('delete-modal')">
+      <div class="bottom-sheet" onclick="event.stopPropagation()" style="display:flex;flex-direction:column;align-items:center;text-align:center;">
+        <div class="sheet-handle"></div>
+        <div class="confirm-icon">🗑️</div>
+        <div class="confirm-title">Delete Account?</div>
+        <div class="confirm-desc">This will permanently delete your profile, matches, and conversations. You have 24 hours to cancel via email. This cannot be undone after that.</div>
+        <div style="width:100%;margin-top:var(--space-2);">
+          <label class="input-label" style="text-align:left;">Why are you leaving? (optional)</label>
+          <div class="chip-group" style="margin-bottom:var(--space-4);" data-multi="true">
+            <span class="chip" onclick="toggleChip(this)">Found someone</span>
+            <span class="chip" onclick="toggleChip(this)">Taking a break</span>
+            <span class="chip" onclick="toggleChip(this)">Not enough matches</span>
+            <span class="chip" onclick="toggleChip(this)">Other</span>
+          </div>
+        </div>
+        <div style="width:100%;">
+          <button class="btn btn-danger" onclick="closeModal('delete-modal'); showToast('Account deletion scheduled. Check your email to cancel.');">Delete My Account</button>
+          <button class="btn btn-ghost" onclick="closeModal('delete-modal')">Keep My Account</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unblock confirmation -->
+    <div class="modal-overlay" id="unblock-modal" onclick="closeModal('unblock-modal')">
+      <div class="bottom-sheet" onclick="event.stopPropagation()" style="display:flex;flex-direction:column;align-items:center;text-align:center;">
+        <div class="sheet-handle"></div>
+        <div class="confirm-title">Unblock this user?</div>
+        <div class="confirm-desc">They'll be able to see your profile in discovery again, but your previous conversation will not be restored.</div>
+        <div style="width:100%;">
+          <button class="btn btn-primary" onclick="closeModal('unblock-modal'); showToast('User unblocked');">Unblock</button>
+          <button class="btn btn-ghost" onclick="closeModal('unblock-modal')">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast-el"></div>
+
+    <!-- Prototype navigation -->
+    <button class="prototype-toggle" onclick="toggleNav()" aria-label="Toggle prototype navigation">☰</button>
+    <nav class="prototype-nav hidden" aria-label="Prototype screen navigation" id="proto-nav">
+      <button onclick="showScreen('profile-view')">My Profile</button>
+      <button onclick="showScreen('profile-edit')">Edit Profile</button>
+      <button onclick="showScreen('settings')">Settings</button>
+      <button onclick="showScreen('discovery-prefs')">Preferences</button>
+      <button onclick="showScreen('blocked-users')">Blocked</button>
+      <button onclick="showScreen('conversation')">Chat + Actions</button>
+      <button onclick="showScreen('report-confirm')">Report Done</button>
+    </nav>
+
+    <script>
+      function showScreen(id) {
+        document.querySelectorAll('[data-screen]').forEach(function(s) { s.classList.remove('active'); });
+        var target = document.querySelector('[data-screen="' + id + '"]');
+        if (target) target.classList.add('active');
+      }
+
+      function openModal(id) {
+        document.getElementById(id).classList.add('visible');
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove('visible');
+      }
+
+      function toggleChip(el) {
+        var group = el.parentElement;
+        if (group.dataset.multi !== 'true') {
+          group.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected'); });
+        }
+        el.classList.toggle('selected');
+      }
+
+      function selectGender(el) {
+        el.parentElement.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected'); });
+        el.classList.add('selected');
+      }
+
+      function selectReport(el) {
+        el.parentElement.querySelectorAll('.report-option').forEach(function(o) {
+          o.classList.remove('selected');
+          o.setAttribute('aria-checked', 'false');
+        });
+        el.classList.add('selected');
+        el.setAttribute('aria-checked', 'true');
+        document.getElementById('submit-report-btn').disabled = false;
+      }
+
+      function saveProfile() {
+        showToast('Profile saved');
+        showScreen('profile-view');
+      }
+
+      function savePrefs() {
+        showToast('Preferences saved');
+        showScreen('settings');
+      }
+
+      function pauseProfile() {
+        document.getElementById('pause-banner').classList.add('visible');
+        showToast('Profile paused');
+      }
+
+      var toastTimer;
+      function showToast(msg) {
+        clearTimeout(toastTimer);
+        var el = document.getElementById('toast-el');
+        el.textContent = msg;
+        el.classList.add('visible');
+        toastTimer = setTimeout(function() { el.classList.remove('visible'); }, 3000);
+      }
+
+      function toggleNav() {
+        document.getElementById('proto-nav').classList.toggle('hidden');
+      }
+    </script>
+</body>
+</html>
