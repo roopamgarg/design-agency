@@ -258,6 +258,32 @@
     .open-tab-btn:hover { background: rgba(225, 29, 72, 0.14); }
     .open-tab-btn svg { width: 12px; height: 12px; }
 
+    .mode-toggle {
+      display: inline-flex;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .mode-toggle-btn {
+      padding: 5px 12px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 120ms, color 120ms;
+      background: var(--surface);
+      color: var(--text-3);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .mode-toggle-btn:not(:last-child) { border-right: 1px solid var(--border); }
+    .mode-toggle-btn:hover { background: var(--elevated); color: var(--text-2); }
+    .mode-toggle-btn.active { background: var(--accent); color: #fff; }
+    .mode-toggle-btn svg { width: 12px; height: 12px; }
+
     .preview-frame-wrap {
       flex: 1;
       display: flex;
@@ -265,6 +291,11 @@
       justify-content: center;
       padding: 24px;
       overflow: hidden;
+    }
+
+    .preview-frame-wrap[data-mode="screenshots"] {
+      overflow-y: auto;
+      align-items: flex-start;
     }
 
     .device-frame {
@@ -286,6 +317,51 @@
       border: none;
       background: #fff;
     }
+
+    .screenshots-view {
+      display: none;
+      width: 100%;
+      max-width: 1100px;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .preview-frame-wrap[data-mode="screenshots"] .device-frame { display: none; }
+    .preview-frame-wrap[data-mode="screenshots"] .screenshots-view { display: flex; }
+
+    .screenshot-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screenshot-card-label {
+      padding: 10px 14px;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .screenshot-card-label svg { width: 12px; height: 12px; }
+
+    .screenshot-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .screenshot-card.desktop { flex: 1 1 600px; max-width: 680px; }
+    .screenshot-card.mobile { flex: 0 0 260px; max-width: 300px; }
 
     @media (max-width: 768px) {
       :root { --sidebar-w: 100%; }
@@ -348,21 +424,41 @@
         <button class="preview-nav-btn" id="btn-next" aria-label="Next screen">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
+        <div class="mode-toggle" id="mode-toggle">
+          <button class="mode-toggle-btn active" data-mode="live">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Live
+          </button>
+          <button class="mode-toggle-btn" data-mode="screenshots">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Screenshots
+          </button>
+        </div>
         <button class="open-tab-btn" id="btn-open-tab">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Open in new tab
         </button>
       </div>
 
-      <div class="preview-frame-wrap">
+      <div class="preview-frame-wrap" id="preview-frame-wrap">
         <div class="device-frame">
           <iframe id="preview-iframe" title="Screen preview"></iframe>
         </div>
+        <div class="screenshots-view" id="screenshots-view"></div>
       </div>
     </div>
   </div>
 
   <script>
+    function screenshotPaths(htmlFile) {
+      const dir = htmlFile.includes("prototypes/") ? "prototypes" : "screens";
+      const slug = htmlFile.split("/").pop().replace(".html", "");
+      return {
+        desktop: `${dir}/screenshots/${slug}-desktop.png`,
+        mobile:  `${dir}/screenshots/${slug}-mobile.png`,
+      };
+    }
+
     const SCREENS = [
       { group: "Onboarding", items: [
         { num: 1,  file: "screens/welcome.html",            name: "Welcome",            desc: "Landing screen with value proposition" },
@@ -392,16 +488,22 @@
       ]},
     ];
 
+    SCREENS.forEach(g => g.items.forEach(s => { s.screenshots = screenshotPaths(s.file); }));
+
     const flatScreens = SCREENS.flatMap(g => g.items);
     let activeIndex = 0;
+    let viewMode = "live";
 
-    const sidebar    = document.getElementById("sidebar");
-    const iframe     = document.getElementById("preview-iframe");
-    const titleEl    = document.getElementById("preview-title");
-    const btnPrev    = document.getElementById("btn-prev");
-    const btnNext    = document.getElementById("btn-next");
-    const btnOpenTab = document.getElementById("btn-open-tab");
-    const btnToggle  = document.getElementById("toggle-sidebar");
+    const sidebar        = document.getElementById("sidebar");
+    const iframe         = document.getElementById("preview-iframe");
+    const titleEl        = document.getElementById("preview-title");
+    const btnPrev        = document.getElementById("btn-prev");
+    const btnNext        = document.getElementById("btn-next");
+    const btnOpenTab     = document.getElementById("btn-open-tab");
+    const btnToggle      = document.getElementById("toggle-sidebar");
+    const frameWrap      = document.getElementById("preview-frame-wrap");
+    const screenshotsDiv = document.getElementById("screenshots-view");
+    const modeToggle     = document.getElementById("mode-toggle");
 
     const protoIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
 
@@ -433,12 +535,49 @@
       });
     }
 
+    const monitorIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`;
+    const phoneIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`;
+
+    function renderScreenshots(s) {
+      const ss = s.screenshots;
+      screenshotsDiv.innerHTML = `
+        <div class="screenshot-card desktop">
+          <div class="screenshot-card-label">${monitorIcon} Desktop</div>
+          <img src="${ss.desktop}" alt="${s.name} — Desktop" loading="lazy">
+        </div>
+        <div class="screenshot-card mobile">
+          <div class="screenshot-card-label">${phoneIcon} Mobile</div>
+          <img src="${ss.mobile}" alt="${s.name} — Mobile" loading="lazy">
+        </div>
+      `;
+    }
+
+    function setViewMode(mode) {
+      viewMode = mode;
+      frameWrap.dataset.mode = mode;
+      modeToggle.querySelectorAll(".mode-toggle-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.mode === mode);
+      });
+      const s = flatScreens[activeIndex];
+      if (mode === "screenshots") {
+        renderScreenshots(s);
+        iframe.src = "about:blank";
+      } else {
+        iframe.src = s.file;
+      }
+    }
+
     function selectScreen(idx) {
       if (idx < 0 || idx >= flatScreens.length) return;
       activeIndex = idx;
       const s = flatScreens[idx];
 
-      iframe.src = s.file;
+      if (viewMode === "live") {
+        iframe.src = s.file;
+      } else {
+        renderScreenshots(s);
+      }
+
       titleEl.textContent = typeof s.num === "number" ? `${s.num}. ${s.name}` : `${s.name}`;
       btnPrev.disabled = idx === 0;
       btnNext.disabled = idx === flatScreens.length - 1;
@@ -458,6 +597,11 @@
     });
     btnToggle.addEventListener("click", () => {
       sidebar.classList.toggle("collapsed");
+    });
+    modeToggle.addEventListener("click", (e) => {
+      const btn = e.target.closest(".mode-toggle-btn");
+      if (!btn || btn.dataset.mode === viewMode) return;
+      setViewMode(btn.dataset.mode);
     });
 
     document.addEventListener("keydown", (e) => {
