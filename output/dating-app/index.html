@@ -648,67 +648,11 @@
 
     const themeToggle = document.getElementById("theme-toggle");
 
-    const LIGHT_OVERRIDES = `:root {
-      --color-bg-primary: #FAF8F5 !important;
-      --color-bg-secondary: #F5F0EB !important;
-      --color-bg-tertiary: #EDE6DD !important;
-      --color-bg-elevated: #FFFFFF !important;
-      --color-text-primary: #1A1A1A !important;
-      --color-text-secondary: #4A4A4A !important;
-      --color-text-tertiary: #7A7A7A !important;
-      --color-border-default: #E5DFD8 !important;
-      --color-border-subtle: #F0EBE5 !important;
-      --color-primary: #B8860B !important;
-      --color-accent: #C9A96E !important;
-      --color-bg-overlay: rgba(26, 37, 47, 0.6) !important;
-      --color-bg-scrim: rgba(26, 37, 47, 0.4) !important;
-      --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
-      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06) !important;
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
-      --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12) !important;
-      --card-bg: #FFFFFF !important;
-      --card-border: #E5DFD8 !important;
-      --input-bg: #FFFFFF !important;
-      --input-border: #E5DFD8 !important;
-    }`;
-
-    const DARK_OVERRIDES = `:root {
-      --color-bg-primary: #121212 !important;
-      --color-bg-secondary: #1E1E1E !important;
-      --color-bg-tertiary: #2A2A2A !important;
-      --color-bg-elevated: #2A2A2A !important;
-      --color-text-primary: #F5F0EB !important;
-      --color-text-secondary: #C9C1B8 !important;
-      --color-text-tertiary: #8A8078 !important;
-      --color-border-default: #3A3530 !important;
-      --color-border-subtle: #2A2520 !important;
-      --color-primary: #D4A855 !important;
-      --color-accent: #E2CFA0 !important;
-      --color-bg-overlay: rgba(0, 0, 0, 0.7) !important;
-      --color-bg-scrim: rgba(0, 0, 0, 0.5) !important;
-      --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.25) !important;
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
-      --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.4) !important;
-      --card-bg: #2A2A2A !important;
-      --card-border: #3A3530 !important;
-      --input-bg: #1E1E1E !important;
-      --input-border: #3A3530 !important;
-    }`;
-
     function applyThemeToIframe() {
       try {
         const doc = iframe.contentDocument || iframe.contentWindow.document;
-        if (!doc || !doc.head) return;
-        let el = doc.getElementById("theme-override");
-        if (!el) {
-          el = doc.createElement("style");
-          el.id = "theme-override";
-          doc.head.appendChild(el);
-        }
-        el.textContent = currentTheme === "dark" ? DARK_OVERRIDES : LIGHT_OVERRIDES;
+        if (!doc || !doc.documentElement) return;
+        doc.documentElement.setAttribute("data-theme", currentTheme);
       } catch (e) {}
     }
 

@@ -183,23 +183,21 @@
   --header-height: 56px;
 }
 
-/* ── Dark Mode ── */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg-primary: #1E1E2A;
-    --color-bg-secondary: #262636;
-    --color-bg-tertiary: #2E2E42;
+/* ── Dark Mode — activated via data-theme="dark" on :root ── */
+:root[data-theme="dark"] {
+  --color-bg-primary: #1E1E2A;
+  --color-bg-secondary: #262636;
+  --color-bg-tertiary: #2E2E42;
 
-    --color-text-primary: #F0EDE8;
-    --color-text-secondary: #A0A0B0;
-    --color-text-tertiary: #6B6B80;
+  --color-text-primary: #F0EDE8;
+  --color-text-secondary: #A0A0B0;
+  --color-text-tertiary: #6B6B80;
 
-    --color-border: #3A3A50;
-    --color-border-light: #2E2E42;
+  --color-border: #3A3A50;
+  --color-border-light: #2E2E42;
 
-    --color-primary: #D4A017;
-    --color-accent: #D4B978;
-  }
+  --color-primary: #D4A017;
+  --color-accent: #D4B978;
 }
 
 /* ── Reduce Motion ── */
