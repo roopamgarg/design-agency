@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edge States — StoryCraft</title>
+    <link rel="stylesheet" href="../tokens.css">
+    <style>
+        /* ── State Catalog Layout ─────────────────────────── */
+
+        .state-catalog {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .state-section {
+            border-bottom: 4px solid var(--color-border-default);
+        }
+
+        .state-section:last-child {
+            border-bottom: none;
+        }
+
+        .state-section__label {
+            position: sticky;
+            top: 0;
+            z-index: var(--z-sticky);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-3) var(--space-page-x);
+            background: var(--color-bg-secondary);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-widest);
+        }
+
+        .state-section__label svg {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+        }
+
+        .state-frame {
+            padding: var(--space-4) var(--space-page-x) var(--space-6);
+        }
+
+        .state-frame__title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-3);
+            padding-bottom: var(--space-2);
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+
+        /* ── Shared card styles ───────────────────────────── */
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            padding: var(--card-padding);
+        }
+
+        /* ── Empty State Component ────────────────────────── */
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: var(--space-10) var(--space-6);
+            gap: var(--space-4);
+        }
+
+        .empty-state__illustration {
+            width: 96px;
+            height: 96px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-4xl);
+            line-height: 1;
+        }
+
+        .empty-state__illustration--primary {
+            background: var(--color-primary-subtle);
+        }
+
+        .empty-state__illustration--accent {
+            background: var(--color-accent-subtle);
+        }
+
+        .empty-state__illustration--secondary {
+            background: var(--color-secondary-subtle);
+        }
+
+        .empty-state__title {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-snug);
+        }
+
+        .empty-state__desc {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-relaxed);
+            max-width: 280px;
+        }
+
+        .empty-state__action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            height: var(--btn-height-md);
+            padding: 0 var(--space-6);
+            border: none;
+            border-radius: var(--btn-radius);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-sm);
+            font-weight: var(--btn-font-weight);
+            letter-spacing: var(--btn-letter-spacing);
+            cursor: pointer;
+            transition: background var(--transition-fast), transform var(--transition-fast);
+            min-height: var(--touch-target-min);
+        }
+
+        .empty-state__action--primary {
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            box-shadow: var(--shadow-glow-primary);
+        }
+
+        .empty-state__action--primary:hover {
+            background: var(--color-primary-dark);
+            transform: scale(1.02);
+        }
+
+        .empty-state__action--recording {
+            background: var(--color-recording);
+            color: var(--color-text-inverse);
+            box-shadow: var(--shadow-glow-recording);
+        }
+
+        .empty-state__action--recording:hover {
+            background: var(--color-recording-dark);
+            transform: scale(1.02);
+        }
+
+        .empty-state__action svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
+
+        /* ── Skeleton Loader ──────────────────────────────── */
+
+        @keyframes skeleton-pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .skeleton { animation: none !important; opacity: 0.5; }
+        }
+
+        .skeleton {
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-md);
+            animation: skeleton-pulse 1.8s ease-in-out infinite;
+        }
+
+        .skeleton--circle {
+            border-radius: var(--radius-full);
+        }
+
+        .skeleton--text {
+            height: 14px;
+            border-radius: var(--radius-sm);
+        }
+
+        .skeleton--text-sm {
+            height: 10px;
+            border-radius: var(--radius-sm);
+        }
+
+        .skeleton--card {
+            border-radius: var(--card-radius);
+            border: 1px solid var(--card-border);
+        }
+
+        /* ── Skeleton: Daily Prompt ───────────────────────── */
+
+        .skel-prompt {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .skel-prompt__image {
+            width: 100%;
+            height: 180px;
+            border-radius: var(--card-radius);
+        }
+
+        .skel-prompt__body {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            padding: 0 var(--space-1);
+        }
+
+        .skel-prompt__badge {
+            width: 100px;
+            height: 24px;
+        }
+
+        .skel-prompt__title {
+            width: 90%;
+            height: 22px;
+        }
+
+        .skel-prompt__meta {
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .skel-prompt__meta-item {
+            width: 72px;
+            height: 14px;
+        }
+
+        .skel-prompt__btn {
+            width: 100%;
+            height: var(--btn-height-lg);
+            border-radius: var(--btn-radius);
+            margin-top: var(--space-2);
+        }
+
+        /* ── Skeleton: Feedback Dashboard ─────────────────── */
+
+        .skel-feedback {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .skel-feedback__scores {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: var(--space-3);
+        }
+
+        .skel-feedback__score-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-4);
+        }
+
+        .skel-feedback__score-label {
+            width: 48px;
+            height: 12px;
+        }
+
+        .skel-feedback__score-value {
+            width: 56px;
+            height: 36px;
+        }
+
+        .skel-feedback__score-delta {
+            width: 40px;
+            height: 14px;
+        }
+
+        .skel-feedback__waveform-card {
+            padding: var(--space-4);
+        }
+
+        .skel-feedback__waveform {
+            display: flex;
+            align-items: flex-end;
+            gap: var(--waveform-bar-gap);
+            height: 40px;
+        }
+
+        .skel-feedback__waveform-bar {
+            flex: 1;
+            border-radius: var(--radius-sm);
+            min-width: var(--waveform-bar-width);
+        }
+
+        .skel-feedback__metric {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-4);
+        }
+
+        .skel-feedback__metric-name {
+            width: 80px;
+            height: 16px;
+        }
+
+        .skel-feedback__metric-score {
+            width: 48px;
+            height: 16px;
+        }
+
+        /* ── Skeleton: Community ──────────────────────────── */
+
+        .skel-community {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .skel-community__story {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+        }
+
+        .skel-community__rank {
+            width: 28px;
+            height: 28px;
+        }
+
+        .skel-community__avatar {
+            width: var(--avatar-sm);
+            height: var(--avatar-sm);
+        }
+
+        .skel-community__info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .skel-community__name {
+            width: 100px;
+            height: 14px;
+        }
+
+        .skel-community__wave {
+            width: 140px;
+            height: 16px;
+        }
+
+        .skel-community__play {
+            width: var(--touch-target-min);
+            height: var(--touch-target-min);
+        }
+
+        /* ── Error State Component ────────────────────────── */
+
+        .error-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: var(--space-8) var(--space-6);
+            gap: var(--space-4);
+        }
+
+        .error-state__icon {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius-full);
+            background: var(--color-error-subtle);
+            color: var(--color-error);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-state__icon svg {
+            width: var(--icon-2xl);
+            height: var(--icon-2xl);
+        }
+
+        .error-state__title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-snug);
+        }
+
+        .error-state__desc {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-relaxed);
+            max-width: 280px;
+        }
+
+        .error-state__actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            align-items: center;
+        }
+
+        .btn-retry {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            height: var(--btn-height-md);
+            padding: 0 var(--space-6);
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border: none;
+            border-radius: var(--btn-radius);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-sm);
+            font-weight: var(--btn-font-weight);
+            letter-spacing: var(--btn-letter-spacing);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: background var(--transition-fast), transform var(--transition-fast);
+            min-height: var(--touch-target-min);
+        }
+
+        .btn-retry:hover {
+            background: var(--color-primary-dark);
+            transform: scale(1.02);
+        }
+
+        .btn-retry svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
+
+        .btn-dismiss {
+            background: none;
+            border: none;
+            color: var(--color-text-tertiary);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            padding: var(--space-2) var(--space-4);
+            min-height: var(--touch-target-min);
+            display: flex;
+            align-items: center;
+            transition: color var(--transition-fast);
+        }
+
+        .btn-dismiss:hover {
+            color: var(--color-text-secondary);
+        }
+
+        /* ── Error Banner ─────────────────────────────────── */
+
+        .error-banner {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-error-subtle);
+            border: 1px solid var(--color-error-light);
+            border-radius: var(--radius-lg);
+        }
+
+        .error-banner__icon {
+            flex-shrink: 0;
+            width: var(--icon-lg);
+            height: var(--icon-lg);
+            color: var(--color-error);
+        }
+
+        .error-banner__text {
+            flex: 1;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-snug);
+        }
+
+        .error-banner__retry {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 32px;
+            padding: 0 var(--space-3);
+            background: var(--color-error);
+            color: var(--color-text-inverse);
+            border: none;
+            border-radius: var(--radius-full);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+            min-height: var(--touch-target-min);
+            min-width: var(--touch-target-min);
+        }
+
+        .error-banner__retry:hover {
+            background: var(--color-error-light);
+        }
+
+        /* ── Permission Dialog ────────────────────────────── */
+
+        .dialog-backdrop {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-8) var(--space-page-x);
+            min-height: 400px;
+            background: var(--color-bg-overlay);
+            border-radius: var(--card-radius);
+        }
+
+        .dialog {
+            width: 100%;
+            max-width: 320px;
+            background: var(--card-bg);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-2xl);
+            overflow: hidden;
+        }
+
+        .dialog__header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-8) var(--space-6) var(--space-4);
+        }
+
+        .dialog__icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-2xl);
+        }
+
+        .dialog__icon--warning {
+            background: var(--color-warning-subtle);
+        }
+
+        .dialog__title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            text-align: center;
+            line-height: var(--line-height-snug);
+        }
+
+        .dialog__body {
+            padding: 0 var(--space-6) var(--space-6);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            text-align: center;
+            line-height: var(--line-height-relaxed);
+        }
+
+        .dialog__actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            padding: 0 var(--space-6) var(--space-6);
+        }
+
+        .dialog__btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: var(--btn-height-md);
+            border: none;
+            border-radius: var(--btn-radius);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-sm);
+            font-weight: var(--btn-font-weight);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+            min-height: var(--touch-target-min);
+        }
+
+        .dialog__btn--primary {
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+        }
+
+        .dialog__btn--primary:hover {
+            background: var(--color-primary-dark);
+        }
+
+        .dialog__btn--ghost {
+            background: none;
+            color: var(--color-text-tertiary);
+        }
+
+        .dialog__btn--ghost:hover {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-secondary);
+        }
+
+        /* ── Utilities ────────────────────────────────────── */
+
+        .state-spacer {
+            height: var(--space-6);
+        }
+
+        .sr-only--focusable:focus-visible {
+            position: fixed;
+            top: var(--space-2);
+            left: var(--space-2);
+            width: auto;
+            height: auto;
+            padding: var(--space-2) var(--space-4);
+            clip: auto;
+            white-space: normal;
+            overflow: visible;
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            z-index: var(--z-max);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="sr-only sr-only--focusable">Skip to content</a>
+    <div class="app-shell" data-screen="states">
+
+        <header class="app-shell__header">
+            <h1 style="font-family: var(--font-family-display); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-text-primary);">Edge States</h1>
+        </header>
+
+        <main class="app-shell__content" id="main-content">
+            <div class="state-catalog">
+
+                <!-- ════════════════════════════════════════════════ -->
+                <!--  EMPTY STATES                                    -->
+                <!-- ════════════════════════════════════════════════ -->
+
+                <section class="state-section" aria-label="Empty states">
+                    <div class="state-section__label">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+                        Empty States
+                    </div>
+
+                    <!-- Empty: Daily Prompt — No prompts -->
+                    <div class="state-frame">
+                        <p class="state-frame__title">Daily Prompt — No prompts available</p>
+                        <div class="card">
+                            <div class="empty-state" role="status" aria-label="No prompts available">
+                                <div class="empty-state__illustration empty-state__illustration--primary" aria-hidden="true">🎙️</div>
+                                <h2 class="empty-state__title">No prompts right now</h2>
+                                <p class="empty-state__desc">New prompts are generated daily. Check back tomorrow for your next storytelling challenge.</p>
+                                <button class="empty-state__action empty-state__action--primary" type="button">
+                                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                    </svg>
+                                    Free Record
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty: Progress Overview — New user -->
+                    <div class="state-frame">
+                        <p class="state-frame__title">Progress Overview — New user, 0 sessions</p>
+                        <div class="card">
+                            <div class="empty-state" role="status" aria-label="No progress data yet">
+                                <div class="empty-state__illustration empty-state__illustration--accent" aria-hidden="true">📈</div>
+                                <h2 class="empty-state__title">Your journey starts here</h2>
+                                <p class="empty-state__desc">Complete your first recording to start tracking your voice and storytelling scores.</p>
+                                <button class="empty-state__action empty-state__action--recording" type="button">
+                                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                    </svg>
+                                    Record Your First Story
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty: Community Home — No submissions -->
+                    <div class="state-frame">
+                        <p class="state-frame__title">Community Home — No submissions yet</p>
+                        <div class="card">
+                            <div class="empty-state" role="status" aria-label="No community submissions yet">
+                                <div class="empty-state__illustration empty-state__illustration--secondary" aria-hidden="true">🤝</div>
+                                <h2 class="empty-state__title">Be the first to share</h2>
+                                <p class="empty-state__desc">This week's challenge just started. Record your story and inspire others in the community.</p>
+                                <button class="empty-state__action empty-state__action--recording" type="button">
+                                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                    </svg>
+                                    Record My Entry
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ════════════════════════════════════════════════ -->
+                <!--  LOADING STATES                                  -->
+                <!-- ════════════════════════════════════════════════ -->
+
+                <section class="state-section" aria-label="Loading states">
+                    <div class="state-section__label">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        Loading States
+                    </div>
+
+                    <!-- Loading: Daily Prompt -->
+                    <div class="state-frame">
+                        <p class="state-frame__title">Daily Prompt — Loading prompt</p>
+                        <div class="skel-prompt" role="status" aria-label="Loading today's prompt">
+                            <span class="sr-only">Loading today's prompt…</span>
+                            <div class="skeleton skel-prompt__image"></div>
+                            <div class="skel-prompt__body">
+                                <div class="skeleton skeleton--text skel-prompt__badge"></div>
+                                <div class="skeleton skeleton--text skel-prompt__title"></div>
+                                <div class="skel-prompt__meta">
+                                    <div class="skeleton skeleton--text-sm skel-prompt__meta-item"></div>
+                                    <div class="skeleton skeleton--text-sm skel-prompt__meta-item"></div>
+                                </div>
+                                <div class="skeleton skel-prompt__btn"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loading: Feedback Dashboard -->
+                    <div class="state-frame">
+                        <p class="state-frame__title">Feedback Dashboard — Processing recording</p>
+                        <div class="skel-feedback" role="status" aria-label="Processing your recording">
+                            <span class="sr-only">Processing your recording…</span>
+
+                            <div class="skel-feedback__scores">
+                                <div class="card skel-feedback__score-card">
+                                    <div class="skeleton skeleton--text skel-feedback__score-label"></div>
+                                    <div class="skeleton skel-feedback__score-value"></div>
+                                    <div class="skeleton skeleton--text-sm skel-feedback__score-delta"></div>
+                                </div>
+                                <div style="display:flex; align-items:center; justify-content:center; padding: var(--space-2);">
+                                    <div class="skeleton skeleton--circle" style="width: 48px; height: 48px;"></div>
+                                </div>
+                                <div class="card skel-feedback__score-card">
+                                    <div class="skeleton skeleton--text skel-feedback__score-label"></div>
+                                    <div class="skeleton skel-feedback__score-value"></div>
+                                    <div class="skeleton skeleton--text-sm skel-feedback__score-delta"></div>
+                                </div>
+                            </div>
+
+                            <div class="card skel-feedback__waveform-card">
+                                <div class="skel-feedback__waveform">
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 30%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 50%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 40%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 65%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 80%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 55%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 70%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 90%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 60%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 45%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 75%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 85%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 50%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 35%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 60%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 95%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 70%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 55%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 40%"></div>
+                                    <div class="skeleton skel-feedback__waveform-bar" style="height: 80%"></div>
+                                </div>
+                            </div>
+
+                            <div class="card skel-feedback__metric">
+                                <div class="skeleton skeleton--text skel-feedback__metric-name"></div>
+                                <div class="skeleton skeleton--text skel-feedback__metric-score"></div>
+                            </div>
+                            <div class="card skel-feedback__metric">
+                                <div class="skeleton skeleton--text skel-feedback__metric-name"></div>
+                                <div class="skeleton skeleton--text skel-feedback__metric-score"></div>
+                            </div>
+                            <div class="card skel-feedback__metric">
+                                <div class="skeleton skeleton--text skel-feedback__metric-name"></div>
+                                <div class="skeleton skeleton--text skel-feedback__metric-score"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loading: Community Home — Leaderboard -->
+                    <div class="state-frame">
+                        <p class="state-frame__title">Community Home — Fetching leaderboard</p>
+                        <div class="skel-community" role="status" aria-label="Loading leaderboard">
+                            <span class="sr-only">Loading leaderboard…</span>
+
+                            <div class="card skel-community__story">
+                                <div class="skeleton skeleton--circle skel-community__rank"></div>
+                                <div class="skeleton skeleton--circle skel-community__avatar"></div>
+                                <div class="skel-community__info">
+                                    <div class="skeleton skeleton--text skel-community__name"></div>
+                                    <div class="skeleton skeleton--text skel-community__wave"></div>
+                                </div>
+                                <div class="skeleton skeleton--circle skel-community__play"></div>
+                            </div>
+
+                            <div class="card skel-community__story">
+                                <div class="skeleton skeleton--circle skel-community__rank"></div>
+                                <div class="skeleton skeleton--circle skel-community__avatar"></div>
+                                <div class="skel-community__info">
+                                    <div class="skeleton skeleton--text skel-community__name"></div>
+                                    <div class="skeleton skeleton--text skel-community__wave"></div>
+                                </div>
+                                <div class="skeleton skeleton--circle skel-community__play"></div>
+                            </div>
+
+                            <div class="card skel-community__story">
+                                <div class="skeleton skeleton--circle skel-community__rank"></div>
+                                <div class="skeleton skeleton--circle skel-community__avatar"></div>
+                                <div class="skel-community__info">
+                                    <div class="skeleton skeleton--text skel-community__name"></div>
+                                    <div class="skeleton skeleton--text skel-community__wave"></div>
+                                </div>
+                                <div class="skeleton skeleton--circle skel-community__play"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ════════════════════════════════════════════════ -->
+                <!--  ERROR STATES                                    -->
+                <!-- ════════════════════════════════════════════════ -->
+
+                <section class="state-section" aria-label="Error states">
+                    <div class="state-section__label">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        Error States
+                    </div>
+
+                    <!-- Error: Microphone Permission Denied -->
+                    <div class="state-frame">
+                        <p class="state-frame__title">Recording — Microphone permission denied</p>
+                        <div class="dialog-backdrop" role="presentation">
+                            <div class="dialog" role="alertdialog" aria-labelledby="perm-title" aria-describedby="perm-desc">
+                                <div class="dialog__header">
+                                    <div class="dialog__icon dialog__icon--warning" aria-hidden="true">🎤</div>
+                                    <h2 class="dialog__title" id="perm-title">Microphone Access Needed</h2>
+                                </div>
+                                <div class="dialog__body" id="perm-desc">
+                                    <p>StoryCraft needs microphone access to record your stories. Please enable it in your device settings.</p>
+                                </div>
+                                <div class="dialog__actions">
+                                    <button class="dialog__btn dialog__btn--primary" type="button">Open Settings</button>
+                                    <button class="dialog__btn dialog__btn--ghost" type="button">Maybe Later</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error: Network error with retry -->
+                    <div class="state-frame">
+                        <p class="state-frame__title">Network Error — Banner with retry</p>
+                        <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+                            <div class="error-banner" role="alert">
+                                <svg class="error-banner__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                    <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/>
+                                    <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/>
+                                    <path d="M10.71 5.05A16 16 0 0 1 22.56 9"/>
+                                    <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/>
+                                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                                    <line x1="12" y1="20" x2="12.01" y2="20"/>
+                                </svg>
+                                <span class="error-banner__text">No internet connection. Your data will sync when you're back online.</span>
+                                <button class="error-banner__retry" type="button" aria-label="Retry connection">Retry</button>
+                            </div>
+
+                            <div class="card" style="padding: var(--space-6); text-align: center;">
+                                <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Content area below the banner would show cached data or the last loaded state.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error: Feedback processing failed -->
+                    <div class="state-frame">
+                        <p class="state-frame__title">Feedback Dashboard — Processing error</p>
+                        <div class="card">
+                            <div class="error-state" role="alert" aria-label="Failed to process recording">
+                                <div class="error-state__icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="12" y1="8" x2="12" y2="12"/>
+                                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                    </svg>
+                                </div>
+                                <h2 class="error-state__title">Couldn't process your recording</h2>
+                                <p class="error-state__desc">Something went wrong while analyzing your story. Your recording has been saved — try submitting again.</p>
+                                <div class="error-state__actions">
+                                    <button class="btn-retry" type="button">
+                                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="23 4 23 10 17 10"/>
+                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                                        </svg>
+                                        Try Again
+                                    </button>
+                                    <button class="btn-dismiss" type="button">Go to Dashboard</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <div class="state-spacer"></div>
+
+            </div>
+        </main>
+
+    </div>
+</body>
+</html>

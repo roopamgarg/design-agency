@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Library — StoryCraft</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            color: var(--color-text-primary);
+            background: var(--color-bg-primary);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page-header {
+            padding: var(--space-12) var(--space-8) var(--space-8);
+            text-align: center;
+            border-bottom: 1px solid var(--color-border-subtle);
+            background: var(--color-bg-elevated);
+        }
+        .page-header h1 {
+            font-family: var(--font-family-serif);
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            letter-spacing: var(--letter-spacing-tight);
+            margin-bottom: var(--space-2);
+        }
+        .page-header p {
+            font-size: var(--font-size-md);
+            color: var(--color-text-secondary);
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        main { max-width: 1200px; margin: 0 auto; padding: var(--space-8); }
+
+        section { margin-bottom: var(--space-16); }
+
+        section > h2 {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-2);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+        section > p.section-desc {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-6);
+        }
+
+        .component-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            align-items: flex-start;
+            margin-bottom: var(--space-6);
+        }
+        .component-row.col { flex-direction: column; }
+
+        .component-group {
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border-subtle);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            flex: 1;
+            min-width: 280px;
+        }
+        .component-group h3 {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            margin-bottom: var(--space-4);
+        }
+
+        .state-label {
+            display: inline-block;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-2);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* BUTTONS                                                            */
+        /* ------------------------------------------------------------------ */
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-family-sans);
+            font-weight: var(--btn-font-weight);
+            letter-spacing: var(--btn-letter-spacing);
+            border-radius: var(--btn-radius);
+            transition: all var(--transition-fast);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .btn:focus-visible {
+            outline: 2px solid var(--color-border-focus);
+            outline-offset: 2px;
+        }
+
+        .btn--sm { height: var(--btn-height-sm); padding: 0 var(--space-4); font-size: var(--font-size-sm); }
+        .btn--md { height: var(--btn-height-md); padding: 0 var(--space-6); font-size: var(--font-size-base); }
+        .btn--lg { height: var(--btn-height-lg); padding: 0 var(--space-8); font-size: var(--font-size-md); }
+
+        .btn--primary {
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+        }
+        .btn--primary:hover {
+            background: var(--color-primary-dark);
+            box-shadow: var(--shadow-glow-primary);
+            transform: translateY(-1px);
+        }
+        .btn--primary:active {
+            transform: scale(0.98);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn--secondary {
+            background: var(--color-primary-subtle);
+            color: var(--color-primary);
+            border: 1px solid var(--color-primary-light);
+        }
+        .btn--secondary:hover {
+            background: var(--color-primary-light);
+            color: var(--color-primary-contrast);
+            transform: translateY(-1px);
+        }
+        .btn--secondary:active { transform: scale(0.98); }
+
+        .btn--ghost {
+            background: transparent;
+            color: var(--color-text-secondary);
+        }
+        .btn--ghost:hover {
+            background: var(--color-primary-subtle);
+            color: var(--color-primary);
+        }
+
+        .btn--accent {
+            background: var(--color-accent);
+            color: #FFFFFF;
+        }
+        .btn--accent:hover {
+            background: var(--color-accent-dark);
+            box-shadow: var(--shadow-glow-streak);
+            transform: translateY(-1px);
+        }
+
+        .btn--danger {
+            background: var(--color-error);
+            color: #FFFFFF;
+        }
+        .btn--danger:hover {
+            background: #DC2626;
+            transform: translateY(-1px);
+        }
+
+        .btn--disabled {
+            background: var(--color-border-default);
+            color: var(--color-text-disabled);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .btn--icon {
+            width: var(--btn-height-md);
+            height: var(--btn-height-md);
+            padding: 0;
+            border-radius: var(--radius-full);
+            background: var(--color-bg-elevated);
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border-default);
+        }
+        .btn--icon:hover {
+            background: var(--color-primary-subtle);
+            color: var(--color-primary);
+            border-color: var(--color-primary-light);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* RECORD BUTTON (FAB)                                                */
+        /* ------------------------------------------------------------------ */
+
+        .record-btn {
+            width: var(--record-btn-size);
+            height: var(--record-btn-size);
+            border-radius: var(--record-btn-radius);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-recording);
+            color: #FFFFFF;
+            box-shadow: var(--record-btn-shadow);
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+        .record-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-glow-recording);
+        }
+        .record-btn:active { transform: scale(0.95); }
+
+        .record-btn--recording {
+            animation: record-pulse var(--recording-pulse-duration) var(--recording-pulse-easing) infinite;
+        }
+        .record-btn--recording::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: var(--radius-full);
+            border: 2px solid var(--color-recording-pulse);
+            animation: record-ring var(--recording-pulse-duration) var(--recording-pulse-easing) infinite;
+        }
+
+        @keyframes record-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
+        }
+        @keyframes record-ring {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 0; }
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* INPUTS                                                             */
+        /* ------------------------------------------------------------------ */
+
+        .input {
+            width: 100%;
+            height: var(--input-height);
+            padding: 0 var(--input-padding-x);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            color: var(--color-text-primary);
+            background: var(--input-bg);
+            border: 1.5px solid var(--input-border);
+            border-radius: var(--input-radius);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+            outline: none;
+        }
+        .input::placeholder { color: var(--color-text-tertiary); }
+        .input:focus {
+            border-color: var(--input-border-focus);
+            box-shadow: 0 0 0 3px var(--color-primary-subtle);
+        }
+        .input--error {
+            border-color: var(--color-error);
+        }
+        .input--error:focus {
+            box-shadow: 0 0 0 3px var(--color-error-subtle);
+        }
+
+        .input-label {
+            display: block;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-1);
+        }
+        .input-hint {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            margin-top: var(--space-1);
+        }
+        .input-error-msg {
+            font-size: var(--font-size-xs);
+            color: var(--color-error);
+            margin-top: var(--space-1);
+        }
+
+        .input-group { margin-bottom: var(--space-4); }
+
+        textarea.input {
+            height: auto;
+            min-height: 100px;
+            padding: var(--space-3) var(--input-padding-x);
+            resize: vertical;
+            line-height: var(--line-height-normal);
+        }
+
+        select.input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238B83A0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right var(--space-4) center;
+            padding-right: var(--space-10);
+        }
+
+        /* Checkbox & Radio */
+        .checkbox-group, .radio-group {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            cursor: pointer;
+            font-size: var(--font-size-base);
+            color: var(--color-text-primary);
+            min-height: var(--touch-target-min);
+        }
+        .checkbox-group input[type="checkbox"],
+        .radio-group input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--color-primary);
+            cursor: pointer;
+        }
+
+        /* Toggle */
+        .toggle {
+            position: relative;
+            width: 48px;
+            height: 28px;
+            display: inline-block;
+        }
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: var(--color-border-default);
+            border-radius: var(--radius-full);
+            transition: background var(--transition-fast);
+            cursor: pointer;
+        }
+        .toggle-slider::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            left: 3px;
+            top: 3px;
+            background: var(--color-bg-elevated);
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-fast);
+        }
+        .toggle input:checked + .toggle-slider {
+            background: var(--color-primary);
+        }
+        .toggle input:checked + .toggle-slider::after {
+            transform: translateX(20px);
+        }
+        .toggle input:focus-visible + .toggle-slider {
+            outline: 2px solid var(--color-border-focus);
+            outline-offset: 2px;
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* CARDS                                                              */
+        /* ------------------------------------------------------------------ */
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--card-radius);
+            padding: var(--card-padding);
+            box-shadow: var(--card-shadow);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Prompt Card */
+        .prompt-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        .prompt-card__image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+        .prompt-card__body { padding: var(--card-padding); }
+        .prompt-card__category {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            color: var(--color-primary);
+            margin-bottom: var(--space-2);
+        }
+        .prompt-card__title {
+            font-family: var(--font-family-serif);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-snug);
+            margin-bottom: var(--space-2);
+        }
+        .prompt-card__meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+        }
+        .prompt-card__meta svg { width: 16px; height: 16px; }
+
+        /* Feedback Card */
+        .feedback-card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            padding: var(--card-padding);
+            border-left: 4px solid var(--color-primary);
+            box-shadow: var(--card-shadow);
+        }
+        .feedback-card--positive { border-left-color: var(--color-success); }
+        .feedback-card--warning { border-left-color: var(--color-warning); }
+        .feedback-card--critical { border-left-color: var(--color-error); }
+
+        .feedback-card__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-2);
+        }
+        .feedback-card__metric {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+        .feedback-card__score {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+        }
+        .feedback-card__delta {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+        }
+        .feedback-card__delta--up {
+            color: var(--color-success);
+            background: var(--color-success-subtle);
+        }
+        .feedback-card__delta--down {
+            color: var(--color-error);
+            background: var(--color-error-subtle);
+        }
+        .feedback-card__body {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-relaxed);
+        }
+
+        /* Track Card */
+        .track-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            width: 260px;
+        }
+        .track-card__image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+        }
+        .track-card__body { padding: var(--card-padding); }
+        .track-card__tag {
+            display: inline-block;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            margin-bottom: var(--space-2);
+        }
+        .track-card__title {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-1);
+        }
+        .track-card__desc {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+            line-height: var(--line-height-normal);
+        }
+        .track-card__progress {
+            padding: var(--space-3) var(--card-padding);
+            border-top: 1px solid var(--color-border-subtle);
+        }
+
+        /* Community Entry Card */
+        .community-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--card-radius);
+            padding: var(--card-padding);
+            box-shadow: var(--card-shadow);
+        }
+        .community-card__header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+        .community-card__avatar {
+            width: var(--avatar-md);
+            height: var(--avatar-md);
+            border-radius: var(--radius-full);
+            object-fit: cover;
+        }
+        .community-card__name {
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-base);
+            color: var(--color-text-primary);
+        }
+        .community-card__time {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+        .community-card__waveform {
+            height: 48px;
+            background: var(--color-primary-subtle);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--waveform-bar-gap);
+            padding: 0 var(--space-3);
+            overflow: hidden;
+        }
+        .community-card__actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* SCORE DISPLAY                                                      */
+        /* ------------------------------------------------------------------ */
+
+        .score-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--card-radius);
+            padding: var(--card-padding);
+            text-align: center;
+            min-width: var(--score-card-min-width);
+        }
+        .score-card__value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary);
+            line-height: 1;
+            margin-bottom: var(--space-1);
+        }
+        .score-card__label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+        }
+        .score-card__sublabel {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* PROGRESS INDICATORS                                                */
+        /* ------------------------------------------------------------------ */
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--color-border-subtle);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+        .progress-bar__fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            background: var(--color-primary);
+            transition: width var(--transition-normal);
+        }
+        .progress-bar__fill--success { background: var(--color-success); }
+        .progress-bar__fill--accent { background: var(--color-accent); }
+
+        .progress-ring {
+            width: var(--progress-ring-size);
+            height: var(--progress-ring-size);
+        }
+        .progress-ring__bg {
+            fill: none;
+            stroke: var(--progress-ring-bg);
+            stroke-width: var(--progress-ring-stroke);
+        }
+        .progress-ring__fill {
+            fill: none;
+            stroke-width: var(--progress-ring-stroke);
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            transition: stroke-dashoffset var(--transition-slow);
+        }
+
+        /* Streak display */
+        .streak {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-streak);
+        }
+        .streak__icon {
+            width: var(--streak-icon-size);
+            height: var(--streak-icon-size);
+        }
+        .streak__count {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xl);
+        }
+        .streak__label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-regular);
+            color: var(--color-text-secondary);
+        }
+
+        /* Heatmap (practice frequency) */
+        .heatmap {
+            display: flex;
+            gap: 3px;
+            flex-wrap: wrap;
+        }
+        .heatmap__cell {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            background: var(--color-border-subtle);
+        }
+        .heatmap__cell--l1 { background: var(--color-primary-subtle); }
+        .heatmap__cell--l2 { background: var(--color-primary-light); opacity: 0.5; }
+        .heatmap__cell--l3 { background: var(--color-primary-light); }
+        .heatmap__cell--l4 { background: var(--color-primary); }
+
+        /* ------------------------------------------------------------------ */
+        /* WAVEFORM VISUALIZER                                                */
+        /* ------------------------------------------------------------------ */
+
+        .waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--waveform-bar-gap);
+            height: 64px;
+            padding: 0 var(--space-4);
+        }
+        .waveform__bar {
+            width: var(--waveform-bar-width);
+            border-radius: var(--waveform-bar-radius);
+            background: var(--waveform-color-idle);
+            transition: height var(--transition-fast);
+        }
+        .waveform--active .waveform__bar {
+            background: var(--waveform-color-active);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* TIMER DISPLAY                                                      */
+        /* ------------------------------------------------------------------ */
+
+        .timer {
+            font-family: var(--timer-font-family);
+            font-size: var(--timer-font-size);
+            font-weight: var(--timer-font-weight);
+            font-variant-numeric: var(--timer-font-variant);
+            color: var(--color-text-primary);
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+        .timer--recording { color: var(--color-recording); }
+        .timer--sm {
+            font-size: var(--font-size-xl);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* NAVIGATION — Bottom Tabs                                           */
+        /* ------------------------------------------------------------------ */
+
+        .bottom-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            height: var(--bottom-nav-height);
+            background: var(--color-bg-elevated);
+            border-top: 1px solid var(--color-border-subtle);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        .bottom-nav__item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            min-width: var(--touch-target-min);
+            min-height: var(--touch-target-min);
+            color: var(--color-text-tertiary);
+            text-decoration: none;
+            font-size: var(--bottom-nav-label-size);
+            font-weight: var(--font-weight-medium);
+            transition: color var(--transition-fast);
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        .bottom-nav__item svg {
+            width: var(--bottom-nav-icon-size);
+            height: var(--bottom-nav-icon-size);
+        }
+        .bottom-nav__item--active {
+            color: var(--color-primary);
+        }
+        .bottom-nav__item:hover {
+            color: var(--color-primary);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* BADGES & TAGS                                                      */
+        /* ------------------------------------------------------------------ */
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            height: var(--badge-height);
+            padding: 0 var(--badge-padding-x);
+            font-size: var(--badge-font-size);
+            font-weight: var(--font-weight-semibold);
+            border-radius: var(--badge-radius);
+            white-space: nowrap;
+        }
+        .badge--primary { background: var(--color-primary-subtle); color: var(--color-primary); }
+        .badge--success { background: var(--color-success-subtle); color: var(--color-success); }
+        .badge--warning { background: var(--color-warning-subtle); color: var(--color-warning); }
+        .badge--error { background: var(--color-error-subtle); color: var(--color-error); }
+        .badge--accent { background: var(--color-accent-subtle); color: var(--color-accent); }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-1) var(--space-3);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            border-radius: var(--radius-full);
+            border: 1px solid var(--color-border-default);
+            color: var(--color-text-secondary);
+            background: var(--color-bg-elevated);
+        }
+        .tag--active {
+            background: var(--color-primary-subtle);
+            border-color: var(--color-primary-light);
+            color: var(--color-primary);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* AVATARS                                                            */
+        /* ------------------------------------------------------------------ */
+
+        .avatar {
+            border-radius: var(--radius-full);
+            object-fit: cover;
+            border: var(--avatar-border);
+        }
+        .avatar--xs { width: var(--avatar-xs); height: var(--avatar-xs); }
+        .avatar--sm { width: var(--avatar-sm); height: var(--avatar-sm); }
+        .avatar--md { width: var(--avatar-md); height: var(--avatar-md); }
+        .avatar--lg { width: var(--avatar-lg); height: var(--avatar-lg); }
+        .avatar--xl { width: var(--avatar-xl); height: var(--avatar-xl); }
+
+        .avatar-group {
+            display: flex;
+        }
+        .avatar-group .avatar {
+            margin-left: -8px;
+        }
+        .avatar-group .avatar:first-child { margin-left: 0; }
+
+        /* ------------------------------------------------------------------ */
+        /* BOTTOM SHEET                                                       */
+        /* ------------------------------------------------------------------ */
+
+        .bottom-sheet-backdrop {
+            position: fixed;
+            inset: 0;
+            background: var(--color-bg-overlay);
+            z-index: var(--z-modal-backdrop);
+        }
+        .bottom-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: var(--content-width-base);
+            background: var(--color-bg-elevated);
+            border-radius: var(--sheet-radius);
+            z-index: var(--z-modal);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-2xl);
+        }
+        .bottom-sheet__handle {
+            width: var(--sheet-handle-width);
+            height: var(--sheet-handle-height);
+            background: var(--color-border-default);
+            border-radius: var(--sheet-handle-radius);
+            margin: 0 auto var(--space-4);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* TOAST                                                              */
+        /* ------------------------------------------------------------------ */
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-text-primary);
+            color: var(--color-text-inverse);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            min-height: var(--touch-target-min);
+            max-width: 360px;
+        }
+        .toast--success { background: var(--color-success); }
+        .toast--error { background: var(--color-error); }
+
+        /* ------------------------------------------------------------------ */
+        /* SKELETON LOADING                                                   */
+        /* ------------------------------------------------------------------ */
+
+        .skeleton {
+            background: linear-gradient(90deg,
+                var(--color-border-subtle) 25%,
+                var(--color-bg-tertiary) 50%,
+                var(--color-border-subtle) 75%
+            );
+            background-size: 200% 100%;
+            animation: skeleton-shimmer 1.5s ease-in-out infinite;
+            border-radius: var(--radius-md);
+        }
+        @keyframes skeleton-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .skeleton--text { height: 16px; margin-bottom: var(--space-2); }
+        .skeleton--title { height: 24px; width: 60%; margin-bottom: var(--space-3); }
+        .skeleton--circle {
+            border-radius: var(--radius-full);
+        }
+        .skeleton--card {
+            height: 200px;
+            border-radius: var(--card-radius);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* UTILITY: Demo spacing helpers                                      */
+        /* ------------------------------------------------------------------ */
+
+        .demo-row { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; margin-bottom: var(--space-4); }
+        .demo-col { display: flex; flex-direction: column; gap: var(--space-3); }
+        .demo-spacer { height: var(--space-4); }
+        .demo-dark-bg {
+            background: var(--color-bg-recording);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+        }
+    </style>
+</head>
+<body>
+
+<header class="page-header">
+    <h1>StoryCraft Components</h1>
+    <p>Visual component library for the StoryCraft storytelling practice platform. Warm, approachable, audio-first.</p>
+</header>
+
+<main>
+
+    <!-- ================================================================ -->
+    <!-- BUTTONS                                                          -->
+    <!-- ================================================================ -->
+    <section data-component="buttons">
+        <h2>Buttons</h2>
+        <p class="section-desc">Primary actions use pill-shaped buttons. Sizes: sm (36px), md (44px), lg (52px). All meet 44px minimum touch target.</p>
+
+        <div class="component-row">
+            <div class="component-group">
+                <h3>Variants</h3>
+                <div class="demo-row">
+                    <button class="btn btn--primary btn--md">Primary</button>
+                    <button class="btn btn--secondary btn--md">Secondary</button>
+                    <button class="btn btn--ghost btn--md">Ghost</button>
+                    <button class="btn btn--accent btn--md">Accent</button>
+                    <button class="btn btn--danger btn--md">Danger</button>
+                    <button class="btn btn--disabled btn--md">Disabled</button>
+                </div>
+            </div>
+
+            <div class="component-group">
+                <h3>Sizes</h3>
+                <div class="demo-row">
+                    <button class="btn btn--primary btn--sm">Small</button>
+                    <button class="btn btn--primary btn--md">Medium</button>
+                    <button class="btn btn--primary btn--lg">Large</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="component-row">
+            <div class="component-group">
+                <h3>With Icons</h3>
+                <div class="demo-row">
+                    <button class="btn btn--primary btn--md">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        Start Recording
+                    </button>
+                    <button class="btn btn--secondary btn--md">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                        Try Again
+                    </button>
+                    <button class="btn btn--icon" aria-label="Settings">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- RECORDING UI                                                     -->
+    <!-- ================================================================ -->
+    <section data-component="recording">
+        <h2>Recording UI</h2>
+        <p class="section-desc">Core interaction components: record button (FAB), waveform visualizer, and timer. The recording screen uses a dark background for focus.</p>
+
+        <div class="component-row">
+            <div class="component-group">
+                <h3>Record Button — States</h3>
+                <div class="demo-row" style="gap: var(--space-8);">
+                    <div style="text-align:center">
+                        <span class="state-label">Idle</span><br>
+                        <button class="record-btn" aria-label="Start recording">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        </button>
+                    </div>
+                    <div style="text-align:center">
+                        <span class="state-label">Recording</span><br>
+                        <button class="record-btn record-btn--recording" aria-label="Stop recording">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component-group demo-dark-bg">
+                <h3 style="color: var(--color-text-inverse);">Waveform Visualizer</h3>
+                <div style="margin-bottom: var(--space-4);">
+                    <span class="state-label" style="color: var(--color-text-tertiary);">Idle</span>
+                    <div class="waveform">
+                        <div class="waveform__bar" style="height: 12px;"></div>
+                        <div class="waveform__bar" style="height: 20px;"></div>
+                        <div class="waveform__bar" style="height: 16px;"></div>
+                        <div class="waveform__bar" style="height: 28px;"></div>
+                        <div class="waveform__bar" style="height: 24px;"></div>
+                        <div class="waveform__bar" style="height: 32px;"></div>
+                        <div class="waveform__bar" style="height: 20px;"></div>
+                        <div class="waveform__bar" style="height: 36px;"></div>
+                        <div class="waveform__bar" style="height: 28px;"></div>
+                        <div class="waveform__bar" style="height: 16px;"></div>
+                        <div class="waveform__bar" style="height: 24px;"></div>
+                        <div class="waveform__bar" style="height: 40px;"></div>
+                        <div class="waveform__bar" style="height: 32px;"></div>
+                        <div class="waveform__bar" style="height: 20px;"></div>
+                        <div class="waveform__bar" style="height: 12px;"></div>
+                        <div class="waveform__bar" style="height: 28px;"></div>
+                        <div class="waveform__bar" style="height: 36px;"></div>
+                        <div class="waveform__bar" style="height: 24px;"></div>
+                        <div class="waveform__bar" style="height: 16px;"></div>
+                        <div class="waveform__bar" style="height: 8px;"></div>
+                    </div>
+                </div>
+                <div>
+                    <span class="state-label" style="color: var(--color-text-tertiary);">Active (Recording)</span>
+                    <div class="waveform waveform--active">
+                        <div class="waveform__bar" style="height: 18px;"></div>
+                        <div class="waveform__bar" style="height: 32px;"></div>
+                        <div class="waveform__bar" style="height: 44px;"></div>
+                        <div class="waveform__bar" style="height: 28px;"></div>
+                        <div class="waveform__bar" style="height: 52px;"></div>
+                        <div class="waveform__bar" style="height: 36px;"></div>
+                        <div class="waveform__bar" style="height: 48px;"></div>
+                        <div class="waveform__bar" style="height: 24px;"></div>
+                        <div class="waveform__bar" style="height: 56px;"></div>
+                        <div class="waveform__bar" style="height: 40px;"></div>
+                        <div class="waveform__bar" style="height: 32px;"></div>
+                        <div class="waveform__bar" style="height: 48px;"></div>
+                        <div class="waveform__bar" style="height: 36px;"></div>
+                        <div class="waveform__bar" style="height: 52px;"></div>
+                        <div class="waveform__bar" style="height: 20px;"></div>
+                        <div class="waveform__bar" style="height: 44px;"></div>
+                        <div class="waveform__bar" style="height: 28px;"></div>
+                        <div class="waveform__bar" style="height: 36px;"></div>
+                        <div class="waveform__bar" style="height: 16px;"></div>
+                        <div class="waveform__bar" style="height: 24px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="component-row">
+            <div class="component-group demo-dark-bg">
+                <h3 style="color: var(--color-text-inverse);">Timer Display</h3>
+                <div class="demo-row" style="gap: var(--space-8); justify-content: center;">
+                    <div style="text-align:center">
+                        <span class="state-label" style="color: var(--color-text-tertiary);">Default</span>
+                        <div class="timer" style="color: var(--color-text-inverse);">02:34</div>
+                    </div>
+                    <div style="text-align:center">
+                        <span class="state-label" style="color: var(--color-text-tertiary);">Recording</span>
+                        <div class="timer timer--recording">01:15</div>
+                    </div>
+                    <div style="text-align:center">
+                        <span class="state-label" style="color: var(--color-text-tertiary);">Small</span>
+                        <div class="timer timer--sm" style="color: var(--color-text-inverse);">3:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- INPUTS                                                           -->
+    <!-- ================================================================ -->
+    <section data-component="inputs">
+        <h2>Inputs</h2>
+        <p class="section-desc">Form elements with focus states, error handling, and accessibility. 48px height for easy touch targeting.</p>
+
+        <div class="component-row">
+            <div class="component-group">
+                <h3>Text Inputs</h3>
+                <div class="input-group">
+                    <label class="input-label">Display Name</label>
+                    <input type="text" class="input" placeholder="How should we call you?">
+                    <span class="input-hint">This is shown on community challenges</span>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Email Address</label>
+                    <input type="email" class="input input--error" value="invalid-email">
+                    <span class="input-error-msg">Please enter a valid email address</span>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Your Story Goal</label>
+                    <textarea class="input" placeholder="What do you want to improve? (e.g., 'nail my startup pitch', 'be a better storyteller at parties')"></textarea>
+                </div>
+            </div>
+
+            <div class="component-group">
+                <h3>Select, Checkbox, Radio, Toggle</h3>
+                <div class="input-group">
+                    <label class="input-label">Learning Track</label>
+                    <select class="input">
+                        <option>Choose a track...</option>
+                        <option>Beginner Storyteller</option>
+                        <option>Content Creator</option>
+                        <option>Founder Pitch</option>
+                        <option>Interview Prep</option>
+                        <option>Social & Dating</option>
+                        <option>Leadership</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="checkbox-group">
+                        <input type="checkbox" checked> Daily practice reminders
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox"> Share recordings anonymously
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label class="radio-group">
+                        <input type="radio" name="session-len" checked> 3 min (Quick)
+                    </label>
+                    <label class="radio-group">
+                        <input type="radio" name="session-len"> 5 min (Standard)
+                    </label>
+                </div>
+                <div class="input-group" style="display: flex; align-items: center; gap: var(--space-3);">
+                    <span class="input-label" style="margin-bottom: 0;">Dark Mode</span>
+                    <label class="toggle">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- CARDS                                                            -->
+    <!-- ================================================================ -->
+    <section data-component="cards">
+        <h2>Cards</h2>
+        <p class="section-desc">Content containers for prompts, feedback, tracks, and community entries. All use the warm elevated surface.</p>
+
+        <div class="component-row">
+            <div class="component-group" style="min-width: 340px;">
+                <h3>Prompt Card</h3>
+                <div class="prompt-card">
+                    <img class="prompt-card__image" src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=200&fit=crop" alt="Person speaking on stage">
+                    <div class="prompt-card__body">
+                        <div class="prompt-card__category">Daily Challenge</div>
+                        <div class="prompt-card__title">Tell a story about a moment that changed how you see the world</div>
+                        <div class="prompt-card__meta">
+                            <span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                3 min
+                            </span>
+                            <span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                Beginner
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component-group" style="min-width: 340px;">
+                <h3>Feedback Cards — States</h3>
+                <div class="demo-col">
+                    <div class="feedback-card feedback-card--positive">
+                        <div class="feedback-card__header">
+                            <span class="feedback-card__metric">Hook Strength</span>
+                            <div style="display:flex;align-items:center;gap:var(--space-2);">
+                                <span class="feedback-card__score" style="color:var(--color-success);">8.2</span>
+                                <span class="feedback-card__delta feedback-card__delta--up">+2.1</span>
+                            </div>
+                        </div>
+                        <div class="feedback-card__body">Strong opening — you led with the conflict immediately. The listener is hooked within the first 5 seconds.</div>
+                    </div>
+                    <div class="feedback-card feedback-card--warning">
+                        <div class="feedback-card__header">
+                            <span class="feedback-card__metric">Pacing</span>
+                            <div style="display:flex;align-items:center;gap:var(--space-2);">
+                                <span class="feedback-card__score" style="color:var(--color-warning);">5.8</span>
+                                <span class="feedback-card__delta feedback-card__delta--down">-0.5</span>
+                            </div>
+                        </div>
+                        <div class="feedback-card__body">You sped up in the middle section (0:45–1:12). Try pausing after your key point to let it land.</div>
+                    </div>
+                    <div class="feedback-card feedback-card--critical">
+                        <div class="feedback-card__header">
+                            <span class="feedback-card__metric">Filler Words</span>
+                            <div style="display:flex;align-items:center;gap:var(--space-2);">
+                                <span class="feedback-card__score" style="color:var(--color-error);">12</span>
+                                <span class="feedback-card__delta feedback-card__delta--down">+4</span>
+                            </div>
+                        </div>
+                        <div class="feedback-card__body">Detected 12 filler words ("um", "like", "you know"). Focus on replacing fillers with brief pauses — silence is powerful.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="component-row">
+            <div class="component-group">
+                <h3>Track Cards</h3>
+                <div class="demo-row">
+                    <div class="track-card">
+                        <img class="track-card__image" src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=280&h=140&fit=crop" alt="Person presenting">
+                        <div class="track-card__body">
+                            <span class="track-card__tag" style="background: var(--color-primary-subtle); color: var(--color-primary);">Beginner</span>
+                            <div class="track-card__title">Storyteller Foundations</div>
+                            <div class="track-card__desc">Master structure, clarity, and confidence in 20 sessions</div>
+                        </div>
+                        <div class="track-card__progress">
+                            <div style="display:flex;justify-content:space-between;font-size:var(--font-size-xs);color:var(--color-text-tertiary);margin-bottom:4px;">
+                                <span>8 / 20 sessions</span>
+                                <span>40%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-bar__fill" style="width: 40%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="track-card">
+                        <img class="track-card__image" src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=280&h=140&fit=crop" alt="Content creation">
+                        <div class="track-card__body">
+                            <span class="track-card__tag" style="background: var(--color-accent-subtle); color: var(--color-accent);">Creator</span>
+                            <div class="track-card__title">Content Creator Voice</div>
+                            <div class="track-card__desc">Hooks, retention, and on-camera confidence</div>
+                        </div>
+                        <div class="track-card__progress">
+                            <div style="display:flex;justify-content:space-between;font-size:var(--font-size-xs);color:var(--color-text-tertiary);margin-bottom:4px;">
+                                <span>0 / 15 sessions</span>
+                                <span>Locked</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-bar__fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="component-row">
+            <div class="component-group" style="min-width: 340px;">
+                <h3>Community Entry Card</h3>
+                <div class="community-card">
+                    <div class="community-card__header">
+                        <img class="community-card__avatar" src="https://i.pravatar.cc/48?img=12" alt="User avatar">
+                        <div>
+                            <div class="community-card__name">Anika M.</div>
+                            <div class="community-card__time">2 hours ago · Weekly Challenge</div>
+                        </div>
+                    </div>
+                    <div class="community-card__waveform">
+                        <div class="waveform__bar" style="height:10px;background:var(--color-primary-light);"></div>
+                        <div class="waveform__bar" style="height:18px;background:var(--color-primary-light);"></div>
+                        <div class="waveform__bar" style="height:26px;background:var(--color-primary);"></div>
+                        <div class="waveform__bar" style="height:14px;background:var(--color-primary-light);"></div>
+                        <div class="waveform__bar" style="height:32px;background:var(--color-primary);"></div>
+                        <div class="waveform__bar" style="height:22px;background:var(--color-primary-light);"></div>
+                        <div class="waveform__bar" style="height:28px;background:var(--color-primary);"></div>
+                        <div class="waveform__bar" style="height:16px;background:var(--color-primary-light);"></div>
+                        <div class="waveform__bar" style="height:24px;background:var(--color-primary);"></div>
+                        <div class="waveform__bar" style="height:12px;background:var(--color-primary-light);"></div>
+                        <div class="waveform__bar" style="height:20px;background:var(--color-primary-light);"></div>
+                        <div class="waveform__bar" style="height:30px;background:var(--color-primary);"></div>
+                        <div class="waveform__bar" style="height:18px;background:var(--color-primary-light);"></div>
+                        <div class="waveform__bar" style="height:8px;background:var(--color-primary-light);"></div>
+                    </div>
+                    <div class="community-card__actions">
+                        <button class="btn btn--ghost btn--sm">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            Play
+                        </button>
+                        <button class="btn btn--ghost btn--sm">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            42
+                        </button>
+                        <span style="font-size:var(--font-size-xs);color:var(--color-text-tertiary);margin-left:auto;">1:47</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component-group" style="min-width: 340px;">
+                <h3>Score Cards</h3>
+                <div class="demo-row">
+                    <div class="score-card">
+                        <div class="score-card__value">7.4</div>
+                        <div class="score-card__label">Voice Score</div>
+                        <div class="score-card__sublabel">Pace, clarity, filler words</div>
+                    </div>
+                    <div class="score-card">
+                        <div class="score-card__value" style="color: var(--color-accent);">6.8</div>
+                        <div class="score-card__label">Story Score</div>
+                        <div class="score-card__sublabel">Arc, hooks, emotion</div>
+                    </div>
+                    <div class="score-card">
+                        <div class="score-card__value" style="color: var(--color-secondary);">7.1</div>
+                        <div class="score-card__label">Overall</div>
+                        <div class="score-card__sublabel">Combined power</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- PROGRESS INDICATORS                                              -->
+    <!-- ================================================================ -->
+    <section data-component="progress">
+        <h2>Progress Indicators</h2>
+        <p class="section-desc">Progress bars, rings, streaks, and heatmaps for tracking practice and improvement.</p>
+
+        <div class="component-row">
+            <div class="component-group">
+                <h3>Progress Bars</h3>
+                <div class="demo-col" style="gap: var(--space-4);">
+                    <div>
+                        <div style="display:flex;justify-content:space-between;font-size:var(--font-size-sm);margin-bottom:4px;">
+                            <span>Track Progress</span><span style="color:var(--color-text-tertiary);">65%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-bar__fill" style="width: 65%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display:flex;justify-content:space-between;font-size:var(--font-size-sm);margin-bottom:4px;">
+                            <span>Daily Goal</span><span style="color:var(--color-text-tertiary);">100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-bar__fill progress-bar__fill--success" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display:flex;justify-content:space-between;font-size:var(--font-size-sm);margin-bottom:4px;">
+                            <span>Weekly Streak</span><span style="color:var(--color-text-tertiary);">5/7</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-bar__fill progress-bar__fill--accent" style="width: 71%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component-group">
+                <h3>Progress Rings</h3>
+                <div class="demo-row" style="gap: var(--space-8); justify-content: center;">
+                    <div style="text-align: center;">
+                        <svg class="progress-ring" viewBox="0 0 64 64">
+                            <circle class="progress-ring__bg" cx="32" cy="32" r="28"/>
+                            <circle class="progress-ring__fill" cx="32" cy="32" r="28"
+                                stroke="var(--color-feedback-voice)"
+                                stroke-dasharray="175.93"
+                                stroke-dashoffset="52.78"/>
+                        </svg>
+                        <div style="font-size:var(--font-size-xs);color:var(--color-text-secondary);margin-top:4px;">Voice</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <svg class="progress-ring" viewBox="0 0 64 64">
+                            <circle class="progress-ring__bg" cx="32" cy="32" r="28"/>
+                            <circle class="progress-ring__fill" cx="32" cy="32" r="28"
+                                stroke="var(--color-feedback-story)"
+                                stroke-dasharray="175.93"
+                                stroke-dashoffset="70.37"/>
+                        </svg>
+                        <div style="font-size:var(--font-size-xs);color:var(--color-text-secondary);margin-top:4px;">Story</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component-group">
+                <h3>Streak Counter</h3>
+                <div class="demo-row" style="gap: var(--space-6); justify-content: center;">
+                    <div class="streak">
+                        <svg class="streak__icon" viewBox="0 0 24 24" fill="var(--color-streak)"><path d="M12 23c-3.866 0-7-2.686-7-6 0-2.5 1.5-4.5 3-6 .5-.5 1.5-.5 1.5 1 0 .828.5 1.5 1 1.5s1-.5 1-1.5c0-3 2-5.5 3.5-8 .5-.833 2-.5 2 .5 0 3 1 5 2 7 .667 1.333 1 3 1 5 0 3.314-3.134 6-7 6z"/></svg>
+                        <span class="streak__count">12</span>
+                        <span class="streak__label">day streak</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="component-row">
+            <div class="component-group">
+                <h3>Practice Heatmap</h3>
+                <div class="heatmap">
+                    <div class="heatmap__cell"></div>
+                    <div class="heatmap__cell heatmap__cell--l1"></div>
+                    <div class="heatmap__cell heatmap__cell--l2"></div>
+                    <div class="heatmap__cell heatmap__cell--l4"></div>
+                    <div class="heatmap__cell heatmap__cell--l3"></div>
+                    <div class="heatmap__cell"></div>
+                    <div class="heatmap__cell heatmap__cell--l1"></div>
+                    <div class="heatmap__cell heatmap__cell--l2"></div>
+                    <div class="heatmap__cell heatmap__cell--l3"></div>
+                    <div class="heatmap__cell heatmap__cell--l4"></div>
+                    <div class="heatmap__cell heatmap__cell--l4"></div>
+                    <div class="heatmap__cell heatmap__cell--l2"></div>
+                    <div class="heatmap__cell"></div>
+                    <div class="heatmap__cell heatmap__cell--l1"></div>
+                    <div class="heatmap__cell heatmap__cell--l3"></div>
+                    <div class="heatmap__cell heatmap__cell--l4"></div>
+                    <div class="heatmap__cell heatmap__cell--l2"></div>
+                    <div class="heatmap__cell heatmap__cell--l4"></div>
+                    <div class="heatmap__cell heatmap__cell--l3"></div>
+                    <div class="heatmap__cell heatmap__cell--l1"></div>
+                    <div class="heatmap__cell heatmap__cell--l4"></div>
+                    <div class="heatmap__cell"></div>
+                    <div class="heatmap__cell heatmap__cell--l2"></div>
+                    <div class="heatmap__cell heatmap__cell--l4"></div>
+                    <div class="heatmap__cell heatmap__cell--l3"></div>
+                    <div class="heatmap__cell heatmap__cell--l1"></div>
+                    <div class="heatmap__cell heatmap__cell--l4"></div>
+                    <div class="heatmap__cell heatmap__cell--l2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- BADGES & TAGS                                                    -->
+    <!-- ================================================================ -->
+    <section data-component="badges-tags">
+        <h2>Badges &amp; Tags</h2>
+        <p class="section-desc">Status indicators for metrics, achievements, and filter/track selection chips.</p>
+
+        <div class="component-row">
+            <div class="component-group">
+                <h3>Badges</h3>
+                <div class="demo-row">
+                    <span class="badge badge--primary">In Progress</span>
+                    <span class="badge badge--success">Improved</span>
+                    <span class="badge badge--warning">Needs Work</span>
+                    <span class="badge badge--error">12 Fillers</span>
+                    <span class="badge badge--accent">New Track</span>
+                </div>
+            </div>
+            <div class="component-group">
+                <h3>Tags / Chips</h3>
+                <div class="demo-row">
+                    <span class="tag tag--active">All Prompts</span>
+                    <span class="tag">Storytelling</span>
+                    <span class="tag">Pitch</span>
+                    <span class="tag">Interview</span>
+                    <span class="tag">Social</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- AVATARS                                                          -->
+    <!-- ================================================================ -->
+    <section data-component="avatars">
+        <h2>Avatars</h2>
+        <p class="section-desc">User profile images at various sizes. Always use Pravatar for placeholders.</p>
+
+        <div class="component-row">
+            <div class="component-group">
+                <h3>Sizes</h3>
+                <div class="demo-row" style="align-items: center;">
+                    <div style="text-align:center"><img class="avatar avatar--xs" src="https://i.pravatar.cc/28?img=5" alt="Avatar XS"><br><span class="state-label">28px</span></div>
+                    <div style="text-align:center"><img class="avatar avatar--sm" src="https://i.pravatar.cc/36?img=5" alt="Avatar SM"><br><span class="state-label">36px</span></div>
+                    <div style="text-align:center"><img class="avatar avatar--md" src="https://i.pravatar.cc/48?img=5" alt="Avatar MD"><br><span class="state-label">48px</span></div>
+                    <div style="text-align:center"><img class="avatar avatar--lg" src="https://i.pravatar.cc/64?img=5" alt="Avatar LG"><br><span class="state-label">64px</span></div>
+                    <div style="text-align:center"><img class="avatar avatar--xl" src="https://i.pravatar.cc/96?img=5" alt="Avatar XL"><br><span class="state-label">96px</span></div>
+                </div>
+            </div>
+            <div class="component-group">
+                <h3>Avatar Group</h3>
+                <div class="avatar-group">
+                    <img class="avatar avatar--md" src="https://i.pravatar.cc/48?img=10" alt="User 1">
+                    <img class="avatar avatar--md" src="https://i.pravatar.cc/48?img=15" alt="User 2">
+                    <img class="avatar avatar--md" src="https://i.pravatar.cc/48?img=20" alt="User 3">
+                    <img class="avatar avatar--md" src="https://i.pravatar.cc/48?img=25" alt="User 4">
+                </div>
+                <div style="font-size:var(--font-size-sm);color:var(--color-text-tertiary);margin-top:var(--space-2);">+12 others in this challenge</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- NAVIGATION                                                       -->
+    <!-- ================================================================ -->
+    <section data-component="navigation">
+        <h2>Navigation</h2>
+        <p class="section-desc">Bottom tab navigation with 5 tabs. Practice tab is the primary/default landing. Icon + label, 44px minimum touch targets.</p>
+
+        <div class="component-row">
+            <div class="component-group" style="padding: 0; overflow: hidden; max-width: 420px;">
+                <nav class="bottom-nav" style="position: relative;">
+                    <a class="bottom-nav__item bottom-nav__item--active" href="#">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        <span>Practice</span>
+                    </a>
+                    <a class="bottom-nav__item" href="#">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        <span>Progress</span>
+                    </a>
+                    <a class="bottom-nav__item" href="#">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <span>Community</span>
+                    </a>
+                    <a class="bottom-nav__item" href="#">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                        <span>Tracks</span>
+                    </a>
+                    <a class="bottom-nav__item" href="#">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>Profile</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- BOTTOM SHEET & TOAST                                             -->
+    <!-- ================================================================ -->
+    <section data-component="overlays">
+        <h2>Bottom Sheet &amp; Toast</h2>
+        <p class="section-desc">Modal overlays and transient feedback. Bottom sheet for contextual actions, toast for status messages.</p>
+
+        <div class="component-row">
+            <div class="component-group" style="position: relative; min-height: 280px; background: var(--color-bg-tertiary); overflow: hidden; padding: 0;">
+                <div style="position: absolute; inset: 0; background: var(--color-bg-overlay); opacity: 0.3;"></div>
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: var(--color-bg-elevated); border-radius: var(--sheet-radius); padding: var(--space-6); box-shadow: var(--shadow-2xl);">
+                    <div class="bottom-sheet__handle"></div>
+                    <h3 style="font-size:var(--font-size-lg);font-weight:var(--font-weight-bold);margin-bottom:var(--space-3);">Recording Options</h3>
+                    <div class="demo-col" style="gap: var(--space-3);">
+                        <button class="btn btn--secondary btn--md" style="width: 100%; justify-content: flex-start; border-radius: var(--radius-lg);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                            Re-record this prompt
+                        </button>
+                        <button class="btn btn--secondary btn--md" style="width: 100%; justify-content: flex-start; border-radius: var(--radius-lg);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                            Share to community
+                        </button>
+                        <button class="btn btn--ghost btn--md" style="width: 100%; justify-content: flex-start; border-radius: var(--radius-lg); color: var(--color-error);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            Delete recording
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component-group">
+                <h3>Toasts</h3>
+                <div class="demo-col" style="gap: var(--space-3);">
+                    <div class="toast">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        Recording saved
+                    </div>
+                    <div class="toast toast--success">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        12-day streak! Keep going!
+                    </div>
+                    <div class="toast toast--error">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        Microphone access denied
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- SKELETON LOADING                                                 -->
+    <!-- ================================================================ -->
+    <section data-component="skeleton">
+        <h2>Skeleton Loading</h2>
+        <p class="section-desc">Shimmer placeholders shown while AI generates feedback. Provides comforting visual feedback during analysis.</p>
+
+        <div class="component-row">
+            <div class="component-group" style="max-width: 400px;">
+                <h3>Feedback Loading State</h3>
+                <div style="padding: var(--card-padding); background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--card-radius);">
+                    <div class="skeleton skeleton--title" style="width: 40%;"></div>
+                    <div class="skeleton skeleton--text" style="width: 100%;"></div>
+                    <div class="skeleton skeleton--text" style="width: 85%;"></div>
+                    <div class="skeleton skeleton--text" style="width: 70%;"></div>
+                    <div style="height: var(--space-4);"></div>
+                    <div class="skeleton skeleton--title" style="width: 35%;"></div>
+                    <div class="skeleton skeleton--text" style="width: 95%;"></div>
+                    <div class="skeleton skeleton--text" style="width: 60%;"></div>
+                </div>
+                <p style="font-size:var(--font-size-sm);color:var(--color-text-tertiary);text-align:center;margin-top:var(--space-3);font-style:italic;">Analyzing your pace and delivery...</p>
+            </div>
+            <div class="component-group" style="max-width: 400px;">
+                <h3>Card Loading State</h3>
+                <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--card-radius); overflow: hidden;">
+                    <div class="skeleton" style="height: 160px; border-radius: 0;"></div>
+                    <div style="padding: var(--card-padding);">
+                        <div class="skeleton skeleton--text" style="width: 30%;"></div>
+                        <div class="skeleton skeleton--title"></div>
+                        <div class="skeleton skeleton--text" style="width: 50%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

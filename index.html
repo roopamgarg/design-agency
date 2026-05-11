@@ -595,37 +595,28 @@
         slug: "storycraft",
         name: "StoryCraft",
         description: "Voice coaching app — practice storytelling daily with AI-powered feedback, progress tracking, and community challenges.",
-        totalScreens: 16,
-        categories: ["Onboarding", "Core", "Learning", "Community", "Settings"],
-        colors: ["#4F46E5", "#3730A3", "#EF4444", "#10B981", "#F59E0B"],
-        href: "output/storycraft/index.html",
-        screenBase: "output/storycraft/screens/",
+        totalScreens: 9,
+        categories: ["Onboarding", "Core", "Community", "Profile"],
+        colors: ["#6366F1", "#14B8A6", "#F97316", "#EF4444", "#EC4899"],
+        href: "designs/storycraft/prototypes/index.html",
+        screenBase: "designs/storycraft/screens/",
         screens: [
           { group: "Onboarding", items: [
-            { num: 1,  file: "01-onboarding-value.html", name: "Value Proposition" },
-            { num: 2,  file: "02-onboarding-mic.html",   name: "Mic Permission" },
-            { num: 3,  file: "03-onboarding-tracks.html", name: "Track Selection" },
-            { num: 4,  file: "04-auth.html",              name: "Login / Sign Up" },
+            { num: 1,  file: "onboarding-welcome.html",  name: "Welcome" },
           ]},
           { group: "Core Experience", items: [
-            { num: 5,  file: "05-home.html",              name: "Home / Daily Prompt" },
-            { num: 6,  file: "06-recording-studio.html",  name: "Recording Studio" },
-            { num: 7,  file: "07-analysis-feedback.html", name: "Analysis & Feedback" },
-            { num: 8,  file: "08-progress-dashboard.html",name: "Progress Dashboard" },
+            { num: 2,  file: "daily-prompt.html",         name: "Daily Prompt" },
+            { num: 3,  file: "recording-studio.html",     name: "Recording Studio" },
+            { num: 4,  file: "feedback-dashboard.html",   name: "Feedback Dashboard" },
+            { num: 5,  file: "progress-overview.html",    name: "Progress Overview" },
           ]},
-          { group: "Learning", items: [
-            { num: 9,  file: "09-learning-tracks.html",   name: "Learning Tracks" },
-            { num: 10, file: "10-track-detail.html",      name: "Track Detail" },
+          { group: "Discovery & Community", items: [
+            { num: 6,  file: "track-discovery.html",      name: "Track Discovery" },
+            { num: 7,  file: "community-home.html",       name: "Community Home" },
           ]},
-          { group: "Community", items: [
-            { num: 11, file: "11-community-hub.html",     name: "Community Hub" },
-            { num: 15, file: "15-challenge-detail.html",  name: "Challenge Detail" },
-            { num: 16, file: "16-leaderboard.html",       name: "Leaderboard" },
-          ]},
-          { group: "Playback & Settings", items: [
-            { num: 12, file: "12-recording-playback.html",name: "Recording Playback" },
-            { num: 13, file: "13-settings.html",           name: "Settings / Profile" },
-            { num: 14, file: "14-subscription-tiers.html", name: "Subscription Tiers" },
+          { group: "Profile & States", items: [
+            { num: 8,  file: "profile-overview.html",     name: "Profile Overview" },
+            { num: 9,  file: "states.html",               name: "UI States" },
           ]},
         ]
       },

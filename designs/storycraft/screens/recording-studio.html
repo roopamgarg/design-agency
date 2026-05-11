@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recording — StoryCraft</title>
+    <link rel="stylesheet" href="../tokens.css">
+    <style>
+      /* ── Recording Studio Layout ── */
+
+      .recording-studio {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: var(--color-bg-primary);
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      /* ── Top Bar ── */
+
+      .recording-topbar {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-page-x);
+        height: var(--header-height);
+        flex-shrink: 0;
+      }
+
+      .recording-topbar__back {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--touch-target-min);
+        height: var(--touch-target-min);
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: var(--color-text-tertiary);
+        border-radius: var(--radius-full);
+        transition: color var(--transition-fast), background var(--transition-fast);
+        flex-shrink: 0;
+      }
+
+      .recording-topbar__back:hover,
+      .recording-topbar__back:focus-visible {
+        color: var(--color-text-primary);
+        background: var(--color-bg-secondary);
+      }
+
+      .recording-topbar__back svg {
+        width: var(--icon-lg);
+        height: var(--icon-lg);
+      }
+
+      .recording-topbar__center {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+      }
+
+      .recording-topbar__prompt {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-secondary);
+        line-height: var(--line-height-snug);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+
+      .recording-topbar__timer {
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-recording);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: var(--letter-spacing-wide);
+        margin-top: var(--space-0-5);
+      }
+
+      .recording-topbar__spacer {
+        width: var(--touch-target-min);
+        flex-shrink: 0;
+      }
+
+      /* ── Main Content Area ── */
+
+      .recording-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-8) var(--space-page-x);
+        gap: var(--space-10);
+      }
+
+      /* ── Waveform Visualization ── */
+
+      .waveform-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-8);
+        width: 100%;
+      }
+
+      .waveform {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--waveform-bar-gap);
+        height: 120px;
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .waveform__bar {
+        width: var(--waveform-bar-width);
+        border-radius: var(--radius-full);
+        background: var(--waveform-active-color);
+        opacity: 0.85;
+        animation: waveform-bounce var(--bar-duration, 1s) var(--bar-delay, 0ms) ease-in-out infinite alternate;
+        will-change: height, opacity;
+      }
+
+      @keyframes waveform-bounce {
+        0% {
+          height: var(--bar-min, 8px);
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 0.9;
+        }
+        100% {
+          height: var(--bar-max, 60px);
+          opacity: 1;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .waveform__bar {
+          animation: none;
+          height: var(--bar-max, 60px);
+          opacity: 0.7;
+        }
+      }
+
+      /* ── Framework Guide ── */
+
+      .framework-guide {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+        letter-spacing: var(--letter-spacing-wide);
+      }
+
+      .framework-guide__step {
+        color: var(--color-text-disabled);
+        transition: color var(--transition-normal);
+        padding: var(--space-1) var(--space-2);
+        border-radius: var(--radius-full);
+      }
+
+      .framework-guide__step--active {
+        color: var(--color-text-primary);
+        background: var(--color-bg-secondary);
+      }
+
+      .framework-guide__arrow {
+        color: var(--color-text-disabled);
+        font-size: var(--font-size-xs);
+      }
+
+      /* ── Controls Area ── */
+
+      .recording-controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-4);
+        padding-bottom: env(safe-area-inset-bottom, var(--space-8));
+        flex-shrink: 0;
+      }
+
+      .stop-button {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border-radius: var(--radius-full);
+        background: var(--color-recording);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow-glow-recording);
+        transition: transform var(--transition-spring), box-shadow var(--transition-normal);
+      }
+
+      .stop-button::before {
+        content: '';
+        position: absolute;
+        inset: -6px;
+        border-radius: var(--radius-full);
+        background: var(--color-recording-pulse);
+        animation: stop-pulse 2s ease-in-out infinite;
+        z-index: -1;
+      }
+
+      @keyframes stop-pulse {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+        50% {
+          transform: scale(1.15);
+          opacity: 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .stop-button::before {
+          animation: none;
+          opacity: 0.3;
+        }
+      }
+
+      .stop-button:hover {
+        transform: scale(1.06);
+        box-shadow: 0 0 32px var(--color-recording-pulse);
+      }
+
+      .stop-button:active {
+        transform: scale(0.96);
+      }
+
+      .stop-button__icon {
+        width: 24px;
+        height: 24px;
+        border-radius: var(--radius-sm);
+        background: var(--color-primary-contrast);
+      }
+
+      .pause-link {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-tertiary);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-full);
+        min-height: var(--touch-target-min);
+        display: flex;
+        align-items: center;
+        transition: color var(--transition-fast);
+      }
+
+      .pause-link:hover,
+      .pause-link:focus-visible {
+        color: var(--color-text-secondary);
+      }
+
+      /* ── Recording indicator dot ── */
+
+      .rec-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-full);
+        background: var(--color-recording);
+        margin-right: var(--space-1-5);
+        animation: rec-blink 1.2s ease-in-out infinite;
+        vertical-align: middle;
+      }
+
+      @keyframes rec-blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .rec-indicator {
+          animation: none;
+        }
+      }
+
+        .sr-only--focusable:focus-visible {
+            position: fixed;
+            top: var(--space-2);
+            left: var(--space-2);
+            width: auto;
+            height: auto;
+            padding: var(--space-2) var(--space-4);
+            clip: auto;
+            white-space: normal;
+            overflow: visible;
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            z-index: var(--z-max);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="sr-only sr-only--focusable">Skip to content</a>
+    <div class="app-shell" data-screen="recording-studio">
+      <div class="recording-studio" role="main" aria-label="Recording studio" id="main-content">
+
+        <!-- Top Bar -->
+        <header class="recording-topbar">
+          <button class="recording-topbar__back" aria-label="Go back" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 12H5"/>
+              <path d="M12 19l-7-7 7-7"/>
+            </svg>
+          </button>
+
+          <div class="recording-topbar__center">
+            <p class="recording-topbar__prompt" title="Tell the story of a time you changed someone's mind">Tell the story of a time you changed someone's mind</p>
+            <p class="recording-topbar__timer" aria-live="polite" aria-atomic="true">
+              <span class="rec-indicator" aria-hidden="true"></span>
+              <time>01:23</time> / <time>01:30</time>
+            </p>
+          </div>
+
+          <div class="recording-topbar__spacer" aria-hidden="true"></div>
+        </header>
+
+        <!-- Main Recording Area -->
+        <div class="recording-body">
+          <div class="waveform-container">
+
+            <!-- Waveform Visualization -->
+            <div class="waveform" role="img" aria-label="Audio waveform — recording in progress">
+              <div class="waveform__bar" style="--bar-min:6px;--bar-max:28px;--bar-duration:0.8s;--bar-delay:0ms"></div>
+              <div class="waveform__bar" style="--bar-min:10px;--bar-max:52px;--bar-duration:1.1s;--bar-delay:60ms"></div>
+              <div class="waveform__bar" style="--bar-min:8px;--bar-max:72px;--bar-duration:0.9s;--bar-delay:120ms"></div>
+              <div class="waveform__bar" style="--bar-min:12px;--bar-max:96px;--bar-duration:1.3s;--bar-delay:40ms"></div>
+              <div class="waveform__bar" style="--bar-min:6px;--bar-max:60px;--bar-duration:1.0s;--bar-delay:180ms"></div>
+              <div class="waveform__bar" style="--bar-min:14px;--bar-max:110px;--bar-duration:1.2s;--bar-delay:100ms"></div>
+              <div class="waveform__bar" style="--bar-min:8px;--bar-max:80px;--bar-duration:0.85s;--bar-delay:220ms"></div>
+              <div class="waveform__bar" style="--bar-min:10px;--bar-max:55px;--bar-duration:1.15s;--bar-delay:160ms"></div>
+              <div class="waveform__bar" style="--bar-min:16px;--bar-max:100px;--bar-duration:0.95s;--bar-delay:80ms"></div>
+              <div class="waveform__bar" style="--bar-min:6px;--bar-max:42px;--bar-duration:1.25s;--bar-delay:200ms"></div>
+              <div class="waveform__bar" style="--bar-min:12px;--bar-max:88px;--bar-duration:0.9s;--bar-delay:140ms"></div>
+              <div class="waveform__bar" style="--bar-min:8px;--bar-max:115px;--bar-duration:1.1s;--bar-delay:60ms"></div>
+              <div class="waveform__bar" style="--bar-min:10px;--bar-max:70px;--bar-duration:1.35s;--bar-delay:240ms"></div>
+              <div class="waveform__bar" style="--bar-min:14px;--bar-max:95px;--bar-duration:0.8s;--bar-delay:100ms"></div>
+              <div class="waveform__bar" style="--bar-min:6px;--bar-max:50px;--bar-duration:1.2s;--bar-delay:180ms"></div>
+              <div class="waveform__bar" style="--bar-min:10px;--bar-max:108px;--bar-duration:0.95s;--bar-delay:40ms"></div>
+              <div class="waveform__bar" style="--bar-min:8px;--bar-max:65px;--bar-duration:1.15s;--bar-delay:260ms"></div>
+              <div class="waveform__bar" style="--bar-min:16px;--bar-max:85px;--bar-duration:1.0s;--bar-delay:120ms"></div>
+              <div class="waveform__bar" style="--bar-min:6px;--bar-max:48px;--bar-duration:1.3s;--bar-delay:200ms"></div>
+              <div class="waveform__bar" style="--bar-min:12px;--bar-max:105px;--bar-duration:0.85s;--bar-delay:80ms"></div>
+              <div class="waveform__bar" style="--bar-min:8px;--bar-max:35px;--bar-duration:1.1s;--bar-delay:300ms"></div>
+              <div class="waveform__bar" style="--bar-min:14px;--bar-max:92px;--bar-duration:0.9s;--bar-delay:160ms"></div>
+              <div class="waveform__bar" style="--bar-min:10px;--bar-max:118px;--bar-duration:1.25s;--bar-delay:60ms"></div>
+              <div class="waveform__bar" style="--bar-min:6px;--bar-max:58px;--bar-duration:0.8s;--bar-delay:220ms"></div>
+              <div class="waveform__bar" style="--bar-min:12px;--bar-max:78px;--bar-duration:1.15s;--bar-delay:140ms"></div>
+              <div class="waveform__bar" style="--bar-min:8px;--bar-max:100px;--bar-duration:1.0s;--bar-delay:40ms"></div>
+              <div class="waveform__bar" style="--bar-min:16px;--bar-max:68px;--bar-duration:1.3s;--bar-delay:280ms"></div>
+              <div class="waveform__bar" style="--bar-min:6px;--bar-max:112px;--bar-duration:0.85s;--bar-delay:100ms"></div>
+              <div class="waveform__bar" style="--bar-min:10px;--bar-max:45px;--bar-duration:1.2s;--bar-delay:200ms"></div>
+              <div class="waveform__bar" style="--bar-min:14px;--bar-max:90px;--bar-duration:0.95s;--bar-delay:160ms"></div>
+              <div class="waveform__bar" style="--bar-min:8px;--bar-max:62px;--bar-duration:1.1s;--bar-delay:80ms"></div>
+              <div class="waveform__bar" style="--bar-min:12px;--bar-max:102px;--bar-duration:1.35s;--bar-delay:240ms"></div>
+              <div class="waveform__bar" style="--bar-min:6px;--bar-max:38px;--bar-duration:0.9s;--bar-delay:120ms"></div>
+              <div class="waveform__bar" style="--bar-min:10px;--bar-max:82px;--bar-duration:1.0s;--bar-delay:60ms"></div>
+              <div class="waveform__bar" style="--bar-min:16px;--bar-max:75px;--bar-duration:1.25s;--bar-delay:300ms"></div>
+              <div class="waveform__bar" style="--bar-min:8px;--bar-max:98px;--bar-duration:0.8s;--bar-delay:180ms"></div>
+              <div class="waveform__bar" style="--bar-min:14px;--bar-max:56px;--bar-duration:1.15s;--bar-delay:140ms"></div>
+              <div class="waveform__bar" style="--bar-min:6px;--bar-max:88px;--bar-duration:0.95s;--bar-delay:40ms"></div>
+              <div class="waveform__bar" style="--bar-min:12px;--bar-max:110px;--bar-duration:1.1s;--bar-delay:260ms"></div>
+              <div class="waveform__bar" style="--bar-min:8px;--bar-max:42px;--bar-duration:1.3s;--bar-delay:100ms"></div>
+            </div>
+
+            <!-- Framework Guide -->
+            <nav class="framework-guide" aria-label="Story framework progress">
+              <span class="framework-guide__step">Hook</span>
+              <span class="framework-guide__arrow" aria-hidden="true">→</span>
+              <span class="framework-guide__step framework-guide__step--active" aria-current="step">Context</span>
+              <span class="framework-guide__arrow" aria-hidden="true">→</span>
+              <span class="framework-guide__step">Conflict</span>
+              <span class="framework-guide__arrow" aria-hidden="true">→</span>
+              <span class="framework-guide__step">Resolution</span>
+            </nav>
+
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <footer class="recording-controls">
+          <button class="stop-button" type="button" aria-label="Stop recording">
+            <span class="stop-button__icon" aria-hidden="true"></span>
+          </button>
+          <button class="pause-link" type="button" aria-label="Pause recording">Pause</button>
+        </footer>
+
+      </div>
+    </div>
+</body>
+</html>

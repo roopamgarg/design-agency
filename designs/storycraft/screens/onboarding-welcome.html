@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome — StoryCraft</title>
+    <link rel="stylesheet" href="../tokens.css">
+    <style>
+        /* ── Hero ──────────────────────────────────────── */
+
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 56vh;
+            min-height: 320px;
+            overflow: hidden;
+        }
+
+        .hero__img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero__overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to top,
+                var(--color-bg-primary) 0%,
+                var(--color-bg-primary) 4%,
+                transparent 60%
+            );
+        }
+
+        /* ── Brand ─────────────────────────────────────── */
+
+        .brand {
+            text-align: center;
+            padding: 0 var(--space-page-x);
+            margin-top: calc(-1 * var(--space-10));
+            position: relative;
+            z-index: var(--z-above);
+        }
+
+        .brand__name {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-tight);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+
+        .brand__tagline {
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-regular);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-relaxed);
+            margin-top: var(--space-2);
+        }
+
+        /* ── Value Props ───────────────────────────────── */
+
+        .value-props {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-5);
+            padding: var(--space-8) var(--space-page-x) 0;
+        }
+
+        .value-prop {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-4);
+        }
+
+        .value-prop__icon {
+            flex-shrink: 0;
+            width: var(--icon-4xl);
+            height: var(--icon-4xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-lg);
+            background: var(--color-primary-subtle);
+            font-size: var(--font-size-xl);
+            line-height: 1;
+        }
+
+        .value-prop__text {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-0-5);
+            padding-top: var(--space-1);
+        }
+
+        .value-prop__title {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-snug);
+        }
+
+        .value-prop__desc {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-regular);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-normal);
+        }
+
+        /* ── Actions ───────────────────────────────────── */
+
+        .actions {
+            padding: var(--space-10) var(--space-page-x) 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: var(--btn-height-lg);
+            border: none;
+            border-radius: var(--btn-radius);
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            font-weight: var(--btn-font-weight);
+            letter-spacing: var(--btn-letter-spacing);
+            cursor: pointer;
+            box-shadow: var(--shadow-glow-primary);
+            transition:
+                background var(--transition-fast),
+                transform var(--transition-spring),
+                box-shadow var(--transition-normal);
+            min-height: var(--touch-target-min);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg), var(--shadow-glow-primary);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+            background: var(--color-primary-dark);
+        }
+
+        .btn-ghost {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: var(--color-text-link);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--btn-radius);
+            transition: color var(--transition-fast), background var(--transition-fast);
+            min-height: var(--touch-target-min);
+        }
+
+        .btn-ghost:hover {
+            background: var(--color-primary-subtle);
+            color: var(--color-primary-dark);
+        }
+
+        /* ── Privacy ───────────────────────────────────── */
+
+        .privacy {
+            text-align: center;
+            padding: var(--space-6) var(--space-page-x) var(--space-10);
+        }
+
+        .privacy__text {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-tertiary);
+            letter-spacing: var(--letter-spacing-wide);
+        }
+
+        .sr-only--focusable:focus-visible {
+            position: fixed;
+            top: var(--space-2);
+            left: var(--space-2);
+            width: auto;
+            height: auto;
+            padding: var(--space-2) var(--space-4);
+            clip: auto;
+            white-space: normal;
+            overflow: visible;
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            z-index: var(--z-max);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="sr-only sr-only--focusable">Skip to content</a>
+    <div class="app-shell" data-screen="onboarding-welcome" style="min-height:100vh;">
+
+        <!-- Hero image with gradient overlay -->
+        <section class="hero" id="main-content" aria-label="Welcome imagery">
+            <img
+                class="hero__img"
+                src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=390&h=480&fit=crop"
+                alt="Person confidently speaking and sharing their story"
+                width="390"
+                height="480"
+            >
+            <div class="hero__overlay" aria-hidden="true"></div>
+        </section>
+
+        <!-- Brand -->
+        <header class="brand">
+            <h1 class="brand__name">StoryCraft</h1>
+            <p class="brand__tagline">Your voice has a story worth telling</p>
+        </header>
+
+        <!-- Value propositions -->
+        <ul class="value-props" role="list">
+            <li class="value-prop">
+                <span class="value-prop__icon" aria-hidden="true">🎙️</span>
+                <div class="value-prop__text">
+                    <h2 class="value-prop__title">Record your stories</h2>
+                    <p class="value-prop__desc">Practice speaking in a safe, private space</p>
+                </div>
+            </li>
+            <li class="value-prop">
+                <span class="value-prop__icon" aria-hidden="true">📊</span>
+                <div class="value-prop__text">
+                    <h2 class="value-prop__title">Get AI feedback</h2>
+                    <p class="value-prop__desc">Specific, timestamped insights on your voice and narrative</p>
+                </div>
+            </li>
+            <li class="value-prop">
+                <span class="value-prop__icon" aria-hidden="true">📈</span>
+                <div class="value-prop__text">
+                    <h2 class="value-prop__title">Track your growth</h2>
+                    <p class="value-prop__desc">Watch yourself improve day by day</p>
+                </div>
+            </li>
+        </ul>
+
+        <!-- CTAs -->
+        <nav class="actions" aria-label="Get started">
+            <button type="button" class="btn-primary">
+                Try it free — no signup needed
+            </button>
+            <button type="button" class="btn-ghost">
+                I already have an account
+            </button>
+        </nav>
+
+        <!-- Privacy note -->
+        <footer class="privacy">
+            <p class="privacy__text">🔒 Your recordings stay private. Always.</p>
+        </footer>
+
+    </div>
+</body>
+</html>

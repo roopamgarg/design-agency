@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Practice Flow — StoryCraft Prototype</title>
+    <link rel="stylesheet" href="../tokens.css">
+    <style>
+        /* ── Prototype Screen Management ────────────────── */
+
+        .screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        .screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .screen.fade-out {
+            opacity: 0;
+        }
+
+        .screen.fade-in {
+            opacity: 1;
+        }
+
+        /* ── Prototype Nav (fixed bottom bar) ───────────── */
+
+        .proto-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-1);
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-text-primary);
+            font-family: var(--font-family-mono);
+        }
+
+        .proto-nav__btn {
+            padding: var(--space-1-5) var(--space-3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-full);
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.6875rem;
+            font-family: var(--font-family-mono);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+            min-height: 32px;
+        }
+
+        .proto-nav__btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .proto-nav__btn.active {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: #fff;
+        }
+
+        /* ── Shell Overrides for Prototype ──────────────── */
+
+        .app-shell {
+            padding-bottom: 48px;
+        }
+
+        .app-shell__content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: calc(var(--nav-height) + var(--space-8) + 48px);
+        }
+
+        /* ── Header ─────────────────────────────────────── */
+
+        .header-logo {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+
+        .header-avatar {
+            width: var(--avatar-sm);
+            height: var(--avatar-sm);
+            border-radius: var(--radius-full);
+            object-fit: cover;
+            border: var(--avatar-border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ── Greeting ───────────────────────────────────── */
+
+        .greeting {
+            padding: var(--space-5) var(--space-page-x) var(--space-2);
+        }
+
+        .greeting__text {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-tight);
+        }
+
+        .greeting__streak {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1-5);
+            margin-top: var(--space-2);
+            padding: var(--space-1) var(--space-3) var(--space-1) var(--space-2);
+            background: var(--color-accent-subtle);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-accent-dark);
+        }
+
+        .greeting__streak-icon {
+            font-size: var(--font-size-md);
+            line-height: 1;
+        }
+
+        /* ── Hero Prompt Card ───────────────────────────── */
+
+        .hero-prompt {
+            margin: var(--space-4) var(--space-page-x);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            background: var(--card-bg);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+        }
+
+        .hero-prompt__image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .hero-prompt__image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-prompt__image-wrapper::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 30%, var(--card-bg));
+        }
+
+        .hero-prompt__category {
+            position: absolute;
+            top: var(--space-3);
+            left: var(--space-4);
+            z-index: var(--z-above);
+            display: inline-block;
+            padding: var(--space-1) var(--space-3);
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            letter-spacing: var(--letter-spacing-wider);
+            text-transform: uppercase;
+            border-radius: var(--radius-full);
+        }
+
+        .hero-prompt__body {
+            padding: var(--space-1) var(--card-padding) var(--card-padding);
+        }
+
+        .hero-prompt__title {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-snug);
+        }
+
+        .hero-prompt__meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            margin-top: var(--space-3);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+        }
+
+        .meta-dot {
+            width: 3px;
+            height: 3px;
+            border-radius: var(--radius-full);
+            background: var(--color-text-disabled);
+            flex-shrink: 0;
+        }
+
+        .btn-record {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2-5);
+            width: 100%;
+            height: var(--btn-height-lg);
+            margin-top: var(--space-5);
+            border: none;
+            border-radius: var(--btn-radius);
+            background: var(--color-recording);
+            color: var(--color-text-inverse);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            font-weight: var(--btn-font-weight);
+            letter-spacing: var(--btn-letter-spacing);
+            cursor: pointer;
+            box-shadow: var(--shadow-glow-recording);
+            transition: transform var(--transition-spring), box-shadow var(--transition-normal);
+            min-height: var(--touch-target-min);
+        }
+
+        .btn-record:hover { transform: scale(1.02); }
+        .btn-record:active { transform: scale(0.98); }
+
+        .btn-record svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+            flex-shrink: 0;
+        }
+
+        /* ── Quick Stats ────────────────────────────────── */
+
+        .quick-stats {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-4);
+            margin: var(--space-5) var(--space-page-x) var(--space-2);
+        }
+
+        .quick-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-0-5);
+            flex: 1;
+            padding: var(--space-3) var(--space-2);
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xs);
+            border: 1px solid var(--card-border);
+        }
+
+        .quick-stat__value {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-mono);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+
+        .quick-stat__value--voice { color: var(--color-feedback-voice); }
+        .quick-stat__value--story { color: var(--color-feedback-story); }
+
+        .quick-stat__label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            font-weight: var(--font-weight-medium);
+        }
+
+        /* ── More Prompts ───────────────────────────────── */
+
+        .more-prompts { margin-top: var(--space-6); }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-page-x);
+            margin-bottom: var(--space-3);
+        }
+
+        .section-title {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .section-link {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-primary);
+            text-decoration: none;
+            min-height: var(--touch-target-min);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .section-link:hover { text-decoration: underline; }
+
+        .prompt-scroll {
+            display: flex;
+            gap: var(--space-3);
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding: 0 var(--space-page-x) var(--space-4);
+            scrollbar-width: none;
+        }
+
+        .prompt-scroll::-webkit-scrollbar { display: none; }
+
+        .prompt-card {
+            flex: 0 0 260px;
+            scroll-snap-align: start;
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--card-border);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+        }
+
+        .prompt-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .prompt-card__thumb {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .prompt-card__body {
+            padding: var(--space-3) var(--space-4) var(--space-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            flex: 1;
+        }
+
+        .prompt-card__title {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-snug);
+        }
+
+        .prompt-card__meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            margin-top: auto;
+        }
+
+        .level-badge {
+            padding: var(--space-0-5) var(--space-2);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .level-badge--beginner {
+            background: var(--color-success-subtle);
+            color: var(--color-success);
+        }
+
+        .level-badge--intermediate {
+            background: var(--color-primary-subtle);
+            color: var(--color-primary);
+        }
+
+        .level-badge--advanced {
+            background: var(--color-accent-subtle);
+            color: var(--color-accent-dark);
+        }
+
+        /* ══════════════════════════════════════════════════
+           SCREEN 2: Recording
+           ══════════════════════════════════════════════════ */
+
+        .recording-studio {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+            background: var(--color-bg-primary);
+            user-select: none;
+            -webkit-user-select: none;
+            flex: 1;
+        }
+
+        .recording-topbar {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-page-x);
+            height: var(--header-height);
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--touch-target-min);
+            height: var(--touch-target-min);
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--color-text-primary);
+            border-radius: var(--radius-full);
+            transition: background var(--transition-fast);
+        }
+
+        .icon-btn:hover { background: var(--color-primary-subtle); }
+        .icon-btn svg { width: var(--icon-lg); height: var(--icon-lg); }
+
+        .icon-btn--ghost { color: var(--color-text-tertiary); }
+        .icon-btn--ghost:hover { color: var(--color-text-primary); background: var(--color-bg-secondary); }
+
+        .recording-topbar__center {
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+        }
+
+        .recording-topbar__prompt {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-snug);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .recording-topbar__timer {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-recording);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: var(--letter-spacing-wide);
+            margin-top: var(--space-0-5);
+        }
+
+        .recording-topbar__spacer {
+            width: var(--touch-target-min);
+            flex-shrink: 0;
+        }
+
+        .rec-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+            background: var(--color-recording);
+            margin-right: var(--space-1-5);
+            animation: rec-blink 1.2s ease-in-out infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes rec-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .recording-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-8) var(--space-page-x);
+            gap: var(--space-10);
+        }
+
+        .waveform-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-8);
+            width: 100%;
+        }
+
+        .waveform-live {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--waveform-bar-gap);
+            height: 120px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .waveform-live__bar {
+            width: var(--waveform-bar-width);
+            border-radius: var(--radius-full);
+            background: var(--waveform-active-color);
+            opacity: 0.85;
+            animation: waveform-bounce var(--bar-duration, 1s) var(--bar-delay, 0ms) ease-in-out infinite alternate;
+            will-change: height, opacity;
+        }
+
+        @keyframes waveform-bounce {
+            0% { height: var(--bar-min, 8px); opacity: 0.5; }
+            50% { opacity: 0.9; }
+            100% { height: var(--bar-max, 60px); opacity: 1; }
+        }
+
+        .framework-guide {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            letter-spacing: var(--letter-spacing-wide);
+        }
+
+        .framework-guide__step {
+            color: var(--color-text-disabled);
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-full);
+            transition: color var(--transition-normal);
+        }
+
+        .framework-guide__step--active {
+            color: var(--color-text-primary);
+            background: var(--color-bg-secondary);
+        }
+
+        .framework-guide__arrow {
+            color: var(--color-text-disabled);
+            font-size: var(--font-size-xs);
+        }
+
+        .recording-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-4);
+            padding-bottom: env(safe-area-inset-bottom, var(--space-8));
+            flex-shrink: 0;
+        }
+
+        .stop-button {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-full);
+            background: var(--color-recording);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-glow-recording);
+            transition: transform var(--transition-spring), box-shadow var(--transition-normal);
+        }
+
+        .stop-button::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: var(--radius-full);
+            background: var(--color-recording-pulse);
+            animation: stop-pulse 2s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes stop-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 0; }
+        }
+
+        .stop-button:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 32px var(--color-recording-pulse);
+        }
+
+        .stop-button:active { transform: scale(0.96); }
+
+        .stop-button__icon {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-sm);
+            background: var(--color-primary-contrast);
+        }
+
+        .pause-link {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-tertiary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-full);
+            min-height: var(--touch-target-min);
+            display: flex;
+            align-items: center;
+            transition: color var(--transition-fast);
+        }
+
+        .pause-link:hover { color: var(--color-text-secondary); }
+
+        /* ══════════════════════════════════════════════════
+           SCREEN 3: Processing
+           ══════════════════════════════════════════════════ */
+
+        .processing-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-8) var(--space-page-x);
+            gap: var(--space-8);
+            text-align: center;
+        }
+
+        .processing-screen__title {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+        }
+
+        .processing-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+            width: 100%;
+            max-width: 280px;
+            text-align: left;
+        }
+
+        .processing-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: var(--font-size-base);
+            color: var(--color-text-primary);
+        }
+
+        .processing-item__icon {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-base);
+        }
+
+        .processing-item__icon--done { color: var(--color-success); }
+
+        .processing-item__icon--pending {
+            color: var(--color-text-disabled);
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .processing-item__label {
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+            min-width: 0;
+        }
+
+        .processing-item__value {
+            font-family: var(--font-family-mono);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .processing-item--pending .processing-item__label {
+            color: var(--color-text-tertiary);
+        }
+
+        .shimmer {
+            background: linear-gradient(
+                90deg,
+                var(--color-bg-secondary) 25%,
+                var(--color-bg-tertiary) 50%,
+                var(--color-bg-secondary) 75%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.5s ease-in-out infinite;
+            border-radius: var(--radius-md);
+            height: 20px;
+            width: 100px;
+            margin-left: auto;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ══════════════════════════════════════════════════
+           SCREEN 4: Feedback
+           ══════════════════════════════════════════════════ */
+
+        .feedback-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-4) var(--space-page-x) calc(var(--space-8) + 48px);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-5);
+        }
+
+        .feedback-header {
+            position: sticky;
+            top: 0;
+            z-index: var(--z-sticky);
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-page-x);
+            background: var(--color-bg-primary);
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+
+        .feedback-header__title {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .scores-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: var(--space-3);
+            align-items: stretch;
+        }
+
+        .score-card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            padding: var(--space-4);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-1);
+            text-align: center;
+        }
+
+        .score-card--voice { border-top: 3px solid var(--color-feedback-voice); }
+        .score-card--story { border-top: 3px solid var(--color-feedback-story); }
+
+        .score-card__label {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            color: var(--color-text-tertiary);
+        }
+
+        .score-card__label--voice { color: var(--color-feedback-voice); }
+        .score-card__label--story { color: var(--color-feedback-story); }
+
+        .score-card__value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            line-height: var(--line-height-tight);
+            color: var(--color-text-primary);
+        }
+
+        .score-card__delta {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-success);
+        }
+
+        .combined-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-1);
+            padding: var(--space-2) var(--space-3);
+        }
+
+        .combined-score__label {
+            font-size: 0.625rem;
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            color: var(--color-text-tertiary);
+            text-align: center;
+            line-height: var(--line-height-tight);
+        }
+
+        .combined-score__value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            line-height: var(--line-height-tight);
+            background: linear-gradient(135deg, var(--color-feedback-voice), var(--color-feedback-story));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Waveform Player */
+
+        .waveform-card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            padding: var(--space-4);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .waveform-player {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .play-btn {
+            flex-shrink: 0;
+            width: var(--touch-target-min);
+            height: var(--touch-target-min);
+            border-radius: var(--radius-full);
+            border: none;
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .play-btn:hover { transform: scale(1.06); box-shadow: var(--shadow-glow-primary); }
+        .play-btn svg { width: var(--icon-md); height: var(--icon-md); }
+
+        .waveform-track {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .waveform-bars {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: var(--waveform-bar-gap);
+            height: 40px;
+            padding: 0 var(--space-1);
+        }
+
+        .waveform-bar {
+            flex: 1;
+            border-radius: var(--radius-sm);
+            background: var(--waveform-bg-color);
+            transition: background var(--transition-fast);
+            min-width: var(--waveform-bar-width);
+        }
+
+        .waveform-bar--played { background: var(--color-primary-light); }
+
+        .waveform-annotation {
+            position: absolute;
+            top: -4px;
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+            border: 2px solid var(--card-bg);
+            transform: translateX(-50%);
+            z-index: var(--z-above);
+        }
+
+        .waveform-annotation--filler { background: var(--color-feedback-filler); left: 30%; }
+        .waveform-annotation--pace { background: var(--color-feedback-pace); left: 60%; }
+        .waveform-annotation--emotion { background: var(--color-feedback-emotion); left: 80%; }
+
+        .waveform-time {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .waveform-legend {
+            display: flex;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1-5);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+            flex-shrink: 0;
+        }
+
+        .legend-dot--filler { background: var(--color-feedback-filler); }
+        .legend-dot--pace { background: var(--color-feedback-pace); }
+        .legend-dot--emotion { background: var(--color-feedback-emotion); }
+
+        /* Metric Sections */
+
+        .metrics-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .metrics-section__heading {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            color: var(--color-text-tertiary);
+            padding-left: var(--space-1);
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            padding: var(--space-4);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--card-border);
+            border-left: 3px solid transparent;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .metric-card--voice { border-left-color: var(--color-feedback-voice); }
+        .metric-card--story { border-left-color: var(--color-feedback-story); }
+
+        .metric-card summary {
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: var(--touch-target-min);
+        }
+
+        .metric-card summary::-webkit-details-marker { display: none; }
+        .metric-card summary::marker { display: none; content: ""; }
+
+        .metric-card__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-3);
+            flex: 1;
+        }
+
+        .metric-card__name {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-primary);
+        }
+
+        .metric-card__score {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-secondary);
+            flex-shrink: 0;
+        }
+
+        .metric-card__expand-icon {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+            color: var(--color-text-tertiary);
+            transition: transform var(--transition-fast);
+            flex-shrink: 0;
+            margin-left: var(--space-2);
+        }
+
+        details[open] .metric-card__expand-icon { transform: rotate(180deg); }
+
+        .metric-card__expanded {
+            padding-top: var(--space-2);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .metric-card__bar-track {
+            height: 6px;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .metric-card__bar-fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            transition: width var(--transition-slow);
+        }
+
+        .metric-card__bar-fill--voice { background: var(--color-feedback-voice); }
+        .metric-card__bar-fill--story { background: var(--color-feedback-story); }
+
+        .metric-card__detail {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-relaxed);
+        }
+
+        /* AI Insight */
+
+        .insight-card {
+            background: var(--color-primary-subtle);
+            border-radius: var(--card-radius);
+            padding: var(--space-4) var(--space-5);
+            border: 1px solid var(--color-feedback-voice);
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .insight-card__icon {
+            flex-shrink: 0;
+            width: var(--icon-xl);
+            height: var(--icon-xl);
+            color: var(--color-feedback-voice);
+            margin-top: var(--space-0-5);
+        }
+
+        .insight-card__body {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+
+        .insight-card__label {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            color: var(--color-feedback-voice);
+        }
+
+        .insight-card__text {
+            font-size: var(--font-size-sm);
+            line-height: var(--line-height-relaxed);
+            color: var(--color-text-primary);
+        }
+
+        .insight-card__text mark {
+            background: rgba(99, 102, 241, 0.15);
+            color: inherit;
+            border-radius: var(--radius-sm);
+            padding: 0 var(--space-0-5);
+        }
+
+        /* Action Buttons */
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            padding-top: var(--space-2);
+        }
+
+        .actions__row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-3);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: var(--btn-height-lg);
+            border-radius: var(--btn-radius);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            font-weight: var(--btn-font-weight);
+            letter-spacing: var(--btn-letter-spacing);
+            cursor: pointer;
+            transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+            border: none;
+            text-decoration: none;
+            min-height: var(--touch-target-min);
+        }
+
+        .btn:active { transform: scale(0.97); }
+
+        .btn--primary {
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn--primary:hover { background: var(--color-primary-dark); box-shadow: var(--shadow-glow-primary); }
+
+        .btn--secondary {
+            background: transparent;
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .btn--secondary:hover { background: var(--color-primary-subtle); }
+
+        .btn--ghost {
+            background: transparent;
+            color: var(--color-text-secondary);
+        }
+
+        .btn--ghost:hover { color: var(--color-primary); background: var(--color-primary-subtle); }
+
+        /* ══════════════════════════════════════════════════
+           SCREEN 5: Streak Update
+           ══════════════════════════════════════════════════ */
+
+        .streak-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-8) var(--space-page-x);
+            gap: var(--space-6);
+            text-align: center;
+        }
+
+        .streak-emoji {
+            font-size: 4rem;
+            line-height: 1;
+            animation: streak-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        @keyframes streak-pop {
+            0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+            60% { transform: scale(1.15) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .streak-heading {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-tight);
+        }
+
+        .streak-sub {
+            font-size: var(--font-size-base);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-relaxed);
+        }
+
+        .streak-improvement {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-5);
+            background: var(--card-bg);
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--card-border);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .streak-improvement__item--voice { color: var(--color-feedback-voice); }
+        .streak-improvement__item--story { color: var(--color-feedback-story); }
+
+        .streak-improvement__divider {
+            width: 1px;
+            height: 20px;
+            background: var(--color-border-default);
+        }
+
+        .streak-confetti {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .confetti-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: var(--radius-full);
+            animation: confetti-fall 2.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+        }
+
+        .streak-btn-wrap {
+            width: 100%;
+            max-width: 280px;
+            margin-top: var(--space-4);
+        }
+
+        .streak-btn-wrap .btn { width: 100%; }
+
+        /* ── Week dots ────────────────────────────────── */
+
+        .week-dots {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-top: var(--space-1);
+        }
+
+        .week-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .week-dot--done {
+            background: var(--color-success);
+            color: #fff;
+        }
+
+        .week-dot--empty {
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-disabled);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+
+        <!-- ════════════════════════════════════════════════
+             SCREEN 1: Daily Prompt
+             ════════════════════════════════════════════════ -->
+        <div class="screen active" id="screen-daily-prompt" role="region" aria-label="Daily prompt screen">
+
+            <header class="app-shell__header">
+                <span class="header-logo" aria-label="StoryCraft home">StoryCraft</span>
+                <a href="#profile" aria-label="Your profile">
+                    <img class="header-avatar" src="https://i.pravatar.cc/36?img=12" alt="Sarah's profile photo" width="36" height="36">
+                </a>
+            </header>
+
+            <main class="app-shell__content">
+
+                <section class="greeting" aria-label="Welcome greeting">
+                    <h1 class="greeting__text">Good morning, Sarah</h1>
+                    <span class="greeting__streak" aria-label="12-day streak">
+                        <span class="greeting__streak-icon" aria-hidden="true">🔥</span>
+                        12-day streak
+                    </span>
+                </section>
+
+                <article class="hero-prompt" aria-label="Today's storytelling prompt">
+                    <div class="hero-prompt__image-wrapper">
+                        <img class="hero-prompt__image" src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=390&h=200&fit=crop" alt="People having an engaging conversation" width="390" height="200" loading="eager">
+                        <span class="hero-prompt__category">Storytelling</span>
+                    </div>
+                    <div class="hero-prompt__body">
+                        <h2 class="hero-prompt__title">Tell the story of a time you changed someone's mind</h2>
+                        <div class="hero-prompt__meta">
+                            <span>90 seconds</span>
+                            <span class="meta-dot" aria-hidden="true"></span>
+                            <span>Intermediate</span>
+                            <span class="meta-dot" aria-hidden="true"></span>
+                            <span>CART Framework</span>
+                        </div>
+                        <button class="btn-record" type="button" aria-label="Start recording your story" onclick="goTo('recording')">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                <line x1="12" y1="19" x2="12" y2="23"/>
+                                <line x1="8" y1="23" x2="16" y2="23"/>
+                            </svg>
+                            START RECORDING
+                        </button>
+                    </div>
+                </article>
+
+                <section class="quick-stats" aria-label="Your practice stats">
+                    <div class="quick-stat">
+                        <span class="quick-stat__value">47</span>
+                        <span class="quick-stat__label">Stories</span>
+                    </div>
+                    <div class="quick-stat">
+                        <span class="quick-stat__value quick-stat__value--voice">7.2</span>
+                        <span class="quick-stat__label">Voice</span>
+                    </div>
+                    <div class="quick-stat">
+                        <span class="quick-stat__value quick-stat__value--story">6.8</span>
+                        <span class="quick-stat__label">Story</span>
+                    </div>
+                </section>
+
+                <section class="more-prompts" aria-label="More prompts to try">
+                    <div class="section-header">
+                        <h2 class="section-title">More Prompts</h2>
+                        <a href="#all-prompts" class="section-link" aria-label="View all prompts">See all</a>
+                    </div>
+                    <div class="prompt-scroll" role="list">
+                        <a href="#prompt-brave" class="prompt-card" role="listitem">
+                            <img class="prompt-card__thumb" src="https://picsum.photos/seed/brave/260/120" alt="Mountain landscape representing bravery" width="260" height="120" loading="lazy">
+                            <div class="prompt-card__body">
+                                <h3 class="prompt-card__title">What's the bravest thing you've ever done?</h3>
+                                <div class="prompt-card__meta">
+                                    <span>60s</span>
+                                    <span class="meta-dot" aria-hidden="true"></span>
+                                    <span class="level-badge level-badge--beginner">Beginner</span>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="#prompt-book" class="prompt-card" role="listitem">
+                            <img class="prompt-card__thumb" src="https://picsum.photos/seed/bookpitch/260/120" alt="Stack of books on a wooden table" width="260" height="120" loading="lazy">
+                            <div class="prompt-card__body">
+                                <h3 class="prompt-card__title">Pitch your favorite book in 2 minutes</h3>
+                                <div class="prompt-card__meta">
+                                    <span>120s</span>
+                                    <span class="meta-dot" aria-hidden="true"></span>
+                                    <span class="level-badge level-badge--intermediate">Intermediate</span>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="#prompt-lesson" class="prompt-card" role="listitem">
+                            <img class="prompt-card__thumb" src="https://picsum.photos/seed/lesson42/260/120" alt="Winding path through a forest" width="260" height="120" loading="lazy">
+                            <div class="prompt-card__body">
+                                <h3 class="prompt-card__title">A lesson you learned the hard way</h3>
+                                <div class="prompt-card__meta">
+                                    <span>90s</span>
+                                    <span class="meta-dot" aria-hidden="true"></span>
+                                    <span class="level-badge level-badge--advanced">Advanced</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+
+            </main>
+
+            <nav class="app-shell__nav" aria-label="Main navigation">
+                <button class="nav-item active" aria-label="Practice" aria-current="page">
+                    <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    <span class="nav-item__label">Practice</span>
+                </button>
+                <button class="nav-item" aria-label="Progress">
+                    <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"/>
+                        <line x1="12" y1="20" x2="12" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                    <span class="nav-item__label">Progress</span>
+                </button>
+                <button class="nav-item nav-item--record" aria-label="Record a new story">
+                    <span class="nav-fab">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                    </span>
+                    <span class="nav-item__label">Record</span>
+                </button>
+                <button class="nav-item" aria-label="Community">
+                    <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span class="nav-item__label">Community</span>
+                </button>
+                <button class="nav-item" aria-label="Tracks">
+                    <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polygon points="10 8 16 12 10 16 10 8"/>
+                    </svg>
+                    <span class="nav-item__label">Tracks</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- ════════════════════════════════════════════════
+             SCREEN 2: Recording
+             ════════════════════════════════════════════════ -->
+        <div class="screen" id="screen-recording" role="region" aria-label="Recording screen">
+            <div class="recording-studio">
+
+                <header class="recording-topbar">
+                    <button class="icon-btn icon-btn--ghost" aria-label="Go back" type="button" onclick="goTo('daily-prompt')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M19 12H5"/>
+                            <path d="M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div class="recording-topbar__center">
+                        <p class="recording-topbar__prompt" title="Tell the story of a time you changed someone's mind">Tell the story of a time you changed someone's mind</p>
+                        <p class="recording-topbar__timer" aria-live="polite" aria-atomic="true">
+                            <span class="rec-indicator" aria-hidden="true"></span>
+                            <time>01:23</time> / <time>01:30</time>
+                        </p>
+                    </div>
+                    <div class="recording-topbar__spacer" aria-hidden="true"></div>
+                </header>
+
+                <div class="recording-body">
+                    <div class="waveform-container">
+                        <div class="waveform-live" role="img" aria-label="Audio waveform — recording in progress" id="waveform-live"></div>
+
+                        <nav class="framework-guide" aria-label="Story framework progress">
+                            <span class="framework-guide__step">Hook</span>
+                            <span class="framework-guide__arrow" aria-hidden="true">→</span>
+                            <span class="framework-guide__step framework-guide__step--active" aria-current="step">Context</span>
+                            <span class="framework-guide__arrow" aria-hidden="true">→</span>
+                            <span class="framework-guide__step">Conflict</span>
+                            <span class="framework-guide__arrow" aria-hidden="true">→</span>
+                            <span class="framework-guide__step">Resolution</span>
+                        </nav>
+                    </div>
+                </div>
+
+                <footer class="recording-controls">
+                    <button class="stop-button" type="button" aria-label="Stop recording" onclick="goTo('processing')">
+                        <span class="stop-button__icon" aria-hidden="true"></span>
+                    </button>
+                    <button class="pause-link" type="button" aria-label="Pause recording">Pause</button>
+                </footer>
+
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════
+             SCREEN 3: Processing
+             ════════════════════════════════════════════════ -->
+        <div class="screen" id="screen-processing" role="region" aria-label="Processing screen">
+            <div class="processing-screen">
+                <h1 class="processing-screen__title">Analyzing your story…</h1>
+                <ul class="processing-list" aria-live="polite">
+                    <li class="processing-item">
+                        <span class="processing-item__icon processing-item__icon--done" aria-hidden="true">✓</span>
+                        <span class="processing-item__label">Duration</span>
+                        <span class="processing-item__value">1:23</span>
+                    </li>
+                    <li class="processing-item">
+                        <span class="processing-item__icon processing-item__icon--done" aria-hidden="true">✓</span>
+                        <span class="processing-item__label">Pace</span>
+                        <span class="processing-item__value">142 wpm</span>
+                    </li>
+                    <li class="processing-item">
+                        <span class="processing-item__icon processing-item__icon--done" aria-hidden="true">✓</span>
+                        <span class="processing-item__label">Filler words</span>
+                        <span class="processing-item__value">4</span>
+                    </li>
+                    <li class="processing-item processing-item--pending">
+                        <span class="processing-item__icon processing-item__icon--pending" aria-hidden="true">◌</span>
+                        <span class="processing-item__label">Analyzing story…</span>
+                        <span class="shimmer" aria-hidden="true"></span>
+                    </li>
+                    <li class="processing-item processing-item--pending">
+                        <span class="processing-item__icon processing-item__icon--pending" aria-hidden="true">◌</span>
+                        <span class="processing-item__label">Scoring narrative arc…</span>
+                        <span class="shimmer" aria-hidden="true"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════
+             SCREEN 4: Feedback
+             ════════════════════════════════════════════════ -->
+        <div class="screen" id="screen-feedback" role="region" aria-label="Feedback screen">
+
+            <header class="feedback-header" role="banner">
+                <button class="icon-btn" aria-label="Go back" onclick="goTo('processing')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M19 12H5"/>
+                        <path d="M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h1 class="feedback-header__title">Session Feedback</h1>
+                <button class="icon-btn" aria-label="Share feedback">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                        <polyline points="16 6 12 2 8 6"/>
+                        <line x1="12" y1="2" x2="12" y2="15"/>
+                    </svg>
+                </button>
+            </header>
+
+            <main class="feedback-content" role="main">
+
+                <section class="scores-row" aria-label="Overall scores">
+                    <div class="score-card score-card--voice" role="group" aria-label="Voice score">
+                        <span class="score-card__label score-card__label--voice">Voice</span>
+                        <span class="score-card__value" aria-label="7.2 out of 10">7.2</span>
+                        <span class="score-card__delta" aria-label="Up 0.4 from last session">&#8593; +0.4</span>
+                    </div>
+                    <div class="combined-score" role="group" aria-label="Combined storytelling power score">
+                        <span class="combined-score__label">Storytelling<br>Power</span>
+                        <span class="combined-score__value" aria-label="7.0 out of 10">7.0</span>
+                    </div>
+                    <div class="score-card score-card--story" role="group" aria-label="Story score">
+                        <span class="score-card__label score-card__label--story">Story</span>
+                        <span class="score-card__value" aria-label="6.8 out of 10">6.8</span>
+                        <span class="score-card__delta" aria-label="Up 0.6 from last session">&#8593; +0.6</span>
+                    </div>
+                </section>
+
+                <section class="waveform-card" aria-label="Session recording playback">
+                    <div class="waveform-player">
+                        <button class="play-btn" aria-label="Play recording">
+                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <polygon points="6,3 20,12 6,21"/>
+                            </svg>
+                        </button>
+                        <div class="waveform-track">
+                            <div class="waveform-bars" role="img" aria-label="Audio waveform with annotations" id="feedback-waveform">
+                                <span class="waveform-annotation waveform-annotation--filler" aria-hidden="true"></span>
+                                <span class="waveform-annotation waveform-annotation--pace" aria-hidden="true"></span>
+                                <span class="waveform-annotation waveform-annotation--emotion" aria-hidden="true"></span>
+                            </div>
+                            <div class="waveform-time">
+                                <time>0:00</time>
+                                <time>1:23</time>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="waveform-legend" aria-label="Annotation legend">
+                        <span class="legend-item"><span class="legend-dot legend-dot--filler" aria-hidden="true"></span> Filler Words</span>
+                        <span class="legend-item"><span class="legend-dot legend-dot--pace" aria-hidden="true"></span> Pace</span>
+                        <span class="legend-item"><span class="legend-dot legend-dot--emotion" aria-hidden="true"></span> Emotional Peak</span>
+                    </div>
+                </section>
+
+                <section class="metrics-section" aria-label="Voice metrics">
+                    <h2 class="metrics-section__heading">Voice Metrics</h2>
+
+                    <details class="metric-card metric-card--voice" open>
+                        <summary>
+                            <div class="metric-card__header">
+                                <span class="metric-card__name">Pace</span>
+                                <span class="metric-card__score">8 / 10</span>
+                            </div>
+                            <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                        </summary>
+                        <div class="metric-card__expanded">
+                            <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--voice" style="width:80%"></div></div>
+                            <p class="metric-card__detail">Your pacing was excellent, averaging 142 WPM with natural variation that kept listeners engaged.</p>
+                        </div>
+                    </details>
+
+                    <details class="metric-card metric-card--voice">
+                        <summary>
+                            <div class="metric-card__header">
+                                <span class="metric-card__name">Filler Words</span>
+                                <span class="metric-card__score">7 / 10</span>
+                            </div>
+                            <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                        </summary>
+                        <div class="metric-card__expanded">
+                            <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--voice" style="width:70%"></div></div>
+                            <p class="metric-card__detail">4 filler words detected — down from 7 last session. Great improvement!</p>
+                        </div>
+                    </details>
+
+                    <details class="metric-card metric-card--voice">
+                        <summary>
+                            <div class="metric-card__header">
+                                <span class="metric-card__name">Intonation</span>
+                                <span class="metric-card__score">7 / 10</span>
+                            </div>
+                            <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                        </summary>
+                        <div class="metric-card__expanded">
+                            <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--voice" style="width:70%"></div></div>
+                            <p class="metric-card__detail">Good vocal range with clear emphasis on key points. Try varying pitch more during transitions.</p>
+                        </div>
+                    </details>
+
+                    <details class="metric-card metric-card--voice">
+                        <summary>
+                            <div class="metric-card__header">
+                                <span class="metric-card__name">Clarity</span>
+                                <span class="metric-card__score">8 / 10</span>
+                            </div>
+                            <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                        </summary>
+                        <div class="metric-card__expanded">
+                            <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--voice" style="width:80%"></div></div>
+                            <p class="metric-card__detail">Excellent articulation throughout. Words were crisp and easy to follow.</p>
+                        </div>
+                    </details>
+                </section>
+
+                <section class="metrics-section" aria-label="Story metrics">
+                    <h2 class="metrics-section__heading">Story Metrics</h2>
+
+                    <details class="metric-card metric-card--story" open>
+                        <summary>
+                            <div class="metric-card__header">
+                                <span class="metric-card__name">Hook Strength</span>
+                                <span class="metric-card__score">6 / 10</span>
+                            </div>
+                            <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                        </summary>
+                        <div class="metric-card__expanded">
+                            <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--story" style="width:60%"></div></div>
+                            <p class="metric-card__detail">Your opening grabbed attention in the first 5 seconds — try adding a question or surprising fact to make it even stronger.</p>
+                        </div>
+                    </details>
+
+                    <details class="metric-card metric-card--story">
+                        <summary>
+                            <div class="metric-card__header">
+                                <span class="metric-card__name">Narrative Arc</span>
+                                <span class="metric-card__score">7 / 10</span>
+                            </div>
+                            <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                        </summary>
+                        <div class="metric-card__expanded">
+                            <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--story" style="width:70%"></div></div>
+                            <p class="metric-card__detail">Clear beginning, middle, and end. The rising tension worked well — the resolution could use a bit more breathing room.</p>
+                        </div>
+                    </details>
+
+                    <details class="metric-card metric-card--story">
+                        <summary>
+                            <div class="metric-card__header">
+                                <span class="metric-card__name">Engagement</span>
+                                <span class="metric-card__score">7 / 10</span>
+                            </div>
+                            <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                        </summary>
+                        <div class="metric-card__expanded">
+                            <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--story" style="width:70%"></div></div>
+                            <p class="metric-card__detail">Strong emotional connection. Your personal anecdote at 0:35 was the most engaging moment.</p>
+                        </div>
+                    </details>
+
+                    <details class="metric-card metric-card--story">
+                        <summary>
+                            <div class="metric-card__header">
+                                <span class="metric-card__name">Persuasion</span>
+                                <span class="metric-card__score">6 / 10</span>
+                            </div>
+                            <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                        </summary>
+                        <div class="metric-card__expanded">
+                            <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--story" style="width:60%"></div></div>
+                            <p class="metric-card__detail">Good call-to-action at the end. Adding a concrete example earlier would strengthen your argument.</p>
+                        </div>
+                    </details>
+                </section>
+
+                <section class="insight-card" aria-label="AI coaching insight">
+                    <svg class="insight-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <div class="insight-card__body">
+                        <span class="insight-card__label">AI Insight</span>
+                        <p class="insight-card__text">
+                            At <mark>0:42</mark> you said <mark>"kind of"</mark> — try a confident pause instead. Your hook landed well but the resolution at <mark>1:15</mark> felt rushed — slow down for the payoff.
+                        </p>
+                    </div>
+                </section>
+
+                <nav class="actions" aria-label="Session actions">
+                    <div class="actions__row">
+                        <button class="btn btn--secondary" type="button" onclick="goTo('recording')">Try Again</button>
+                        <button class="btn btn--primary" type="button" onclick="goTo('streak-update')">Done</button>
+                    </div>
+                    <button class="btn btn--ghost" type="button">Share to Challenge</button>
+                </nav>
+
+            </main>
+        </div>
+
+        <!-- ════════════════════════════════════════════════
+             SCREEN 5: Streak Update
+             ════════════════════════════════════════════════ -->
+        <div class="screen" id="screen-streak-update" role="region" aria-label="Streak update screen">
+            <div class="streak-screen">
+                <div class="streak-confetti" id="confetti-container" aria-hidden="true"></div>
+                <span class="streak-emoji" aria-hidden="true">🔥</span>
+                <h1 class="streak-heading">12-day streak!</h1>
+                <p class="streak-sub">You practiced 5 of 7 days this week</p>
+
+                <div class="week-dots" aria-label="Weekly practice: 5 of 7 days completed">
+                    <span class="week-dot week-dot--done" aria-label="Monday completed">M</span>
+                    <span class="week-dot week-dot--done" aria-label="Tuesday completed">T</span>
+                    <span class="week-dot week-dot--done" aria-label="Wednesday completed">W</span>
+                    <span class="week-dot week-dot--empty" aria-label="Thursday missed">T</span>
+                    <span class="week-dot week-dot--done" aria-label="Friday completed">F</span>
+                    <span class="week-dot week-dot--empty" aria-label="Saturday pending">S</span>
+                    <span class="week-dot week-dot--done" aria-label="Sunday completed">S</span>
+                </div>
+
+                <div class="streak-improvement" aria-label="Session improvements">
+                    <span class="streak-improvement__item--voice">Voice ↑0.4</span>
+                    <span class="streak-improvement__divider" aria-hidden="true"></span>
+                    <span class="streak-improvement__item--story">Story ↑0.6</span>
+                </div>
+
+                <div class="streak-btn-wrap">
+                    <button class="btn btn--primary" type="button" onclick="goTo('daily-prompt')">Back to Practice</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── Prototype Navigation ────────────────────────── -->
+    <nav class="proto-nav" aria-label="Prototype screen navigation">
+        <button class="proto-nav__btn active" onclick="goTo('daily-prompt')" aria-label="Go to daily prompt screen">1 Prompt</button>
+        <button class="proto-nav__btn" onclick="goTo('recording')" aria-label="Go to recording screen">2 Record</button>
+        <button class="proto-nav__btn" onclick="goTo('processing')" aria-label="Go to processing screen">3 Process</button>
+        <button class="proto-nav__btn" onclick="goTo('feedback')" aria-label="Go to feedback screen">4 Feedback</button>
+        <button class="proto-nav__btn" onclick="goTo('streak-update')" aria-label="Go to streak update screen">5 Streak</button>
+    </nav>
+
+    <script>
+        (function () {
+            var processingTimer = null;
+
+            function generateWaveformBars() {
+                var container = document.getElementById('waveform-live');
+                if (!container || container.children.length > 0) return;
+                for (var i = 0; i < 40; i++) {
+                    var bar = document.createElement('div');
+                    bar.className = 'waveform-live__bar';
+                    var minH = 6 + Math.floor(Math.random() * 12);
+                    var maxH = 28 + Math.floor(Math.random() * 92);
+                    var dur = (0.8 + Math.random() * 0.6).toFixed(2);
+                    var delay = Math.floor(Math.random() * 320);
+                    bar.style.cssText = '--bar-min:' + minH + 'px;--bar-max:' + maxH + 'px;--bar-duration:' + dur + 's;--bar-delay:' + delay + 'ms';
+                    container.appendChild(bar);
+                }
+            }
+
+            function generateFeedbackWaveform() {
+                var container = document.getElementById('feedback-waveform');
+                if (!container || container.querySelectorAll('.waveform-bar').length > 0) return;
+                var heights = [30,50,40,65,80,55,70,90,60,45,75,85,50,35,60,95,70,55,40,80,65,90,45,70,55,85,60,75,50,65,40,70,90,55,80,45,60,75,50,85];
+                var playedCount = 12;
+                for (var i = 0; i < 40; i++) {
+                    var bar = document.createElement('span');
+                    bar.className = 'waveform-bar' + (i < playedCount ? ' waveform-bar--played' : '');
+                    bar.style.height = heights[i] + '%';
+                    container.appendChild(bar);
+                }
+            }
+
+            function spawnConfetti() {
+                var container = document.getElementById('confetti-container');
+                if (!container) return;
+                container.innerHTML = '';
+                var colors = ['#6366F1', '#F97316', '#14B8A6', '#EF4444', '#F59E0B', '#EC4899'];
+                for (var i = 0; i < 30; i++) {
+                    var dot = document.createElement('span');
+                    dot.className = 'confetti-dot';
+                    dot.style.left = Math.random() * 100 + '%';
+                    dot.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    dot.style.animationDelay = (Math.random() * 0.8).toFixed(2) + 's';
+                    dot.style.width = (4 + Math.random() * 6) + 'px';
+                    dot.style.height = dot.style.width;
+                    container.appendChild(dot);
+                }
+            }
+
+            window.goTo = function (screenId) {
+                if (processingTimer) {
+                    clearTimeout(processingTimer);
+                    processingTimer = null;
+                }
+
+                var screens = document.querySelectorAll('.screen');
+                var current = document.querySelector('.screen.active');
+                var next = document.getElementById('screen-' + screenId);
+                if (!next || next === current) return;
+
+                if (current) {
+                    current.classList.add('fade-out');
+                }
+
+                setTimeout(function () {
+                    screens.forEach(function (s) {
+                        s.classList.remove('active', 'fade-out', 'fade-in');
+                    });
+                    next.classList.add('active');
+                    requestAnimationFrame(function () {
+                        next.classList.add('fade-in');
+                    });
+
+                    if (screenId === 'recording') {
+                        generateWaveformBars();
+                    }
+
+                    if (screenId === 'feedback') {
+                        generateFeedbackWaveform();
+                    }
+
+                    if (screenId === 'processing') {
+                        processingTimer = setTimeout(function () {
+                            goTo('feedback');
+                        }, 2000);
+                    }
+
+                    if (screenId === 'streak-update') {
+                        spawnConfetti();
+                    }
+
+                    var btns = document.querySelectorAll('.proto-nav__btn');
+                    var screenNames = ['daily-prompt', 'recording', 'processing', 'feedback', 'streak-update'];
+                    btns.forEach(function (btn, idx) {
+                        btn.classList.toggle('active', screenNames[idx] === screenId);
+                    });
+                }, 250);
+            };
+
+            generateWaveformBars();
+            generateFeedbackWaveform();
+        })();
+    </script>
+</body>
+</html>

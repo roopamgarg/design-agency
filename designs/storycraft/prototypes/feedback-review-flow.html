@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StoryCraft — Feedback Review Flow</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    /* Screen management */
+    .screen {
+      display: none;
+      opacity: 0;
+      transition: opacity var(--transition-normal);
+    }
+    .screen.active {
+      display: block;
+      opacity: 1;
+    }
+    .screen.slide-right {
+      animation: slideRight 250ms var(--ease-out) forwards;
+    }
+    .screen.slide-left {
+      animation: slideLeft 250ms var(--ease-out) forwards;
+    }
+    @keyframes slideRight {
+      from { transform: translateX(30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideLeft {
+      from { transform: translateX(-30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Page content */
+    .page-content {
+      padding: var(--space-page-x);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    /* Header */
+    .screen-header {
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-page-x);
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+    .screen-header__title {
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+    .icon-btn {
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: var(--radius-full);
+      color: var(--color-text-primary);
+      transition: background var(--transition-fast);
+    }
+    .icon-btn:hover {
+      background: var(--color-bg-secondary);
+    }
+    .icon-btn svg {
+      width: var(--icon-lg);
+      height: var(--icon-lg);
+    }
+
+    /* Score cards row */
+    .score-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+    .score-card {
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--card-border);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .score-card--voice {
+      border-top: 3px solid var(--color-feedback-voice);
+    }
+    .score-card--story {
+      border-top: 3px solid var(--color-feedback-story);
+    }
+    .score-card__label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+      margin-bottom: var(--space-1);
+    }
+    .score-card__value {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+    }
+    .score-card__value--gradient {
+      background: linear-gradient(135deg, var(--color-feedback-voice), var(--color-feedback-story));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .score-card__delta {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-success);
+      margin-top: var(--space-1);
+    }
+
+    /* Combined score */
+    .combined-score {
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--card-border);
+      text-align: center;
+    }
+    .combined-score__label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+      margin-bottom: var(--space-1);
+    }
+    .combined-score__value {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      background: linear-gradient(135deg, var(--color-feedback-voice), var(--color-feedback-story));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Waveform player */
+    .waveform-card {
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--card-border);
+    }
+    .waveform-player {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .waveform-play-btn {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .waveform-play-btn:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-glow-primary);
+    }
+    .waveform-play-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+    .waveform-bars {
+      display: flex;
+      align-items: center;
+      gap: var(--waveform-bar-gap);
+      flex: 1;
+      height: 40px;
+      position: relative;
+    }
+    .waveform-bar {
+      width: var(--waveform-bar-width);
+      border-radius: var(--radius-full);
+      background: var(--color-primary-light);
+      transition: background var(--transition-fast);
+    }
+    .waveform-bar.played {
+      background: var(--color-primary);
+    }
+    .waveform-time {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      min-width: 70px;
+      text-align: right;
+    }
+    .waveform-annotations {
+      position: relative;
+      height: 20px;
+      margin-top: var(--space-2);
+      margin-left: 52px;
+      margin-right: 70px;
+    }
+    .annotation-dot {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-full);
+      top: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      border: 2px solid var(--color-bg-elevated);
+      box-shadow: var(--shadow-sm);
+    }
+    .annotation-dot--filler { background: var(--color-feedback-filler); left: 30%; }
+    .annotation-dot--pace { background: var(--color-feedback-pace); left: 60%; }
+    .annotation-dot--emotion { background: var(--color-feedback-emotion); left: 80%; }
+    .waveform-legend {
+      display: flex;
+      gap: var(--space-4);
+      margin-top: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1-5);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
+    }
+
+    /* Section heading */
+    .section-heading {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+      margin-top: var(--space-2);
+    }
+
+    /* Metric cards */
+    .metric-cards {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .metric-card {
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: var(--space-4);
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      cursor: pointer;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .metric-card:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+    .metric-card__info {
+      flex: 1;
+    }
+    .metric-card__name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-1);
+    }
+    .metric-card__score {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-2);
+    }
+    .metric-card__bar {
+      height: 4px;
+      background: var(--color-bg-tertiary);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .metric-card__bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width var(--transition-slow);
+    }
+    .metric-card__chevron {
+      color: var(--color-text-tertiary);
+      width: var(--icon-md);
+      height: var(--icon-md);
+      flex-shrink: 0;
+    }
+
+    /* AI Insight */
+    .ai-insight {
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--color-primary);
+    }
+    .ai-insight__header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-2);
+    }
+    .ai-insight__icon {
+      width: 20px;
+      height: 20px;
+      color: var(--color-primary);
+    }
+    .ai-insight__label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+    }
+    .ai-insight__text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    /* Action buttons */
+    .action-buttons {
+      display: flex;
+      gap: var(--space-3);
+      margin-top: var(--space-2);
+      padding-bottom: var(--space-4);
+    }
+    .btn {
+      height: var(--btn-height-md);
+      border-radius: var(--btn-radius);
+      font-weight: var(--btn-font-weight);
+      font-size: var(--font-size-sm);
+      letter-spacing: var(--btn-letter-spacing);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: 0 var(--space-5);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+      flex: 1;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+    .btn--primary {
+      background: var(--color-primary);
+      color: white;
+    }
+    .btn--primary:hover {
+      box-shadow: var(--shadow-glow-primary);
+    }
+    .btn--secondary {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+    }
+    .btn--accent {
+      background: var(--color-accent);
+      color: white;
+    }
+    .btn--accent:hover {
+      box-shadow: var(--shadow-glow-accent);
+    }
+
+    /* Detail screens */
+    .score-ring {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-6) 0 var(--space-4);
+    }
+    .score-ring__svg {
+      width: 140px;
+      height: 140px;
+    }
+    .score-ring__value {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+    }
+    .score-ring__delta {
+      font-size: var(--font-size-sm);
+      color: var(--color-success);
+      font-weight: var(--font-weight-medium);
+      margin-top: var(--space-2);
+    }
+
+    /* Detail metric expanded */
+    .detail-metric {
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--card-border);
+    }
+    .detail-metric__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-2);
+    }
+    .detail-metric__name {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+    .detail-metric__score {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+    }
+    .detail-metric__bar {
+      height: 6px;
+      background: var(--color-bg-tertiary);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-bottom: var(--space-3);
+    }
+    .detail-metric__bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+    }
+    .detail-metric__text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+    .detail-metric__extras {
+      margin-top: var(--space-3);
+    }
+
+    /* Filler list */
+    .filler-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+    .filler-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-md);
+    }
+    .filler-item__word {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-feedback-filler);
+    }
+    .filler-item__time {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    /* Pace chart */
+    .pace-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 40px;
+      margin-top: var(--space-3);
+    }
+    .pace-chart__bar {
+      flex: 1;
+      background: var(--color-primary-light);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      min-height: 4px;
+    }
+
+    /* Trend chart */
+    .trend-section {
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--card-border);
+    }
+    .trend-section__title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-3);
+    }
+    .trend-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 60px;
+      gap: var(--space-2);
+    }
+    .trend-bar {
+      flex: 1;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .trend-bar__fill {
+      width: 100%;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+    .trend-bar__label {
+      font-family: var(--font-family-mono);
+      font-size: 9px;
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-1);
+      position: absolute;
+      bottom: -18px;
+    }
+
+    /* Annotated playback */
+    .large-waveform {
+      display: flex;
+      align-items: center;
+      gap: var(--waveform-bar-gap);
+      height: 80px;
+      padding: var(--space-4) 0;
+    }
+    .large-waveform .waveform-bar {
+      flex: 1;
+      min-width: 2px;
+    }
+    .playback-time {
+      text-align: center;
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+      padding: var(--space-2) 0;
+    }
+    .playback-controls {
+      display: flex;
+      justify-content: center;
+      padding: var(--space-3) 0;
+    }
+    .play-btn-large {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: var(--shadow-glow-primary);
+      transition: transform var(--transition-fast);
+    }
+    .play-btn-large:hover {
+      transform: scale(1.08);
+    }
+    .play-btn-large svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Annotation list */
+    .annotation-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+    .annotation-card {
+      display: flex;
+      gap: var(--space-3);
+      align-items: flex-start;
+      padding: var(--space-3) var(--space-4);
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--card-border);
+    }
+    .annotation-card__dot {
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-full);
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+    .annotation-card__dot--green { background: var(--color-feedback-emotion); }
+    .annotation-card__dot--red { background: var(--color-feedback-filler); }
+    .annotation-card__dot--amber { background: var(--color-feedback-pace); }
+    .annotation-card__content {
+      flex: 1;
+    }
+    .annotation-card__time {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-0-5);
+    }
+    .annotation-card__text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      line-height: var(--line-height-snug);
+    }
+
+    /* Narrative arc SVG */
+    .arc-diagram {
+      margin-top: var(--space-3);
+      width: 100%;
+      height: 60px;
+    }
+
+    /* Prototype nav */
+    .proto-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: var(--app-shell-width);
+      height: var(--nav-height);
+      background: var(--nav-bg);
+      border-top: 1px solid var(--nav-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: var(--z-fixed);
+      padding: 0 var(--space-2);
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .proto-nav__btn {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-tertiary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: var(--space-2) var(--space-2);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+      min-height: var(--touch-target-min);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: var(--line-height-tight);
+    }
+    .proto-nav__btn:hover {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+    }
+    .proto-nav__btn.active {
+      color: var(--color-primary);
+      background: var(--color-primary-subtle);
+      font-weight: var(--font-weight-semibold);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-shell__content">
+
+      <!-- Screen 1: Feedback Overview -->
+      <section class="screen active" id="feedback-overview" aria-label="Session Feedback Overview">
+        <header class="screen-header">
+          <button class="icon-btn" aria-label="Go back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <h1 class="screen-header__title">Session Feedback</h1>
+          <button class="icon-btn" aria-label="Share">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          </button>
+        </header>
+
+        <div class="page-content">
+          <!-- Dual score cards -->
+          <div class="score-row">
+            <div class="score-card score-card--voice">
+              <div class="score-card__label">Voice</div>
+              <div class="score-card__value">7.2</div>
+              <div class="score-card__delta">↑ +0.4</div>
+            </div>
+            <div class="score-card score-card--story">
+              <div class="score-card__label">Story</div>
+              <div class="score-card__value">6.8</div>
+              <div class="score-card__delta">↑ +0.6</div>
+            </div>
+          </div>
+
+          <!-- Combined score -->
+          <div class="combined-score">
+            <div class="combined-score__label">Combined Score</div>
+            <div class="combined-score__value">7.0</div>
+          </div>
+
+          <!-- Waveform player -->
+          <div class="waveform-card" role="region" aria-label="Annotated waveform player">
+            <div class="waveform-player">
+              <button class="waveform-play-btn" aria-label="Play recording" onclick="navigateTo('annotated-playback')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <div class="waveform-bars" id="overview-waveform" aria-hidden="true"></div>
+              <span class="waveform-time">0:00 / 1:23</span>
+            </div>
+            <div class="waveform-annotations" aria-label="Annotation markers">
+              <span class="annotation-dot annotation-dot--filler" title="Filler word detected" role="img" aria-label="Filler at 30%"></span>
+              <span class="annotation-dot annotation-dot--pace" title="Pace change" role="img" aria-label="Pace issue at 60%"></span>
+              <span class="annotation-dot annotation-dot--emotion" title="Strong emotion" role="img" aria-label="Good emotion at 80%"></span>
+            </div>
+            <div class="waveform-legend">
+              <span class="legend-item"><span class="legend-dot" style="background: var(--color-feedback-filler)"></span>Filler</span>
+              <span class="legend-item"><span class="legend-dot" style="background: var(--color-feedback-pace)"></span>Pace</span>
+              <span class="legend-item"><span class="legend-dot" style="background: var(--color-feedback-emotion)"></span>Emotion</span>
+            </div>
+          </div>
+
+          <!-- Voice Metrics -->
+          <h2 class="section-heading">Voice Metrics</h2>
+          <div class="metric-cards">
+            <div class="metric-card" role="button" tabindex="0" aria-label="Pace: 8 out of 10" onclick="navigateTo('voice-detail')">
+              <div class="metric-card__info">
+                <div class="metric-card__name">Pace</div>
+                <div class="metric-card__score">8 / 10</div>
+                <div class="metric-card__bar"><div class="metric-card__bar-fill" style="width: 80%; background: var(--color-feedback-pace)"></div></div>
+              </div>
+              <svg class="metric-card__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="metric-card" role="button" tabindex="0" aria-label="Filler Words: 7 out of 10" onclick="navigateTo('voice-detail')">
+              <div class="metric-card__info">
+                <div class="metric-card__name">Filler Words</div>
+                <div class="metric-card__score">7 / 10</div>
+                <div class="metric-card__bar"><div class="metric-card__bar-fill" style="width: 70%; background: var(--color-feedback-filler)"></div></div>
+              </div>
+              <svg class="metric-card__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="metric-card" role="button" tabindex="0" aria-label="Intonation: 7 out of 10" onclick="navigateTo('voice-detail')">
+              <div class="metric-card__info">
+                <div class="metric-card__name">Intonation</div>
+                <div class="metric-card__score">7 / 10</div>
+                <div class="metric-card__bar"><div class="metric-card__bar-fill" style="width: 70%; background: var(--color-feedback-voice)"></div></div>
+              </div>
+              <svg class="metric-card__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="metric-card" role="button" tabindex="0" aria-label="Clarity: 8 out of 10" onclick="navigateTo('voice-detail')">
+              <div class="metric-card__info">
+                <div class="metric-card__name">Clarity</div>
+                <div class="metric-card__score">8 / 10</div>
+                <div class="metric-card__bar"><div class="metric-card__bar-fill" style="width: 80%; background: var(--color-secondary)"></div></div>
+              </div>
+              <svg class="metric-card__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+          </div>
+
+          <!-- Story Metrics -->
+          <h2 class="section-heading">Story Metrics</h2>
+          <div class="metric-cards">
+            <div class="metric-card" role="button" tabindex="0" aria-label="Hook: 6 out of 10" onclick="navigateTo('story-detail')">
+              <div class="metric-card__info">
+                <div class="metric-card__name">Hook</div>
+                <div class="metric-card__score">6 / 10</div>
+                <div class="metric-card__bar"><div class="metric-card__bar-fill" style="width: 60%; background: var(--color-feedback-story)"></div></div>
+              </div>
+              <svg class="metric-card__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="metric-card" role="button" tabindex="0" aria-label="Arc: 7 out of 10" onclick="navigateTo('story-detail')">
+              <div class="metric-card__info">
+                <div class="metric-card__name">Arc</div>
+                <div class="metric-card__score">7 / 10</div>
+                <div class="metric-card__bar"><div class="metric-card__bar-fill" style="width: 70%; background: var(--color-feedback-structure)"></div></div>
+              </div>
+              <svg class="metric-card__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="metric-card" role="button" tabindex="0" aria-label="Engagement: 7 out of 10" onclick="navigateTo('story-detail')">
+              <div class="metric-card__info">
+                <div class="metric-card__name">Engagement</div>
+                <div class="metric-card__score">7 / 10</div>
+                <div class="metric-card__bar"><div class="metric-card__bar-fill" style="width: 70%; background: var(--color-feedback-emotion)"></div></div>
+              </div>
+              <svg class="metric-card__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="metric-card" role="button" tabindex="0" aria-label="Persuasion: 6 out of 10" onclick="navigateTo('story-detail')">
+              <div class="metric-card__info">
+                <div class="metric-card__name">Persuasion</div>
+                <div class="metric-card__score">6 / 10</div>
+                <div class="metric-card__bar"><div class="metric-card__bar-fill" style="width: 60%; background: var(--color-accent)"></div></div>
+              </div>
+              <svg class="metric-card__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+          </div>
+
+          <!-- AI Insight -->
+          <div class="ai-insight" role="complementary" aria-label="AI Insight">
+            <div class="ai-insight__header">
+              <svg class="ai-insight__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <span class="ai-insight__label">AI Insight</span>
+            </div>
+            <p class="ai-insight__text">Your storytelling improved significantly this session. Focus on reducing filler words during transitions — try pausing for a beat instead. Your hook is getting stronger but could benefit from a surprising statistic or question.</p>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="action-buttons">
+            <button class="btn btn--secondary">Try Again</button>
+            <button class="btn btn--primary">Done</button>
+            <button class="btn btn--accent">Share</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: Voice Detail -->
+      <section class="screen" id="voice-detail" aria-label="Voice Analysis Detail">
+        <header class="screen-header">
+          <button class="icon-btn" aria-label="Back to overview" onclick="navigateTo('feedback-overview')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <h1 class="screen-header__title">Voice Analysis</h1>
+          <div class="icon-btn" aria-hidden="true"></div>
+        </header>
+
+        <div class="page-content">
+          <!-- Score ring -->
+          <div class="score-ring">
+            <svg class="score-ring__svg" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="60" fill="none" stroke="var(--color-bg-tertiary)" stroke-width="10"/>
+              <circle cx="70" cy="70" r="60" fill="none" stroke="var(--color-feedback-voice)" stroke-width="10" stroke-linecap="round"
+                stroke-dasharray="376.99" stroke-dashoffset="103.17" transform="rotate(-90 70 70)"/>
+              <text x="70" y="65" text-anchor="middle" font-family="var(--font-family-mono)" font-size="28" font-weight="700" fill="var(--color-text-primary)">7.2</text>
+              <text x="70" y="85" text-anchor="middle" font-family="var(--font-family-sans)" font-size="12" fill="var(--color-text-tertiary)">/ 10</text>
+            </svg>
+            <div class="score-ring__delta">↑ +0.4 from last session</div>
+          </div>
+
+          <!-- Pace -->
+          <div class="detail-metric">
+            <div class="detail-metric__header">
+              <span class="detail-metric__name">Pace</span>
+              <span class="detail-metric__score">8/10</span>
+            </div>
+            <div class="detail-metric__bar"><div class="detail-metric__bar-fill" style="width: 80%; background: var(--color-feedback-pace)"></div></div>
+            <p class="detail-metric__text">Averaging 142 WPM with natural variation</p>
+            <div class="pace-chart" aria-label="Pace over recording timeline">
+              <div class="pace-chart__bar" style="height: 60%"></div>
+              <div class="pace-chart__bar" style="height: 70%"></div>
+              <div class="pace-chart__bar" style="height: 65%"></div>
+              <div class="pace-chart__bar" style="height: 80%"></div>
+              <div class="pace-chart__bar" style="height: 90%"></div>
+              <div class="pace-chart__bar" style="height: 75%"></div>
+              <div class="pace-chart__bar" style="height: 85%"></div>
+              <div class="pace-chart__bar" style="height: 55%"></div>
+              <div class="pace-chart__bar" style="height: 70%"></div>
+              <div class="pace-chart__bar" style="height: 60%"></div>
+            </div>
+          </div>
+
+          <!-- Filler Words -->
+          <div class="detail-metric">
+            <div class="detail-metric__header">
+              <span class="detail-metric__name">Filler Words</span>
+              <span class="detail-metric__score" style="color: var(--color-feedback-filler)">7/10</span>
+            </div>
+            <div class="detail-metric__bar"><div class="detail-metric__bar-fill" style="width: 70%; background: var(--color-feedback-filler)"></div></div>
+            <p class="detail-metric__text">4 fillers detected — down from 7</p>
+            <ul class="filler-list" aria-label="Detected filler words">
+              <li class="filler-item">
+                <span class="filler-item__word">"kind of"</span>
+                <span class="filler-item__time">0:42</span>
+              </li>
+              <li class="filler-item">
+                <span class="filler-item__word">"like"</span>
+                <span class="filler-item__time">0:58</span>
+              </li>
+              <li class="filler-item">
+                <span class="filler-item__word">"you know"</span>
+                <span class="filler-item__time">1:05</span>
+              </li>
+              <li class="filler-item">
+                <span class="filler-item__word">"um"</span>
+                <span class="filler-item__time">1:18</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Intonation -->
+          <div class="detail-metric">
+            <div class="detail-metric__header">
+              <span class="detail-metric__name">Intonation</span>
+              <span class="detail-metric__score">7/10</span>
+            </div>
+            <div class="detail-metric__bar"><div class="detail-metric__bar-fill" style="width: 70%; background: var(--color-feedback-voice)"></div></div>
+            <p class="detail-metric__text">Good vocal range, vary pitch more during transitions</p>
+          </div>
+
+          <!-- Clarity -->
+          <div class="detail-metric">
+            <div class="detail-metric__header">
+              <span class="detail-metric__name">Clarity</span>
+              <span class="detail-metric__score">8/10</span>
+            </div>
+            <div class="detail-metric__bar"><div class="detail-metric__bar-fill" style="width: 80%; background: var(--color-secondary)"></div></div>
+            <p class="detail-metric__text">Excellent articulation, words crisp and easy to follow</p>
+          </div>
+
+          <!-- Trend -->
+          <div class="trend-section">
+            <div class="trend-section__title">Last 7 sessions</div>
+            <div class="trend-chart" aria-label="Voice score trend: 5.4, 6.0, 6.2, 6.8, 6.9, 7.0, 7.2">
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 54%; background: var(--color-primary-light)"></div><span class="trend-bar__label">5.4</span></div>
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 60%; background: var(--color-primary-light)"></div><span class="trend-bar__label">6.0</span></div>
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 62%; background: var(--color-primary-light)"></div><span class="trend-bar__label">6.2</span></div>
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 68%; background: var(--color-primary-light)"></div><span class="trend-bar__label">6.8</span></div>
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 69%; background: var(--color-primary-light)"></div><span class="trend-bar__label">6.9</span></div>
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 70%; background: var(--color-primary-light)"></div><span class="trend-bar__label">7.0</span></div>
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 72%; background: var(--color-primary)"></div><span class="trend-bar__label">7.2</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 3: Story Detail -->
+      <section class="screen" id="story-detail" aria-label="Story Analysis Detail">
+        <header class="screen-header">
+          <button class="icon-btn" aria-label="Back to overview" onclick="navigateTo('feedback-overview')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <h1 class="screen-header__title">Story Analysis</h1>
+          <div class="icon-btn" aria-hidden="true"></div>
+        </header>
+
+        <div class="page-content">
+          <!-- Score ring -->
+          <div class="score-ring">
+            <svg class="score-ring__svg" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="60" fill="none" stroke="var(--color-bg-tertiary)" stroke-width="10"/>
+              <circle cx="70" cy="70" r="60" fill="none" stroke="var(--color-feedback-story)" stroke-width="10" stroke-linecap="round"
+                stroke-dasharray="376.99" stroke-dashoffset="120.64" transform="rotate(-90 70 70)"/>
+              <text x="70" y="65" text-anchor="middle" font-family="var(--font-family-mono)" font-size="28" font-weight="700" fill="var(--color-text-primary)">6.8</text>
+              <text x="70" y="85" text-anchor="middle" font-family="var(--font-family-sans)" font-size="12" fill="var(--color-text-tertiary)">/ 10</text>
+            </svg>
+            <div class="score-ring__delta">↑ +0.6 from last session</div>
+          </div>
+
+          <!-- Hook Strength -->
+          <div class="detail-metric">
+            <div class="detail-metric__header">
+              <span class="detail-metric__name">Hook Strength</span>
+              <span class="detail-metric__score" style="color: var(--color-feedback-story)">6/10</span>
+            </div>
+            <div class="detail-metric__bar"><div class="detail-metric__bar-fill" style="width: 60%; background: var(--color-feedback-story)"></div></div>
+            <p class="detail-metric__text">Opening grabbed attention in 5 seconds — add a question or surprising fact</p>
+          </div>
+
+          <!-- Narrative Arc -->
+          <div class="detail-metric">
+            <div class="detail-metric__header">
+              <span class="detail-metric__name">Narrative Arc</span>
+              <span class="detail-metric__score" style="color: var(--color-feedback-structure)">7/10</span>
+            </div>
+            <div class="detail-metric__bar"><div class="detail-metric__bar-fill" style="width: 70%; background: var(--color-feedback-structure)"></div></div>
+            <p class="detail-metric__text">Clear beginning, middle, end. Resolution needs breathing room.</p>
+            <svg class="arc-diagram" viewBox="0 0 300 60" fill="none" aria-label="Story tension curve">
+              <path d="M10 50 Q50 45 80 35 Q120 20 150 10 Q180 5 200 15 Q240 30 260 40 Q280 48 290 50" stroke="var(--color-feedback-structure)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <circle cx="10" cy="50" r="3" fill="var(--color-feedback-structure)"/>
+              <circle cx="150" cy="10" r="3" fill="var(--color-feedback-structure)"/>
+              <circle cx="290" cy="50" r="3" fill="var(--color-feedback-structure)"/>
+              <text x="10" y="58" font-size="8" fill="var(--color-text-tertiary)" font-family="var(--font-family-sans)">Setup</text>
+              <text x="138" y="8" font-size="8" fill="var(--color-text-tertiary)" font-family="var(--font-family-sans)">Climax</text>
+              <text x="265" y="58" font-size="8" fill="var(--color-text-tertiary)" font-family="var(--font-family-sans)">Resolution</text>
+            </svg>
+          </div>
+
+          <!-- Engagement -->
+          <div class="detail-metric">
+            <div class="detail-metric__header">
+              <span class="detail-metric__name">Engagement</span>
+              <span class="detail-metric__score" style="color: var(--color-feedback-emotion)">7/10</span>
+            </div>
+            <div class="detail-metric__bar"><div class="detail-metric__bar-fill" style="width: 70%; background: var(--color-feedback-emotion)"></div></div>
+            <p class="detail-metric__text">Strong emotional connection. Anecdote at 0:35 was most engaging.</p>
+          </div>
+
+          <!-- Persuasion -->
+          <div class="detail-metric">
+            <div class="detail-metric__header">
+              <span class="detail-metric__name">Persuasion</span>
+              <span class="detail-metric__score" style="color: var(--color-accent)">6/10</span>
+            </div>
+            <div class="detail-metric__bar"><div class="detail-metric__bar-fill" style="width: 60%; background: var(--color-accent)"></div></div>
+            <p class="detail-metric__text">Good CTA at end. Add concrete example earlier.</p>
+          </div>
+
+          <!-- Trend -->
+          <div class="trend-section">
+            <div class="trend-section__title">Last 7 sessions</div>
+            <div class="trend-chart" aria-label="Story score trend: 4.7, 5.2, 5.5, 6.0, 6.2, 6.5, 6.8">
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 47%; background: var(--color-accent-light)"></div><span class="trend-bar__label">4.7</span></div>
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 52%; background: var(--color-accent-light)"></div><span class="trend-bar__label">5.2</span></div>
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 55%; background: var(--color-accent-light)"></div><span class="trend-bar__label">5.5</span></div>
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 60%; background: var(--color-accent-light)"></div><span class="trend-bar__label">6.0</span></div>
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 62%; background: var(--color-accent-light)"></div><span class="trend-bar__label">6.2</span></div>
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 65%; background: var(--color-accent-light)"></div><span class="trend-bar__label">6.5</span></div>
+              <div class="trend-bar"><div class="trend-bar__fill" style="height: 68%; background: var(--color-accent)"></div><span class="trend-bar__label">6.8</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 4: Annotated Playback -->
+      <section class="screen" id="annotated-playback" aria-label="Annotated Playback">
+        <header class="screen-header">
+          <button class="icon-btn" aria-label="Back to overview" onclick="navigateTo('feedback-overview')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <h1 class="screen-header__title">Annotated Playback</h1>
+          <div class="icon-btn" aria-hidden="true"></div>
+        </header>
+
+        <div class="page-content">
+          <!-- Large waveform -->
+          <div class="waveform-card">
+            <div class="large-waveform" id="large-waveform" aria-label="Full recording waveform"></div>
+            <div class="playback-time">0:42 / 1:23</div>
+            <div class="playback-controls">
+              <button class="play-btn-large" aria-label="Play or pause recording">
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Annotation list -->
+          <div class="annotation-list" role="list" aria-label="Recording annotations">
+            <div class="annotation-card" role="listitem">
+              <span class="annotation-card__dot annotation-card__dot--green"></span>
+              <div class="annotation-card__content">
+                <div class="annotation-card__time">0:05</div>
+                <div class="annotation-card__text">Strong hook — grabbed attention</div>
+              </div>
+            </div>
+            <div class="annotation-card" role="listitem">
+              <span class="annotation-card__dot annotation-card__dot--green"></span>
+              <div class="annotation-card__content">
+                <div class="annotation-card__time">0:35</div>
+                <div class="annotation-card__text">Best moment — personal anecdote</div>
+              </div>
+            </div>
+            <div class="annotation-card" role="listitem">
+              <span class="annotation-card__dot annotation-card__dot--red"></span>
+              <div class="annotation-card__content">
+                <div class="annotation-card__time">0:42</div>
+                <div class="annotation-card__text">Filler: "kind of" — try a pause</div>
+              </div>
+            </div>
+            <div class="annotation-card" role="listitem">
+              <span class="annotation-card__dot annotation-card__dot--amber"></span>
+              <div class="annotation-card__content">
+                <div class="annotation-card__time">0:58</div>
+                <div class="annotation-card__text">Pace rushed — slow down</div>
+              </div>
+            </div>
+            <div class="annotation-card" role="listitem">
+              <span class="annotation-card__dot annotation-card__dot--amber"></span>
+              <div class="annotation-card__content">
+                <div class="annotation-card__time">1:15</div>
+                <div class="annotation-card__text">Resolution felt rushed</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Prototype navigation -->
+    <nav class="proto-nav" aria-label="Prototype screen navigation">
+      <button class="proto-nav__btn active" onclick="navigateTo('feedback-overview')" aria-label="Overview screen">Overview</button>
+      <button class="proto-nav__btn" onclick="navigateTo('voice-detail')" aria-label="Voice detail screen">Voice</button>
+      <button class="proto-nav__btn" onclick="navigateTo('story-detail')" aria-label="Story detail screen">Story</button>
+      <button class="proto-nav__btn" onclick="navigateTo('annotated-playback')" aria-label="Playback screen">Playback</button>
+    </nav>
+  </div>
+
+  <script>
+    function navigateTo(screenId) {
+      const screens = document.querySelectorAll('.screen');
+      const buttons = document.querySelectorAll('.proto-nav__btn');
+      const targetScreen = document.getElementById(screenId);
+      const isDetail = screenId !== 'feedback-overview';
+
+      screens.forEach(s => {
+        s.classList.remove('active', 'slide-right', 'slide-left');
+      });
+
+      targetScreen.classList.add('active');
+      if (isDetail) {
+        targetScreen.classList.add('slide-right');
+      }
+
+      const screenMap = ['feedback-overview', 'voice-detail', 'story-detail', 'annotated-playback'];
+      const idx = screenMap.indexOf(screenId);
+      buttons.forEach((btn, i) => {
+        btn.classList.toggle('active', i === idx);
+      });
+
+      document.querySelector('.app-shell__content').scrollTop = 0;
+    }
+
+    function generateWaveformBars(container, count, height) {
+      for (let i = 0; i < count; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'waveform-bar';
+        const h = Math.random() * 0.7 + 0.15;
+        bar.style.height = (h * height) + 'px';
+        if (i < count * 0.3) bar.classList.add('played');
+        container.appendChild(bar);
+      }
+    }
+
+    const overviewWaveform = document.getElementById('overview-waveform');
+    if (overviewWaveform) generateWaveformBars(overviewWaveform, 40, 40);
+
+    const largeWaveform = document.getElementById('large-waveform');
+    if (largeWaveform) generateWaveformBars(largeWaveform, 60, 80);
+  </script>
+</body>
+</html>

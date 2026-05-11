@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Prompt — StoryCraft</title>
+    <link rel="stylesheet" href="../tokens.css">
+    <style>
+        /* ── Header ─────────────────────────────────────── */
+
+        .header-logo {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+
+        .header-avatar {
+            width: var(--avatar-sm);
+            height: var(--avatar-sm);
+            border-radius: var(--radius-full);
+            object-fit: cover;
+            border: var(--avatar-border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ── Greeting ───────────────────────────────────── */
+
+        .greeting {
+            padding: var(--space-5) var(--space-page-x) var(--space-2);
+        }
+
+        .greeting__text {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-tight);
+        }
+
+        .greeting__streak {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1-5);
+            margin-top: var(--space-2);
+            padding: var(--space-1) var(--space-3) var(--space-1) var(--space-2);
+            background: var(--color-accent-subtle);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-accent-dark);
+        }
+
+        .greeting__streak-icon {
+            font-size: var(--font-size-md);
+            line-height: 1;
+        }
+
+        /* ── Hero Prompt Card ───────────────────────────── */
+
+        .hero-prompt {
+            margin: var(--space-4) var(--space-page-x);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            background: var(--card-bg);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+        }
+
+        .hero-prompt__image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .hero-prompt__image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-prompt__image-wrapper::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                transparent 30%,
+                var(--card-bg)
+            );
+        }
+
+        .hero-prompt__category {
+            position: absolute;
+            top: var(--space-3);
+            left: var(--space-4);
+            z-index: var(--z-above);
+            display: inline-block;
+            padding: var(--space-1) var(--space-3);
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            letter-spacing: var(--letter-spacing-wider);
+            text-transform: uppercase;
+            border-radius: var(--radius-full);
+        }
+
+        .hero-prompt__body {
+            padding: var(--space-1) var(--card-padding) var(--card-padding);
+        }
+
+        .hero-prompt__title {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-snug);
+        }
+
+        .hero-prompt__meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            margin-top: var(--space-3);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+        }
+
+        .hero-prompt__meta-dot {
+            width: 3px;
+            height: 3px;
+            border-radius: var(--radius-full);
+            background: var(--color-text-disabled);
+            flex-shrink: 0;
+        }
+
+        .btn-record {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2-5);
+            width: 100%;
+            height: var(--btn-height-lg);
+            margin-top: var(--space-5);
+            border: none;
+            border-radius: var(--btn-radius);
+            background: var(--color-recording);
+            color: var(--color-text-inverse);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            font-weight: var(--btn-font-weight);
+            letter-spacing: var(--btn-letter-spacing);
+            cursor: pointer;
+            box-shadow: var(--shadow-glow-recording);
+            transition:
+                transform var(--transition-spring),
+                box-shadow var(--transition-normal);
+            min-height: var(--touch-target-min);
+        }
+
+        .btn-record:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-record:active {
+            transform: scale(0.98);
+        }
+
+        .btn-record svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+            flex-shrink: 0;
+        }
+
+        /* ── Quick Stats ────────────────────────────────── */
+
+        .quick-stats {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-4);
+            margin: var(--space-5) var(--space-page-x) var(--space-2);
+        }
+
+        .quick-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-0-5);
+            flex: 1;
+            padding: var(--space-3) var(--space-2);
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xs);
+            border: 1px solid var(--card-border);
+        }
+
+        .quick-stat__value {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-mono);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+
+        .quick-stat__value--voice {
+            color: var(--color-feedback-voice);
+        }
+
+        .quick-stat__value--story {
+            color: var(--color-feedback-story);
+        }
+
+        .quick-stat__label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            font-weight: var(--font-weight-medium);
+        }
+
+        /* ── More Prompts ───────────────────────────────── */
+
+        .more-prompts {
+            margin-top: var(--space-6);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-page-x);
+            margin-bottom: var(--space-3);
+        }
+
+        .section-title {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .section-link {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-primary);
+            text-decoration: none;
+            min-height: var(--touch-target-min);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .section-link:hover {
+            text-decoration: underline;
+        }
+
+        .prompt-scroll {
+            display: flex;
+            gap: var(--space-3);
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding: 0 var(--space-page-x) var(--space-4);
+            scrollbar-width: none;
+        }
+
+        .prompt-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .prompt-card {
+            flex: 0 0 260px;
+            scroll-snap-align: start;
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--card-border);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+        }
+
+        .prompt-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .prompt-card__thumb {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .prompt-card__body {
+            padding: var(--space-3) var(--space-4) var(--space-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            flex: 1;
+        }
+
+        .prompt-card__title {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-snug);
+        }
+
+        .prompt-card__meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            margin-top: auto;
+        }
+
+        .prompt-card__meta-dot {
+            width: 3px;
+            height: 3px;
+            border-radius: var(--radius-full);
+            background: var(--color-text-disabled);
+        }
+
+        .prompt-card__level {
+            padding: var(--space-0-5) var(--space-2);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .prompt-card__level--beginner {
+            background: var(--color-success-subtle);
+            color: var(--color-success);
+        }
+
+        .prompt-card__level--intermediate {
+            background: var(--color-primary-subtle);
+            color: var(--color-primary);
+        }
+
+        .prompt-card__level--advanced {
+            background: var(--color-accent-subtle);
+            color: var(--color-accent-dark);
+        }
+
+        .sr-only--focusable:focus-visible {
+            position: fixed;
+            top: var(--space-2);
+            left: var(--space-2);
+            width: auto;
+            height: auto;
+            padding: var(--space-2) var(--space-4);
+            clip: auto;
+            white-space: normal;
+            overflow: visible;
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            z-index: var(--z-max);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="sr-only sr-only--focusable">Skip to content</a>
+    <div class="app-shell" data-screen="daily-prompt">
+
+        <!-- ── Header ──────────────────────────────────── -->
+        <header class="app-shell__header">
+            <span class="header-logo" aria-label="StoryCraft home">StoryCraft</span>
+            <a href="#profile" aria-label="Your profile">
+                <img
+                    class="header-avatar"
+                    src="https://i.pravatar.cc/36?img=12"
+                    alt="Sarah's profile photo"
+                    width="36"
+                    height="36"
+                >
+            </a>
+        </header>
+
+        <!-- ── Main Content ────────────────────────────── -->
+        <main class="app-shell__content" id="main-content">
+
+            <!-- Greeting -->
+            <section class="greeting" aria-label="Welcome greeting">
+                <h1 class="greeting__text">Good morning, Sarah</h1>
+                <span class="greeting__streak" aria-label="12-day streak">
+                    <span class="greeting__streak-icon" aria-hidden="true">🔥</span>
+                    12-day streak
+                </span>
+            </section>
+
+            <!-- Hero Prompt -->
+            <article class="hero-prompt" aria-label="Today's storytelling prompt">
+                <div class="hero-prompt__image-wrapper">
+                    <img
+                        class="hero-prompt__image"
+                        src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=390&h=200&fit=crop"
+                        alt="People having an engaging conversation at a table"
+                        width="390"
+                        height="200"
+                        loading="eager"
+                    >
+                    <span class="hero-prompt__category">Storytelling</span>
+                </div>
+                <div class="hero-prompt__body">
+                    <h2 class="hero-prompt__title">Tell the story of a time you changed someone's mind</h2>
+                    <div class="hero-prompt__meta">
+                        <span>90 seconds</span>
+                        <span class="hero-prompt__meta-dot" aria-hidden="true"></span>
+                        <span>Intermediate</span>
+                        <span class="hero-prompt__meta-dot" aria-hidden="true"></span>
+                        <span>CART Framework</span>
+                    </div>
+                    <button class="btn-record" type="button" aria-label="Start recording your story">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                        START RECORDING
+                    </button>
+                </div>
+            </article>
+
+            <!-- Quick Stats -->
+            <section class="quick-stats" aria-label="Your practice stats">
+                <div class="quick-stat">
+                    <span class="quick-stat__value">47</span>
+                    <span class="quick-stat__label">Stories</span>
+                </div>
+                <div class="quick-stat">
+                    <span class="quick-stat__value quick-stat__value--voice">7.2</span>
+                    <span class="quick-stat__label">Voice</span>
+                </div>
+                <div class="quick-stat">
+                    <span class="quick-stat__value quick-stat__value--story">6.8</span>
+                    <span class="quick-stat__label">Story</span>
+                </div>
+            </section>
+
+            <!-- More Prompts -->
+            <section class="more-prompts" aria-label="More prompts to try">
+                <div class="section-header">
+                    <h2 class="section-title">More Prompts</h2>
+                    <a href="#all-prompts" class="section-link" aria-label="View all prompts">See all</a>
+                </div>
+                <div class="prompt-scroll" role="list">
+
+                    <a href="#prompt-brave" class="prompt-card" role="listitem">
+                        <img
+                            class="prompt-card__thumb"
+                            src="https://picsum.photos/seed/brave/260/120"
+                            alt="Mountain landscape representing bravery"
+                            width="260"
+                            height="120"
+                            loading="lazy"
+                        >
+                        <div class="prompt-card__body">
+                            <h3 class="prompt-card__title">What's the bravest thing you've ever done?</h3>
+                            <div class="prompt-card__meta">
+                                <span>60s</span>
+                                <span class="prompt-card__meta-dot" aria-hidden="true"></span>
+                                <span class="prompt-card__level prompt-card__level--beginner">Beginner</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="#prompt-book" class="prompt-card" role="listitem">
+                        <img
+                            class="prompt-card__thumb"
+                            src="https://picsum.photos/seed/bookpitch/260/120"
+                            alt="Stack of books on a wooden table"
+                            width="260"
+                            height="120"
+                            loading="lazy"
+                        >
+                        <div class="prompt-card__body">
+                            <h3 class="prompt-card__title">Pitch your favorite book in 2 minutes</h3>
+                            <div class="prompt-card__meta">
+                                <span>120s</span>
+                                <span class="prompt-card__meta-dot" aria-hidden="true"></span>
+                                <span class="prompt-card__level prompt-card__level--intermediate">Intermediate</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="#prompt-lesson" class="prompt-card" role="listitem">
+                        <img
+                            class="prompt-card__thumb"
+                            src="https://picsum.photos/seed/lesson42/260/120"
+                            alt="Winding path through a forest"
+                            width="260"
+                            height="120"
+                            loading="lazy"
+                        >
+                        <div class="prompt-card__body">
+                            <h3 class="prompt-card__title">A lesson you learned the hard way</h3>
+                            <div class="prompt-card__meta">
+                                <span>90s</span>
+                                <span class="prompt-card__meta-dot" aria-hidden="true"></span>
+                                <span class="prompt-card__level prompt-card__level--advanced">Advanced</span>
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ── Bottom Navigation ───────────────────────── -->
+        <nav class="app-shell__nav" aria-label="Main navigation">
+
+            <a href="#practice" class="nav-item active" aria-label="Practice" aria-current="page">
+                <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+                </svg>
+                <span class="nav-item__label">Practice</span>
+            </a>
+
+            <a href="#progress" class="nav-item" aria-label="Progress">
+                <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                <span class="nav-item__label">Progress</span>
+            </a>
+
+            <button class="nav-item nav-item--record" aria-label="Record a new story">
+                <span class="nav-fab">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" y1="19" x2="12" y2="23"/>
+                        <line x1="8" y1="23" x2="16" y2="23"/>
+                    </svg>
+                </span>
+                <span class="nav-item__label">Record</span>
+            </button>
+
+            <a href="#community" class="nav-item" aria-label="Community">
+                <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span class="nav-item__label">Community</span>
+            </a>
+
+            <a href="#tracks" class="nav-item" aria-label="Tracks">
+                <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                </svg>
+                <span class="nav-item__label">Tracks</span>
+            </a>
+
+        </nav>
+
+    </div>
+</body>
+</html>

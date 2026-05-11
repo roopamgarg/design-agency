@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile — StoryCraft</title>
+    <link rel="stylesheet" href="../tokens.css">
+    <style>
+        .screen-content {
+            padding: var(--space-page-x);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-5);
+        }
+
+        /* --- Header --- */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-4) var(--space-page-x);
+        }
+
+        .profile-header__title {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-tight);
+        }
+
+        .profile-header__action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--touch-target-min);
+            height: var(--touch-target-min);
+            border: none;
+            background: none;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            border-radius: var(--radius-full);
+            transition: background var(--transition-fast), color var(--transition-fast);
+        }
+
+        .profile-header__action:hover {
+            background: var(--color-primary-subtle);
+            color: var(--color-primary);
+        }
+
+        .profile-header__action svg {
+            width: var(--icon-lg);
+            height: var(--icon-lg);
+        }
+
+        /* --- Profile Card --- */
+        .profile-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-6) var(--card-padding);
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .profile-card__avatar {
+            width: var(--avatar-xl);
+            height: var(--avatar-xl);
+            border-radius: var(--radius-full);
+            object-fit: cover;
+            border: 3px solid var(--color-primary-light);
+            box-shadow: var(--shadow-glow-primary);
+        }
+
+        .profile-card__name {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-tight);
+        }
+
+        .profile-card__since {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+        }
+
+        .profile-card__badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1-5);
+            height: var(--badge-height);
+            padding: 0 var(--space-3);
+            border-radius: var(--badge-radius);
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+            color: var(--color-primary-contrast);
+            font-size: var(--badge-font-size);
+            font-weight: var(--font-weight-semibold);
+            letter-spacing: var(--letter-spacing-wide);
+        }
+
+        /* --- Stats Grid --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-3);
+        }
+
+        .stat-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-4) var(--space-2);
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-cell__value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-tight);
+        }
+
+        .stat-cell__value--streak {
+            color: var(--color-accent);
+        }
+
+        .stat-cell__label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            text-align: center;
+            line-height: var(--line-height-snug);
+        }
+
+        /* --- Active Track --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            padding: var(--card-padding);
+        }
+
+        .card__header {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            margin-bottom: var(--space-3);
+        }
+
+        .active-track__info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-3);
+        }
+
+        .active-track__name {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .active-track__percent {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-primary);
+        }
+
+        .active-track__bar {
+            width: 100%;
+            height: 6px;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin-bottom: var(--space-3);
+        }
+
+        .active-track__bar-fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+        }
+
+        .active-track__link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-link);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .active-track__link:hover {
+            color: var(--color-primary-dark);
+        }
+
+        .active-track__link svg {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+        }
+
+        /* --- Recent Badges --- */
+        .badges-scroll {
+            display: flex;
+            gap: var(--space-3);
+            overflow-x: auto;
+            padding-bottom: var(--space-2);
+            margin: 0 calc(-1 * var(--space-page-x));
+            padding-left: var(--space-page-x);
+            padding-right: var(--space-page-x);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .badges-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .badge-item {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-2);
+            width: 100px;
+        }
+
+        .badge-item__icon {
+            width: var(--icon-4xl);
+            height: var(--icon-4xl);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xl);
+        }
+
+        .badge-item__icon--target {
+            background: var(--color-primary-subtle);
+        }
+
+        .badge-item__icon--streak {
+            background: var(--color-accent-subtle);
+        }
+
+        .badge-item__icon--star {
+            background: var(--color-success-subtle);
+        }
+
+        .badge-item__title {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            text-align: center;
+            line-height: var(--line-height-snug);
+        }
+
+        .badge-item__date {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        /* --- Settings Menu --- */
+        .settings-menu {
+            list-style: none;
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .settings-menu__item {
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+
+        .settings-menu__item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-menu__link {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            min-height: 52px;
+            padding: var(--space-3) var(--card-padding);
+            text-decoration: none;
+            color: var(--color-text-primary);
+            transition: background var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .settings-menu__link:hover {
+            background: var(--color-primary-subtle);
+        }
+
+        .settings-menu__icon {
+            flex-shrink: 0;
+            width: var(--icon-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-md);
+        }
+
+        .settings-menu__label {
+            flex: 1;
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .settings-menu__chevron {
+            flex-shrink: 0;
+            width: var(--icon-md);
+            height: var(--icon-md);
+            color: var(--color-text-disabled);
+        }
+
+        /* --- Sign Out --- */
+        .sign-out {
+            display: flex;
+            justify-content: center;
+            padding: var(--space-4) 0 var(--space-2);
+        }
+
+        .sign-out__btn {
+            background: none;
+            border: none;
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-error);
+            cursor: pointer;
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-md);
+            transition: background var(--transition-fast);
+            min-height: var(--touch-target-min);
+            display: flex;
+            align-items: center;
+        }
+
+        .sign-out__btn:hover {
+            background: var(--color-error-subtle);
+        }
+
+        .sr-only--focusable:focus-visible {
+            position: fixed;
+            top: var(--space-2);
+            left: var(--space-2);
+            width: auto;
+            height: auto;
+            padding: var(--space-2) var(--space-4);
+            clip: auto;
+            white-space: normal;
+            overflow: visible;
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            z-index: var(--z-max);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="sr-only sr-only--focusable">Skip to content</a>
+    <div class="app-shell" data-screen="profile-overview">
+
+        <!-- Header -->
+        <header class="profile-header" role="banner">
+            <h1 class="profile-header__title">Profile</h1>
+            <button class="profile-header__action" type="button" aria-label="Edit profile">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Scrollable Content -->
+        <main class="app-shell__content" id="main-content">
+            <div class="screen-content">
+
+                <!-- Profile Card -->
+                <section class="profile-card" aria-label="Profile information">
+                    <img
+                        class="profile-card__avatar"
+                        src="https://i.pravatar.cc/96?img=12"
+                        alt="Sarah Mitchell's avatar"
+                        width="96"
+                        height="96"
+                    >
+                    <h2 class="profile-card__name">Sarah Mitchell</h2>
+                    <p class="profile-card__since">Member since April 2026</p>
+                    <span class="profile-card__badge" aria-label="Premium subscription">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                        Premium
+                    </span>
+                </section>
+
+                <!-- Stats Snapshot -->
+                <section class="stats-grid" aria-label="Activity statistics">
+                    <div class="stat-cell">
+                        <span class="stat-cell__value">47</span>
+                        <span class="stat-cell__label">Sessions</span>
+                    </div>
+                    <div class="stat-cell">
+                        <span class="stat-cell__value">312</span>
+                        <span class="stat-cell__label">Minutes</span>
+                    </div>
+                    <div class="stat-cell">
+                        <span class="stat-cell__value stat-cell__value--streak" aria-label="12 day streak">🔥 12</span>
+                        <span class="stat-cell__label">Streak</span>
+                    </div>
+                    <div class="stat-cell">
+                        <span class="stat-cell__value">3</span>
+                        <span class="stat-cell__label">Tracks Done</span>
+                    </div>
+                </section>
+
+                <!-- Active Track -->
+                <section class="card" aria-labelledby="active-track-heading">
+                    <h2 class="card__header" id="active-track-heading">Active Track</h2>
+                    <div class="active-track__info">
+                        <span class="active-track__name">Beginner Storyteller</span>
+                        <span class="active-track__percent">60%</span>
+                    </div>
+                    <div class="active-track__bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" aria-label="Track progress 60%">
+                        <div class="active-track__bar-fill" style="width: 60%"></div>
+                    </div>
+                    <a href="#continue-track" class="active-track__link">
+                        Continue
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </a>
+                </section>
+
+                <!-- Recent Badges -->
+                <section aria-labelledby="badges-heading">
+                    <h2 class="card__header" id="badges-heading" style="padding-left: var(--space-1);">Recent Badges</h2>
+                    <div class="badges-scroll" role="list">
+                        <div class="badge-item" role="listitem">
+                            <span class="badge-item__icon badge-item__icon--target" aria-hidden="true">🎯</span>
+                            <span class="badge-item__title">First Recording</span>
+                            <time class="badge-item__date" datetime="2026-04-29">Apr 29</time>
+                        </div>
+                        <div class="badge-item" role="listitem">
+                            <span class="badge-item__icon badge-item__icon--streak" aria-hidden="true">🔥</span>
+                            <span class="badge-item__title">7-Day Streak</span>
+                            <time class="badge-item__date" datetime="2026-05-05">May 5</time>
+                        </div>
+                        <div class="badge-item" role="listitem">
+                            <span class="badge-item__icon badge-item__icon--star" aria-hidden="true">⭐</span>
+                            <span class="badge-item__title">Hook Master</span>
+                            <time class="badge-item__date" datetime="2026-05-09">May 9</time>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Menu -->
+                <nav aria-label="Settings">
+                    <ul class="settings-menu">
+                        <li class="settings-menu__item">
+                            <a href="#account-settings" class="settings-menu__link">
+                                <span class="settings-menu__icon" aria-hidden="true">👤</span>
+                                <span class="settings-menu__label">Account Settings</span>
+                                <svg class="settings-menu__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                            </a>
+                        </li>
+                        <li class="settings-menu__item">
+                            <a href="#notifications" class="settings-menu__link">
+                                <span class="settings-menu__icon" aria-hidden="true">🔔</span>
+                                <span class="settings-menu__label">Notification Preferences</span>
+                                <svg class="settings-menu__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                            </a>
+                        </li>
+                        <li class="settings-menu__item">
+                            <a href="#privacy" class="settings-menu__link">
+                                <span class="settings-menu__icon" aria-hidden="true">🔒</span>
+                                <span class="settings-menu__label">Privacy & Data</span>
+                                <svg class="settings-menu__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                            </a>
+                        </li>
+                        <li class="settings-menu__item">
+                            <a href="#accessibility" class="settings-menu__link">
+                                <span class="settings-menu__icon" aria-hidden="true">📱</span>
+                                <span class="settings-menu__label">Accessibility</span>
+                                <svg class="settings-menu__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                            </a>
+                        </li>
+                        <li class="settings-menu__item">
+                            <a href="#subscription" class="settings-menu__link">
+                                <span class="settings-menu__icon" aria-hidden="true">💳</span>
+                                <span class="settings-menu__label">Subscription</span>
+                                <svg class="settings-menu__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                            </a>
+                        </li>
+                        <li class="settings-menu__item">
+                            <a href="#recording-archive" class="settings-menu__link">
+                                <span class="settings-menu__icon" aria-hidden="true">📁</span>
+                                <span class="settings-menu__label">Recording Archive</span>
+                                <svg class="settings-menu__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                            </a>
+                        </li>
+                        <li class="settings-menu__item">
+                            <a href="#help" class="settings-menu__link">
+                                <span class="settings-menu__icon" aria-hidden="true">❓</span>
+                                <span class="settings-menu__label">Help & Support</span>
+                                <svg class="settings-menu__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Sign Out -->
+                <div class="sign-out">
+                    <button class="sign-out__btn" type="button">Sign Out</button>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Bottom Navigation (no active tab) -->
+        <nav class="app-shell__nav" aria-label="Main navigation">
+            <a href="#practice" class="nav-item" aria-label="Practice">
+                <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="6"/>
+                    <circle cx="12" cy="12" r="2"/>
+                </svg>
+                <span class="nav-item__label">Practice</span>
+            </a>
+            <a href="#progress" class="nav-item" aria-label="Progress">
+                <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                <span class="nav-item__label">Progress</span>
+            </a>
+            <button class="nav-item nav-item--record" type="button" aria-label="Record">
+                <span class="nav-fab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="9" y="1" width="6" height="12" rx="3"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" y1="19" x2="12" y2="23"/>
+                        <line x1="8" y1="23" x2="16" y2="23"/>
+                    </svg>
+                </span>
+                <span class="nav-item__label">Record</span>
+            </button>
+            <a href="#community" class="nav-item" aria-label="Community">
+                <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span class="nav-item__label">Community</span>
+            </a>
+            <a href="#tracks" class="nav-item" aria-label="Tracks">
+                <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                    <path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5"/>
+                </svg>
+                <span class="nav-item__label">Tracks</span>
+            </a>
+        </nav>
+    </div>
+</body>
+</html>

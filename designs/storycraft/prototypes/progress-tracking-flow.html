@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Tracking Flow — StoryCraft</title>
+    <link rel="stylesheet" href="../tokens.css">
+    <style>
+        /* Screen management */
+        .screen {
+            display: none;
+            flex-direction: column;
+            min-height: 100%;
+            opacity: 0;
+            transition: opacity 250ms ease;
+        }
+
+        .screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .screen-content {
+            padding: var(--space-page-x);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-5);
+            padding-bottom: var(--space-8);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-page-x);
+            height: var(--header-height);
+            background: var(--color-bg-primary);
+            border-bottom: 1px solid var(--color-border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: var(--z-sticky);
+        }
+
+        .header__title {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+        }
+
+        .header__back {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            background: none;
+            border: none;
+            color: var(--color-primary);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            min-width: var(--touch-target-min);
+            min-height: var(--touch-target-min);
+            padding: var(--space-2);
+            border-radius: var(--radius-md);
+            transition: background var(--transition-fast);
+        }
+
+        .header__back:hover {
+            background: var(--color-primary-subtle);
+        }
+
+        .header__back svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
+
+        .header__action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--touch-target-min);
+            height: var(--touch-target-min);
+            border: none;
+            background: none;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            border-radius: var(--radius-full);
+            transition: background var(--transition-fast), color var(--transition-fast);
+        }
+
+        .header__action:hover {
+            background: var(--color-primary-subtle);
+            color: var(--color-primary);
+        }
+
+        .header__action svg {
+            width: var(--icon-lg);
+            height: var(--icon-lg);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            padding: var(--card-padding);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+        }
+
+        .card__title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            margin-bottom: var(--space-3);
+        }
+
+        /* Progress Rings */
+        .rings-section {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-8);
+            padding: var(--space-4) 0;
+        }
+
+        .ring-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .ring-visual {
+            position: relative;
+            width: 130px;
+            height: 130px;
+        }
+
+        .ring-visual svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .ring-bg {
+            fill: none;
+            stroke: var(--color-bg-tertiary);
+            stroke-width: 8;
+        }
+
+        .ring-progress {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 600ms ease;
+        }
+
+        .ring-progress--voice {
+            stroke: var(--color-feedback-voice);
+            filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.3));
+        }
+
+        .ring-progress--story {
+            stroke: var(--color-feedback-story);
+            filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.3));
+        }
+
+        .ring-score {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ring-score__value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: 1;
+        }
+
+        .ring-score__max {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .ring-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .ring-delta {
+            font-size: var(--font-size-xs);
+            color: var(--color-success);
+            font-weight: var(--font-weight-medium);
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-3);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            padding: var(--space-3) var(--space-4);
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+        }
+
+        .stats-row__item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+        }
+
+        .stats-row__divider {
+            width: 4px;
+            height: 4px;
+            border-radius: var(--radius-full);
+            background: var(--color-text-disabled);
+        }
+
+        /* This Week Card */
+        .week-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+
+        .week-stat {
+            text-align: center;
+        }
+
+        .week-stat__value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+        }
+
+        .week-stat__label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .week-highlights {
+            display: flex;
+            gap: var(--space-4);
+            padding-top: var(--space-3);
+            border-top: 1px solid var(--color-border-subtle);
+        }
+
+        .week-highlight {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+        }
+
+        .week-highlight strong {
+            color: var(--color-text-primary);
+        }
+
+        /* Day 1 vs Today */
+        .comparison-card {
+            cursor: pointer;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .comparison-card:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+
+        .comparison-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-3);
+            border-radius: var(--radius-lg);
+            background: var(--color-bg-secondary);
+        }
+
+        .comparison-side--today {
+            background: var(--color-primary-subtle);
+        }
+
+        .comparison-side__label {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+        }
+
+        .comparison-side__date {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .comparison-waveform {
+            width: 100%;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--waveform-bar-gap);
+        }
+
+        .comparison-waveform__bar {
+            width: var(--waveform-bar-width);
+            border-radius: var(--radius-full);
+            transition: height var(--transition-normal);
+        }
+
+        .comparison-scores {
+            display: flex;
+            gap: var(--space-3);
+            font-size: var(--font-size-xs);
+        }
+
+        .comparison-scores__item {
+            font-family: var(--font-family-mono);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .comparison-cta {
+            text-align: center;
+        }
+
+        .comparison-cta__text {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-2);
+        }
+
+        .btn-play {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border: none;
+            border-radius: var(--btn-radius);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            cursor: pointer;
+            transition: background var(--transition-fast), transform var(--transition-fast);
+            min-height: var(--btn-height-sm);
+        }
+
+        .btn-play:hover {
+            background: var(--color-primary-dark);
+            transform: scale(1.02);
+        }
+
+        .btn-play svg {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+        }
+
+        /* Heatmap */
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: auto repeat(4, 1fr);
+            gap: var(--space-1);
+            margin-bottom: var(--space-3);
+        }
+
+        .heatmap-label {
+            font-size: 10px;
+            color: var(--color-text-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: var(--space-1);
+        }
+
+        .heatmap-cell {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: var(--radius-sm);
+            background: var(--color-bg-tertiary);
+            max-width: 28px;
+        }
+
+        .heatmap-cell--light {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .heatmap-cell--medium {
+            background: rgba(99, 102, 241, 0.45);
+        }
+
+        .heatmap-cell--full {
+            background: var(--color-primary);
+        }
+
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 10px;
+            color: var(--color-text-tertiary);
+            justify-content: flex-end;
+        }
+
+        .heatmap-legend__cell {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        /* Milestones */
+        .milestone-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) 0;
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+
+        .milestone-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .milestone-item:first-child {
+            padding-top: 0;
+        }
+
+        .milestone-icon {
+            font-size: var(--font-size-xl);
+            width: 36px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .milestone-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .milestone-content__title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-primary);
+        }
+
+        .milestone-content__desc {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .milestone-check {
+            color: var(--color-success);
+        }
+
+        .milestone-progress {
+            width: 100%;
+            height: 4px;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-full);
+            margin-top: var(--space-1);
+            overflow: hidden;
+        }
+
+        .milestone-progress__fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            background: var(--color-primary);
+            transition: width var(--transition-slow);
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: var(--app-shell-width);
+            height: var(--nav-height);
+            background: var(--nav-bg);
+            border-top: 1px solid var(--nav-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: var(--z-fixed);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-2) var(--space-3);
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--color-text-tertiary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+            min-width: var(--touch-target-min);
+            min-height: var(--touch-target-min);
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: var(--color-primary);
+        }
+
+        .nav-item__icon {
+            width: var(--nav-icon-size);
+            height: var(--nav-icon-size);
+        }
+
+        .nav-item__label {
+            font-size: var(--nav-label-size);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .nav-item--record {
+            position: relative;
+            margin-top: calc(-1 * var(--space-6));
+        }
+
+        .nav-fab {
+            width: var(--fab-size);
+            height: var(--fab-size);
+            border-radius: var(--radius-full);
+            background: var(--fab-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-glow-recording);
+            border: 3px solid var(--color-bg-elevated);
+            transition: transform var(--transition-spring);
+        }
+
+        .nav-item--record:hover .nav-fab {
+            transform: scale(1.08);
+        }
+
+        .nav-fab svg {
+            color: var(--color-text-inverse);
+            width: var(--fab-icon-size);
+            height: var(--fab-icon-size);
+        }
+
+        /* Trends screen */
+        .period-tabs {
+            display: flex;
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-full);
+            padding: var(--space-1);
+            gap: var(--space-1);
+        }
+
+        .period-tab {
+            flex: 1;
+            padding: var(--space-2) var(--space-3);
+            border: none;
+            background: none;
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-tertiary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-align: center;
+        }
+
+        .period-tab.active {
+            background: var(--color-bg-elevated);
+            color: var(--color-text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Chart */
+        .chart-container {
+            padding: var(--space-4) 0;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: var(--space-3);
+        }
+
+        .chart-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .chart-value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .chart-value--voice {
+            color: var(--color-feedback-voice);
+        }
+
+        .chart-value--story {
+            color: var(--color-feedback-story);
+        }
+
+        .chart-visual {
+            position: relative;
+            height: 120px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: var(--space-6);
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+
+        .chart-bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-1);
+            flex: 1;
+        }
+
+        .chart-bar {
+            width: 24px;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            transition: height var(--transition-slow);
+        }
+
+        .chart-bar--voice {
+            background: var(--color-feedback-voice);
+        }
+
+        .chart-bar--story {
+            background: var(--color-feedback-story);
+        }
+
+        .chart-bar--empty {
+            background: var(--color-bg-tertiary);
+            opacity: 0.5;
+        }
+
+        .chart-day-label {
+            position: absolute;
+            bottom: 0;
+            font-size: 10px;
+            color: var(--color-text-tertiary);
+            text-align: center;
+            width: 100%;
+        }
+
+        .chart-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+            position: absolute;
+            top: -4px;
+        }
+
+        /* Dimension Breakdown */
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-4);
+        }
+
+        .dimension-section__title {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            margin-bottom: var(--space-3);
+        }
+
+        .dimension-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-2);
+        }
+
+        .dimension-item__label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            width: 64px;
+            flex-shrink: 0;
+        }
+
+        .dimension-item__bar {
+            flex: 1;
+            height: 6px;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .dimension-item__fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            transition: width var(--transition-slow);
+        }
+
+        .dimension-item__fill--voice {
+            background: var(--color-feedback-voice);
+        }
+
+        .dimension-item__fill--story {
+            background: var(--color-feedback-story);
+        }
+
+        .dimension-item__value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            width: 24px;
+            text-align: right;
+        }
+
+        /* Best Session */
+        .best-session {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3);
+            background: var(--color-primary-subtle);
+            border-radius: var(--radius-lg);
+        }
+
+        .best-session__icon {
+            font-size: var(--font-size-xl);
+        }
+
+        .best-session__info {
+            flex: 1;
+        }
+
+        .best-session__date {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .best-session__scores {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .best-session__prompt {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            font-style: italic;
+        }
+
+        /* Day 1 vs Today screen */
+        .comparison-large {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-4);
+            margin-bottom: var(--space-5);
+        }
+
+        .comparison-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-5) var(--space-3);
+            border-radius: var(--card-radius);
+            text-align: center;
+        }
+
+        .comparison-panel--day1 {
+            background: var(--color-bg-secondary);
+        }
+
+        .comparison-panel--today {
+            background: var(--color-primary-subtle);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+        }
+
+        .comparison-panel__label {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            color: var(--color-text-tertiary);
+        }
+
+        .comparison-panel__date {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .comparison-panel__waveform {
+            width: 100%;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--waveform-bar-gap);
+        }
+
+        .comparison-panel__scores {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+
+        .comparison-panel__score {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .play-btn-large {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            width: 100%;
+            padding: var(--space-4);
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border: none;
+            border-radius: var(--btn-radius);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            cursor: pointer;
+            min-height: var(--btn-height-lg);
+            transition: background var(--transition-fast), transform var(--transition-fast);
+            box-shadow: var(--shadow-glow-primary);
+            margin-bottom: var(--space-5);
+        }
+
+        .play-btn-large:hover {
+            background: var(--color-primary-dark);
+            transform: scale(1.02);
+        }
+
+        .play-btn-large svg {
+            width: var(--icon-lg);
+            height: var(--icon-lg);
+        }
+
+        /* Improvement Cards */
+        .improvement-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .improvement-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--card-border);
+        }
+
+        .improvement-item__metric {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-primary);
+            width: 80px;
+            flex-shrink: 0;
+        }
+
+        .improvement-item__values {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+        }
+
+        .improvement-item__from {
+            color: var(--color-text-tertiary);
+        }
+
+        .improvement-item__arrow {
+            color: var(--color-success);
+        }
+
+        .improvement-item__to {
+            color: var(--color-text-primary);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .improvement-item__delta {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-success);
+            background: var(--color-success-subtle);
+            padding: var(--space-0-5) var(--space-2);
+            border-radius: var(--radius-full);
+            white-space: nowrap;
+        }
+
+        .motivational-card {
+            padding: var(--space-5);
+            background: linear-gradient(135deg, var(--color-primary-subtle), rgba(20, 184, 166, 0.06));
+            border-radius: var(--card-radius);
+            text-align: center;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .motivational-card__text {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-relaxed);
+        }
+
+        .motivational-card__text strong {
+            color: var(--color-primary);
+        }
+
+        /* Milestones screen */
+        .achievements-section {
+            margin-bottom: var(--space-5);
+        }
+
+        .achievements-section__title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            margin-bottom: var(--space-3);
+        }
+
+        .achievement-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4);
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--card-border);
+            margin-bottom: var(--space-3);
+            transition: box-shadow var(--transition-fast);
+        }
+
+        .achievement-card--earned {
+            box-shadow: var(--shadow-sm), 0 0 12px rgba(99, 102, 241, 0.08);
+        }
+
+        .achievement-card__emoji {
+            font-size: var(--font-size-2xl);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .achievement-card__content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .achievement-card__title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .achievement-card__desc {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            margin-top: var(--space-0-5);
+        }
+
+        .achievement-card__date {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .achievement-progress {
+            width: 100%;
+            height: 6px;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-full);
+            margin-top: var(--space-2);
+            overflow: hidden;
+        }
+
+        .achievement-progress__fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            background: var(--color-primary);
+        }
+
+        .achievement-card__percent {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-primary);
+            flex-shrink: 0;
+        }
+
+        /* Prototype Nav */
+        .proto-nav {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: var(--app-shell-width);
+            display: flex;
+            gap: var(--space-1);
+            padding: var(--space-2);
+            background: var(--color-bg-elevated);
+            border-bottom: 1px solid var(--color-border-default);
+            z-index: var(--z-max);
+            overflow-x: auto;
+        }
+
+        .proto-nav__btn {
+            padding: var(--space-1-5) var(--space-3);
+            border: 1px solid var(--color-border-default);
+            background: var(--color-bg-elevated);
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all var(--transition-fast);
+        }
+
+        .proto-nav__btn.active {
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border-color: var(--color-primary);
+        }
+
+        .proto-nav__btn:hover:not(.active) {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .app-shell__content {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Prototype Navigation -->
+    <nav class="proto-nav" aria-label="Prototype screens">
+        <button class="proto-nav__btn active" data-screen="progress-overview">Overview</button>
+        <button class="proto-nav__btn" data-screen="trends">Trends</button>
+        <button class="proto-nav__btn" data-screen="day1-vs-today">Day 1 vs Today</button>
+        <button class="proto-nav__btn" data-screen="milestones">Milestones</button>
+    </nav>
+
+    <div class="app-shell">
+        <div class="app-shell__content">
+
+            <!-- Screen 1: Progress Overview -->
+            <section class="screen active" id="progress-overview" aria-label="Progress Overview">
+                <header class="header">
+                    <h1 class="header__title">Your Journey</h1>
+                    <button class="header__action" aria-label="Settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </button>
+                </header>
+
+                <div class="screen-content">
+                    <!-- Progress Rings -->
+                    <div class="rings-section">
+                        <div class="ring-card">
+                            <div class="ring-visual" role="img" aria-label="Voice score 7.2 out of 10">
+                                <svg viewBox="0 0 120 120">
+                                    <circle class="ring-bg" cx="60" cy="60" r="50"/>
+                                    <circle class="ring-progress ring-progress--voice" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="87.96"/>
+                                </svg>
+                                <div class="ring-score">
+                                    <span class="ring-score__value">7.2</span>
+                                    <span class="ring-score__max">/10</span>
+                                </div>
+                            </div>
+                            <span class="ring-label">Voice</span>
+                            <span class="ring-delta">↑ +1.8 since Day 1</span>
+                        </div>
+                        <div class="ring-card">
+                            <div class="ring-visual" role="img" aria-label="Story score 6.8 out of 10">
+                                <svg viewBox="0 0 120 120">
+                                    <circle class="ring-bg" cx="60" cy="60" r="50"/>
+                                    <circle class="ring-progress ring-progress--story" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="100.53"/>
+                                </svg>
+                                <div class="ring-score">
+                                    <span class="ring-score__value">6.8</span>
+                                    <span class="ring-score__max">/10</span>
+                                </div>
+                            </div>
+                            <span class="ring-label">Story</span>
+                            <span class="ring-delta">↑ +2.1 since Day 1</span>
+                        </div>
+                    </div>
+
+                    <!-- Stats Row -->
+                    <div class="stats-row" role="status" aria-label="Practice statistics">
+                        <span class="stats-row__item">🔥 12-day streak</span>
+                        <span class="stats-row__divider"></span>
+                        <span class="stats-row__item">47 stories</span>
+                        <span class="stats-row__divider"></span>
+                        <span class="stats-row__item">5/7 this week</span>
+                    </div>
+
+                    <!-- This Week -->
+                    <div class="card">
+                        <h2 class="card__title">This Week</h2>
+                        <div class="week-stats">
+                            <div class="week-stat">
+                                <div class="week-stat__value">7</div>
+                                <div class="week-stat__label">Sessions</div>
+                            </div>
+                            <div class="week-stat">
+                                <div class="week-stat__value">34</div>
+                                <div class="week-stat__label">Minutes</div>
+                            </div>
+                            <div class="week-stat">
+                                <div class="week-stat__value">7.0</div>
+                                <div class="week-stat__label">Avg Score</div>
+                            </div>
+                        </div>
+                        <div class="week-highlights">
+                            <div class="week-highlight">Best dimension: <strong>Pace</strong></div>
+                            <div class="week-highlight">Focus area: <strong>Hook Strength</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Day 1 vs Today -->
+                    <div class="card comparison-card" role="button" tabindex="0" aria-label="View Day 1 versus Today comparison" data-navigate="day1-vs-today">
+                        <h2 class="card__title">Day 1 vs Today</h2>
+                        <div class="comparison-grid">
+                            <div class="comparison-side">
+                                <span class="comparison-side__label">Day 1</span>
+                                <div class="comparison-waveform" aria-hidden="true">
+                                    <span class="comparison-waveform__bar" style="height:8px;background:var(--color-text-disabled)"></span>
+                                    <span class="comparison-waveform__bar" style="height:12px;background:var(--color-text-disabled)"></span>
+                                    <span class="comparison-waveform__bar" style="height:6px;background:var(--color-text-disabled)"></span>
+                                    <span class="comparison-waveform__bar" style="height:10px;background:var(--color-text-disabled)"></span>
+                                    <span class="comparison-waveform__bar" style="height:14px;background:var(--color-text-disabled)"></span>
+                                    <span class="comparison-waveform__bar" style="height:8px;background:var(--color-text-disabled)"></span>
+                                    <span class="comparison-waveform__bar" style="height:6px;background:var(--color-text-disabled)"></span>
+                                    <span class="comparison-waveform__bar" style="height:10px;background:var(--color-text-disabled)"></span>
+                                    <span class="comparison-waveform__bar" style="height:7px;background:var(--color-text-disabled)"></span>
+                                    <span class="comparison-waveform__bar" style="height:9px;background:var(--color-text-disabled)"></span>
+                                    <span class="comparison-waveform__bar" style="height:5px;background:var(--color-text-disabled)"></span>
+                                    <span class="comparison-waveform__bar" style="height:11px;background:var(--color-text-disabled)"></span>
+                                </div>
+                                <div class="comparison-scores">
+                                    <span class="comparison-scores__item" style="color:var(--color-feedback-voice)">Voice 5.4</span>
+                                    <span class="comparison-scores__item" style="color:var(--color-feedback-story)">Story 4.7</span>
+                                </div>
+                                <span class="comparison-side__date">Apr 29</span>
+                            </div>
+                            <div class="comparison-side comparison-side--today">
+                                <span class="comparison-side__label">Today</span>
+                                <div class="comparison-waveform" aria-hidden="true">
+                                    <span class="comparison-waveform__bar" style="height:20px;background:var(--color-feedback-voice)"></span>
+                                    <span class="comparison-waveform__bar" style="height:28px;background:var(--color-feedback-voice)"></span>
+                                    <span class="comparison-waveform__bar" style="height:16px;background:var(--color-feedback-voice)"></span>
+                                    <span class="comparison-waveform__bar" style="height:24px;background:var(--color-feedback-voice)"></span>
+                                    <span class="comparison-waveform__bar" style="height:30px;background:var(--color-feedback-voice)"></span>
+                                    <span class="comparison-waveform__bar" style="height:18px;background:var(--color-feedback-voice)"></span>
+                                    <span class="comparison-waveform__bar" style="height:26px;background:var(--color-feedback-voice)"></span>
+                                    <span class="comparison-waveform__bar" style="height:22px;background:var(--color-feedback-voice)"></span>
+                                    <span class="comparison-waveform__bar" style="height:28px;background:var(--color-feedback-voice)"></span>
+                                    <span class="comparison-waveform__bar" style="height:20px;background:var(--color-feedback-voice)"></span>
+                                    <span class="comparison-waveform__bar" style="height:26px;background:var(--color-feedback-voice)"></span>
+                                    <span class="comparison-waveform__bar" style="height:24px;background:var(--color-feedback-voice)"></span>
+                                </div>
+                                <div class="comparison-scores">
+                                    <span class="comparison-scores__item" style="color:var(--color-feedback-voice)">Voice 7.2</span>
+                                    <span class="comparison-scores__item" style="color:var(--color-feedback-story)">Story 6.8</span>
+                                </div>
+                                <span class="comparison-side__date">May 11</span>
+                            </div>
+                        </div>
+                        <div class="comparison-cta">
+                            <p class="comparison-cta__text">Hear how far you've come</p>
+                            <button class="btn-play" aria-label="Play side-by-side comparison">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+                                Play Side-by-Side
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Practice Heatmap -->
+                    <div class="card">
+                        <h2 class="card__title">Practice Heatmap</h2>
+                        <div class="heatmap-grid" role="img" aria-label="Practice frequency over 4 weeks">
+                            <span class="heatmap-label">Mon</span>
+                            <span class="heatmap-cell heatmap-cell--full"></span>
+                            <span class="heatmap-cell heatmap-cell--medium"></span>
+                            <span class="heatmap-cell heatmap-cell--full"></span>
+                            <span class="heatmap-cell heatmap-cell--full"></span>
+
+                            <span class="heatmap-label">Tue</span>
+                            <span class="heatmap-cell heatmap-cell--medium"></span>
+                            <span class="heatmap-cell heatmap-cell--full"></span>
+                            <span class="heatmap-cell heatmap-cell--light"></span>
+                            <span class="heatmap-cell heatmap-cell--full"></span>
+
+                            <span class="heatmap-label">Wed</span>
+                            <span class="heatmap-cell"></span>
+                            <span class="heatmap-cell heatmap-cell--light"></span>
+                            <span class="heatmap-cell heatmap-cell--full"></span>
+                            <span class="heatmap-cell heatmap-cell--medium"></span>
+
+                            <span class="heatmap-label">Thu</span>
+                            <span class="heatmap-cell heatmap-cell--light"></span>
+                            <span class="heatmap-cell heatmap-cell--full"></span>
+                            <span class="heatmap-cell heatmap-cell--medium"></span>
+                            <span class="heatmap-cell heatmap-cell--full"></span>
+
+                            <span class="heatmap-label">Fri</span>
+                            <span class="heatmap-cell heatmap-cell--full"></span>
+                            <span class="heatmap-cell"></span>
+                            <span class="heatmap-cell heatmap-cell--full"></span>
+                            <span class="heatmap-cell heatmap-cell--full"></span>
+
+                            <span class="heatmap-label">Sat</span>
+                            <span class="heatmap-cell"></span>
+                            <span class="heatmap-cell"></span>
+                            <span class="heatmap-cell heatmap-cell--light"></span>
+                            <span class="heatmap-cell"></span>
+
+                            <span class="heatmap-label">Sun</span>
+                            <span class="heatmap-cell heatmap-cell--light"></span>
+                            <span class="heatmap-cell"></span>
+                            <span class="heatmap-cell heatmap-cell--medium"></span>
+                            <span class="heatmap-cell heatmap-cell--full"></span>
+                        </div>
+                        <div class="heatmap-legend">
+                            <span>Less</span>
+                            <span class="heatmap-legend__cell" style="background:var(--color-bg-tertiary)"></span>
+                            <span class="heatmap-legend__cell" style="background:rgba(99,102,241,0.2)"></span>
+                            <span class="heatmap-legend__cell" style="background:rgba(99,102,241,0.45)"></span>
+                            <span class="heatmap-legend__cell" style="background:var(--color-primary)"></span>
+                            <span>More</span>
+                        </div>
+                    </div>
+
+                    <!-- Milestones -->
+                    <div class="card">
+                        <h2 class="card__title">Milestones</h2>
+                        <div class="milestone-item">
+                            <span class="milestone-icon">✅</span>
+                            <div class="milestone-content">
+                                <div class="milestone-content__title">First recording</div>
+                            </div>
+                        </div>
+                        <div class="milestone-item">
+                            <span class="milestone-icon">✅</span>
+                            <div class="milestone-content">
+                                <div class="milestone-content__title">7-day streak</div>
+                            </div>
+                        </div>
+                        <div class="milestone-item">
+                            <span class="milestone-icon">✅</span>
+                            <div class="milestone-content">
+                                <div class="milestone-content__title">Hook score above 7</div>
+                            </div>
+                        </div>
+                        <div class="milestone-item">
+                            <span class="milestone-icon" style="opacity:0.5">○</span>
+                            <div class="milestone-content">
+                                <div class="milestone-content__title">Complete Beginner Track</div>
+                                <div class="milestone-content__desc">80% complete</div>
+                                <div class="milestone-progress"><div class="milestone-progress__fill" style="width:80%"></div></div>
+                            </div>
+                        </div>
+                        <div class="milestone-item">
+                            <span class="milestone-icon" style="opacity:0.5">○</span>
+                            <div class="milestone-content">
+                                <div class="milestone-content__title">30-day streak</div>
+                                <div class="milestone-content__desc">12/30 days</div>
+                                <div class="milestone-progress"><div class="milestone-progress__fill" style="width:40%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Navigation -->
+                <nav class="bottom-nav" aria-label="Main navigation">
+                    <button class="nav-item" aria-label="Practice">
+                        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        <span class="nav-item__label">Practice</span>
+                    </button>
+                    <button class="nav-item active" aria-label="Progress" aria-current="page">
+                        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        <span class="nav-item__label">Progress</span>
+                    </button>
+                    <button class="nav-item nav-item--record" aria-label="Record">
+                        <div class="nav-fab">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        </div>
+                    </button>
+                    <button class="nav-item" aria-label="Community">
+                        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <span class="nav-item__label">Community</span>
+                    </button>
+                    <button class="nav-item" aria-label="Tracks">
+                        <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <span class="nav-item__label">Tracks</span>
+                    </button>
+                </nav>
+            </section>
+
+            <!-- Screen 2: Trends -->
+            <section class="screen" id="trends" aria-label="Score Trends">
+                <header class="header">
+                    <button class="header__back" data-navigate="progress-overview" aria-label="Back to overview">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        Back
+                    </button>
+                    <h1 class="header__title">Score Trends</h1>
+                    <span style="width:var(--touch-target-min)"></span>
+                </header>
+
+                <div class="screen-content">
+                    <!-- Period Tabs -->
+                    <div class="period-tabs" role="tablist" aria-label="Time period">
+                        <button class="period-tab active" role="tab" aria-selected="true">7D</button>
+                        <button class="period-tab" role="tab" aria-selected="false">30D</button>
+                        <button class="period-tab" role="tab" aria-selected="false">All Time</button>
+                    </div>
+
+                    <!-- Voice Score Chart -->
+                    <div class="card">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <span class="chart-label">Voice Score</span>
+                                <span class="chart-value chart-value--voice">7.2</span>
+                            </div>
+                            <div class="chart-visual" aria-label="Voice score trend: Mon 6.8, Tue 7.0, Wed 6.9, Thu 7.2, Fri 7.1, Sat no data, Sun 7.2">
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--voice" style="height:68%"></div>
+                                    <span class="chart-day-label">Mon</span>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--voice" style="height:75%"></div>
+                                    <span class="chart-day-label">Tue</span>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--voice" style="height:71%"></div>
+                                    <span class="chart-day-label">Wed</span>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--voice" style="height:82%"></div>
+                                    <span class="chart-day-label">Thu</span>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--voice" style="height:78%"></div>
+                                    <span class="chart-day-label">Fri</span>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--empty" style="height:20%"></div>
+                                    <span class="chart-day-label">Sat</span>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--voice" style="height:82%"></div>
+                                    <span class="chart-day-label">Sun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Story Score Chart -->
+                    <div class="card">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <span class="chart-label">Story Score</span>
+                                <span class="chart-value chart-value--story">6.8</span>
+                            </div>
+                            <div class="chart-visual" aria-label="Story score trend: Mon 6.2, Tue 6.5, Wed 6.4, Thu 6.8, Fri 6.6, Sat no data, Sun 6.8">
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--story" style="height:55%"></div>
+                                    <span class="chart-day-label">Mon</span>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--story" style="height:62%"></div>
+                                    <span class="chart-day-label">Tue</span>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--story" style="height:58%"></div>
+                                    <span class="chart-day-label">Wed</span>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--story" style="height:72%"></div>
+                                    <span class="chart-day-label">Thu</span>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--story" style="height:65%"></div>
+                                    <span class="chart-day-label">Fri</span>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--empty" style="height:20%"></div>
+                                    <span class="chart-day-label">Sat</span>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-bar chart-bar--story" style="height:72%"></div>
+                                    <span class="chart-day-label">Sun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dimension Breakdown -->
+                    <div class="card">
+                        <h2 class="card__title">Dimension Breakdown</h2>
+                        <div class="dimension-grid">
+                            <div class="dimension-section">
+                                <h3 class="dimension-section__title">Voice</h3>
+                                <div class="dimension-item">
+                                    <span class="dimension-item__label">Pace</span>
+                                    <div class="dimension-item__bar"><div class="dimension-item__fill dimension-item__fill--voice" style="width:80%"></div></div>
+                                    <span class="dimension-item__value">8.0</span>
+                                </div>
+                                <div class="dimension-item">
+                                    <span class="dimension-item__label">Filler</span>
+                                    <div class="dimension-item__bar"><div class="dimension-item__fill dimension-item__fill--voice" style="width:70%"></div></div>
+                                    <span class="dimension-item__value">7.0</span>
+                                </div>
+                                <div class="dimension-item">
+                                    <span class="dimension-item__label">Intonation</span>
+                                    <div class="dimension-item__bar"><div class="dimension-item__fill dimension-item__fill--voice" style="width:70%"></div></div>
+                                    <span class="dimension-item__value">7.0</span>
+                                </div>
+                                <div class="dimension-item">
+                                    <span class="dimension-item__label">Clarity</span>
+                                    <div class="dimension-item__bar"><div class="dimension-item__fill dimension-item__fill--voice" style="width:80%"></div></div>
+                                    <span class="dimension-item__value">8.0</span>
+                                </div>
+                            </div>
+                            <div class="dimension-section">
+                                <h3 class="dimension-section__title">Story</h3>
+                                <div class="dimension-item">
+                                    <span class="dimension-item__label">Hook</span>
+                                    <div class="dimension-item__bar"><div class="dimension-item__fill dimension-item__fill--story" style="width:60%"></div></div>
+                                    <span class="dimension-item__value">6.0</span>
+                                </div>
+                                <div class="dimension-item">
+                                    <span class="dimension-item__label">Arc</span>
+                                    <div class="dimension-item__bar"><div class="dimension-item__fill dimension-item__fill--story" style="width:70%"></div></div>
+                                    <span class="dimension-item__value">7.0</span>
+                                </div>
+                                <div class="dimension-item">
+                                    <span class="dimension-item__label">Engage</span>
+                                    <div class="dimension-item__bar"><div class="dimension-item__fill dimension-item__fill--story" style="width:70%"></div></div>
+                                    <span class="dimension-item__value">7.0</span>
+                                </div>
+                                <div class="dimension-item">
+                                    <span class="dimension-item__label">Persuade</span>
+                                    <div class="dimension-item__bar"><div class="dimension-item__fill dimension-item__fill--story" style="width:60%"></div></div>
+                                    <span class="dimension-item__value">6.0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Best Session -->
+                    <div class="card">
+                        <h2 class="card__title">Your Best Session</h2>
+                        <div class="best-session">
+                            <span class="best-session__icon">🏆</span>
+                            <div class="best-session__info">
+                                <div class="best-session__date">May 8</div>
+                                <div class="best-session__scores">Voice 7.2 · Story 6.8</div>
+                                <div class="best-session__prompt">"A time you overcame doubt"</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Screen 3: Day 1 vs Today -->
+            <section class="screen" id="day1-vs-today" aria-label="Day 1 vs Today comparison">
+                <header class="header">
+                    <button class="header__back" data-navigate="progress-overview" aria-label="Back to overview">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        Back
+                    </button>
+                    <h1 class="header__title">Day 1 vs Today</h1>
+                    <span style="width:var(--touch-target-min)"></span>
+                </header>
+
+                <div class="screen-content">
+                    <!-- Large Comparison -->
+                    <div class="comparison-large">
+                        <div class="comparison-panel comparison-panel--day1">
+                            <span class="comparison-panel__label">Day 1</span>
+                            <span class="comparison-panel__date">April 29</span>
+                            <div class="comparison-panel__waveform" aria-hidden="true">
+                                <span class="comparison-waveform__bar" style="height:6px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:10px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:4px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:8px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:12px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:6px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:9px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:5px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:7px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:10px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:4px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:8px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:6px;background:var(--color-text-disabled)"></span>
+                                <span class="comparison-waveform__bar" style="height:9px;background:var(--color-text-disabled)"></span>
+                            </div>
+                            <div class="comparison-panel__scores">
+                                <span class="comparison-panel__score" style="color:var(--color-feedback-voice)">Voice 5.4</span>
+                                <span class="comparison-panel__score" style="color:var(--color-feedback-story)">Story 4.7</span>
+                            </div>
+                        </div>
+                        <div class="comparison-panel comparison-panel--today">
+                            <span class="comparison-panel__label">Today</span>
+                            <span class="comparison-panel__date">May 11</span>
+                            <div class="comparison-panel__waveform" aria-hidden="true">
+                                <span class="comparison-waveform__bar" style="height:18px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:28px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:14px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:24px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:32px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:20px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:26px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:16px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:30px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:22px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:28px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:18px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:26px;background:var(--color-feedback-voice)"></span>
+                                <span class="comparison-waveform__bar" style="height:34px;background:var(--color-feedback-voice)"></span>
+                            </div>
+                            <div class="comparison-panel__scores">
+                                <span class="comparison-panel__score" style="color:var(--color-feedback-voice)">Voice 7.2</span>
+                                <span class="comparison-panel__score" style="color:var(--color-feedback-story)">Story 6.8</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Play Button -->
+                    <button class="play-btn-large" aria-label="Play side-by-side audio comparison">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+                        Play Side-by-Side
+                    </button>
+
+                    <!-- Improvement Breakdown -->
+                    <div class="improvement-list">
+                        <div class="improvement-item">
+                            <span class="improvement-item__metric">Voice</span>
+                            <div class="improvement-item__values">
+                                <span class="improvement-item__from">5.4</span>
+                                <span class="improvement-item__arrow">→</span>
+                                <span class="improvement-item__to">7.2</span>
+                            </div>
+                            <span class="improvement-item__delta">+33%</span>
+                        </div>
+                        <div class="improvement-item">
+                            <span class="improvement-item__metric">Story</span>
+                            <div class="improvement-item__values">
+                                <span class="improvement-item__from">4.7</span>
+                                <span class="improvement-item__arrow">→</span>
+                                <span class="improvement-item__to">6.8</span>
+                            </div>
+                            <span class="improvement-item__delta">+45%</span>
+                        </div>
+                        <div class="improvement-item">
+                            <span class="improvement-item__metric">Pace</span>
+                            <div class="improvement-item__values">
+                                <span class="improvement-item__from">4.0</span>
+                                <span class="improvement-item__arrow">→</span>
+                                <span class="improvement-item__to">8.0</span>
+                            </div>
+                            <span class="improvement-item__delta" style="background:var(--color-warning-subtle);color:var(--color-warning)">Best improved!</span>
+                        </div>
+                        <div class="improvement-item">
+                            <span class="improvement-item__metric">Filler words</span>
+                            <div class="improvement-item__values">
+                                <span class="improvement-item__from">12</span>
+                                <span class="improvement-item__arrow">→</span>
+                                <span class="improvement-item__to">4</span>
+                            </div>
+                            <span class="improvement-item__delta">per session</span>
+                        </div>
+                        <div class="improvement-item">
+                            <span class="improvement-item__metric">Consistency</span>
+                            <div class="improvement-item__values">
+                                <span class="improvement-item__from">2/7</span>
+                                <span class="improvement-item__arrow">→</span>
+                                <span class="improvement-item__to">5/7</span>
+                            </div>
+                            <span class="improvement-item__delta">days/week</span>
+                        </div>
+                    </div>
+
+                    <!-- Motivational Message -->
+                    <div class="motivational-card">
+                        <p class="motivational-card__text">
+                            You've improved <strong>33%</strong> in just 12 days. Most users see this in 3 weeks. <strong>Keep going!</strong>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Screen 4: Milestones -->
+            <section class="screen" id="milestones" aria-label="Achievements">
+                <header class="header">
+                    <button class="header__back" data-navigate="progress-overview" aria-label="Back to overview">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        Back
+                    </button>
+                    <h1 class="header__title">Achievements</h1>
+                    <span style="width:var(--touch-target-min)"></span>
+                </header>
+
+                <div class="screen-content">
+                    <!-- Earned -->
+                    <div class="achievements-section">
+                        <h2 class="achievements-section__title">Earned</h2>
+
+                        <div class="achievement-card achievement-card--earned">
+                            <span class="achievement-card__emoji">🏆</span>
+                            <div class="achievement-card__content">
+                                <div class="achievement-card__title">First Recording</div>
+                                <div class="achievement-card__desc">You did it!</div>
+                            </div>
+                            <span class="achievement-card__date">Apr 29</span>
+                        </div>
+
+                        <div class="achievement-card achievement-card--earned">
+                            <span class="achievement-card__emoji">🔥</span>
+                            <div class="achievement-card__content">
+                                <div class="achievement-card__title">7-Day Streak</div>
+                                <div class="achievement-card__desc">Consistency master!</div>
+                            </div>
+                            <span class="achievement-card__date">May 5</span>
+                        </div>
+
+                        <div class="achievement-card achievement-card--earned">
+                            <span class="achievement-card__emoji">🎯</span>
+                            <div class="achievement-card__content">
+                                <div class="achievement-card__title">Hook Score 7+</div>
+                                <div class="achievement-card__desc">Your openings land!</div>
+                            </div>
+                            <span class="achievement-card__date">May 8</span>
+                        </div>
+
+                        <div class="achievement-card achievement-card--earned">
+                            <span class="achievement-card__emoji">🗣️</span>
+                            <div class="achievement-card__content">
+                                <div class="achievement-card__title">25 Stories</div>
+                                <div class="achievement-card__desc">Quarter century!</div>
+                            </div>
+                            <span class="achievement-card__date">May 6</span>
+                        </div>
+
+                        <div class="achievement-card achievement-card--earned">
+                            <span class="achievement-card__emoji">🌟</span>
+                            <div class="achievement-card__content">
+                                <div class="achievement-card__title">Voice Score 7+</div>
+                                <div class="achievement-card__desc">Finding your voice!</div>
+                            </div>
+                            <span class="achievement-card__date">May 10</span>
+                        </div>
+                    </div>
+
+                    <!-- In Progress -->
+                    <div class="achievements-section">
+                        <h2 class="achievements-section__title">In Progress</h2>
+
+                        <div class="achievement-card">
+                            <span class="achievement-card__emoji">📚</span>
+                            <div class="achievement-card__content">
+                                <div class="achievement-card__title">Complete Beginner Track</div>
+                                <div class="achievement-card__desc">16/20 sessions</div>
+                                <div class="achievement-progress"><div class="achievement-progress__fill" style="width:80%"></div></div>
+                            </div>
+                            <span class="achievement-card__percent">80%</span>
+                        </div>
+
+                        <div class="achievement-card">
+                            <span class="achievement-card__emoji">🔥</span>
+                            <div class="achievement-card__content">
+                                <div class="achievement-card__title">30-Day Streak</div>
+                                <div class="achievement-card__desc">12/30 days</div>
+                                <div class="achievement-progress"><div class="achievement-progress__fill" style="width:40%"></div></div>
+                            </div>
+                            <span class="achievement-card__percent">40%</span>
+                        </div>
+
+                        <div class="achievement-card">
+                            <span class="achievement-card__emoji">🎯</span>
+                            <div class="achievement-card__content">
+                                <div class="achievement-card__title">All Metrics 8+</div>
+                                <div class="achievement-card__desc">3 of 8 at 8+</div>
+                                <div class="achievement-progress"><div class="achievement-progress__fill" style="width:37.5%"></div></div>
+                            </div>
+                            <span class="achievement-card__percent">38%</span>
+                        </div>
+
+                        <div class="achievement-card">
+                            <span class="achievement-card__emoji">🏅</span>
+                            <div class="achievement-card__content">
+                                <div class="achievement-card__title">Story Score 8+</div>
+                                <div class="achievement-card__desc">Currently 6.8 — keep practicing!</div>
+                                <div class="achievement-progress"><div class="achievement-progress__fill" style="width:68%"></div></div>
+                            </div>
+                            <span class="achievement-card__percent">68%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const screens = document.querySelectorAll('.screen');
+            const protoButtons = document.querySelectorAll('.proto-nav__btn');
+            const navigateButtons = document.querySelectorAll('[data-navigate]');
+
+            function showScreen(id) {
+                screens.forEach(function(s) {
+                    s.classList.remove('active');
+                    s.style.opacity = '0';
+                });
+                protoButtons.forEach(function(b) {
+                    b.classList.toggle('active', b.dataset.screen === id);
+                });
+                var target = document.getElementById(id);
+                if (target) {
+                    target.classList.add('active');
+                    requestAnimationFrame(function() {
+                        target.style.opacity = '1';
+                    });
+                    target.scrollTop = 0;
+                }
+            }
+
+            protoButtons.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    showScreen(btn.dataset.screen);
+                });
+            });
+
+            navigateButtons.forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    showScreen(btn.dataset.navigate);
+                });
+                btn.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        showScreen(btn.dataset.navigate);
+                    }
+                });
+            });
+
+            var periodTabs = document.querySelectorAll('.period-tab');
+            periodTabs.forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    periodTabs.forEach(function(t) {
+                        t.classList.remove('active');
+                        t.setAttribute('aria-selected', 'false');
+                    });
+                    tab.classList.add('active');
+                    tab.setAttribute('aria-selected', 'true');
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

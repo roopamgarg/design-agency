@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracks — StoryCraft</title>
+    <link rel="stylesheet" href="../tokens.css">
+    <style>
+        /* ── Header ─────────────────────────────────────── */
+
+        .header-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+
+        .header-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--touch-target-min);
+            height: var(--touch-target-min);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--color-text-secondary);
+            border-radius: var(--radius-full);
+            transition: color var(--transition-fast), background var(--transition-fast);
+        }
+
+        .header-action:hover {
+            color: var(--color-text-primary);
+            background: var(--color-primary-subtle);
+        }
+
+        .header-action svg {
+            width: var(--icon-lg);
+            height: var(--icon-lg);
+        }
+
+        /* ── Section Layout ─────────────────────────────── */
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-page-x);
+            margin-bottom: var(--space-3);
+        }
+
+        .section-title {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .section-link {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-primary);
+            text-decoration: none;
+            min-height: var(--touch-target-min);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .section-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Active Track Hero ──────────────────────────── */
+
+        .active-track {
+            margin: var(--space-4) var(--space-page-x);
+        }
+
+        .active-track__label {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-widest);
+            margin-bottom: var(--space-3);
+        }
+
+        .hero-card {
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            background: var(--card-bg);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+        }
+
+        .hero-card__image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .hero-card__image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-card__image-wrapper::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                transparent 20%,
+                var(--card-bg)
+            );
+        }
+
+        .hero-card__tag {
+            position: absolute;
+            top: var(--space-3);
+            left: var(--space-4);
+            z-index: var(--z-above);
+            display: inline-block;
+            padding: var(--space-1) var(--space-3);
+            color: var(--color-primary-contrast);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            letter-spacing: var(--letter-spacing-wider);
+            text-transform: uppercase;
+            border-radius: var(--radius-full);
+        }
+
+        .tag--beginner { background: var(--color-track-beginner); }
+        .tag--creator  { background: var(--color-track-creator); }
+        .tag--founder  { background: var(--color-track-founder); }
+        .tag--interview { background: var(--color-track-interview); }
+        .tag--social   { background: var(--color-track-social); }
+        .tag--leadership { background: var(--color-track-leadership); }
+
+        .hero-card__body {
+            padding: var(--space-1) var(--card-padding) var(--card-padding);
+        }
+
+        .hero-card__name {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-snug);
+        }
+
+        .hero-card__session {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-top: var(--space-2);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .hero-card__session-icon {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+            flex-shrink: 0;
+            color: var(--color-track-beginner);
+        }
+
+        /* ── Progress Bar ───────────────────────────────── */
+
+        .progress {
+            margin-top: var(--space-4);
+        }
+
+        .progress__header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: var(--space-2);
+        }
+
+        .progress__label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+        }
+
+        .progress__count {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-mono);
+        }
+
+        .progress__bar {
+            width: 100%;
+            height: 8px;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .progress__fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            background: var(--color-track-beginner);
+            transition: width var(--transition-slow);
+        }
+
+        /* ── Continue Button ────────────────────────────── */
+
+        .btn-continue {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            width: 100%;
+            height: var(--btn-height-lg);
+            margin-top: var(--space-5);
+            border: none;
+            border-radius: var(--btn-radius);
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            font-weight: var(--btn-font-weight);
+            letter-spacing: var(--btn-letter-spacing);
+            cursor: pointer;
+            box-shadow: var(--shadow-glow-primary);
+            transition:
+                transform var(--transition-spring),
+                box-shadow var(--transition-normal);
+            min-height: var(--touch-target-min);
+        }
+
+        .btn-continue:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-continue:active {
+            transform: scale(0.98);
+        }
+
+        .btn-continue svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+            flex-shrink: 0;
+        }
+
+        /* ── Recommended Scroll ─────────────────────────── */
+
+        .recommended {
+            margin-top: var(--space-8);
+        }
+
+        .rec-scroll {
+            display: flex;
+            gap: var(--space-3);
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding: 0 var(--space-page-x) var(--space-4);
+            scrollbar-width: none;
+        }
+
+        .rec-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .rec-card {
+            flex: 0 0 280px;
+            scroll-snap-align: start;
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--card-border);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+        }
+
+        .rec-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .rec-card__image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 140px;
+            overflow: hidden;
+        }
+
+        .rec-card__image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .rec-card__tag {
+            position: absolute;
+            top: var(--space-3);
+            left: var(--space-3);
+            z-index: var(--z-above);
+            padding: var(--space-0-5) var(--space-2-5);
+            color: var(--color-primary-contrast);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            letter-spacing: var(--letter-spacing-wide);
+            text-transform: uppercase;
+            border-radius: var(--radius-full);
+        }
+
+        .rec-card__body {
+            padding: var(--space-3) var(--space-4) var(--space-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+            flex: 1;
+        }
+
+        .rec-card__name {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-snug);
+        }
+
+        .rec-card__desc {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+            line-height: var(--line-height-normal);
+        }
+
+        .rec-card__meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-top: var(--space-1);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .rec-card__meta-dot {
+            width: 3px;
+            height: 3px;
+            border-radius: var(--radius-full);
+            background: var(--color-text-disabled);
+            flex-shrink: 0;
+        }
+
+        /* ── Available Tracks ───────────────────────────── */
+
+        .available-tracks {
+            margin-top: var(--space-6);
+        }
+
+        .track-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            padding: 0 var(--space-page-x);
+        }
+
+        .track-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-3);
+            border-radius: var(--card-radius);
+            background: var(--card-bg);
+            box-shadow: var(--shadow-xs);
+            border: 1px solid var(--card-border);
+            text-decoration: none;
+            color: inherit;
+            transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+            min-height: var(--touch-target-min);
+        }
+
+        .track-item:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .track-item--locked {
+            opacity: 0.65;
+        }
+
+        .track-item--locked:hover {
+            transform: none;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .track-item__thumb-wrapper {
+            position: relative;
+            flex-shrink: 0;
+            width: 72px;
+            height: 72px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .track-item__thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .track-item--locked .track-item__thumb-wrapper::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: var(--color-bg-scrim);
+            border-radius: var(--radius-lg);
+        }
+
+        .track-item__lock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: var(--z-above);
+            width: var(--icon-lg);
+            height: var(--icon-lg);
+            color: var(--color-text-inverse);
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
+        }
+
+        .track-item__body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .track-item__top {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+        }
+
+        .track-item__name {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            line-height: var(--line-height-snug);
+        }
+
+        .track-item__tag {
+            display: inline-block;
+            padding: var(--space-0-5) var(--space-2);
+            color: var(--color-primary-contrast);
+            font-size: var(--badge-font-size);
+            font-weight: var(--font-weight-semibold);
+            letter-spacing: var(--letter-spacing-wide);
+            text-transform: uppercase;
+            border-radius: var(--radius-full);
+            line-height: var(--line-height-tight);
+        }
+
+        .track-item__meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-top: var(--space-1);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .track-item__meta-dot {
+            width: 3px;
+            height: 3px;
+            border-radius: var(--radius-full);
+            background: var(--color-text-disabled);
+            flex-shrink: 0;
+        }
+
+        .track-item__status {
+            font-weight: var(--font-weight-medium);
+        }
+
+        .track-item__status--unlocked {
+            color: var(--color-success);
+        }
+
+        .track-item__status--locked {
+            color: var(--color-text-disabled);
+        }
+
+        .track-item__chevron {
+            flex-shrink: 0;
+            width: var(--icon-md);
+            height: var(--icon-md);
+            color: var(--color-text-disabled);
+        }
+
+        .sr-only--focusable:focus-visible {
+            position: fixed;
+            top: var(--space-2);
+            left: var(--space-2);
+            width: auto;
+            height: auto;
+            padding: var(--space-2) var(--space-4);
+            clip: auto;
+            white-space: normal;
+            overflow: visible;
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            z-index: var(--z-max);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="sr-only sr-only--focusable">Skip to content</a>
+    <div class="app-shell" data-screen="track-discovery">
+
+        <!-- ── Header ──────────────────────────────────── -->
+        <header class="app-shell__header">
+            <h1 class="header-title">Tracks</h1>
+            <button class="header-action" type="button" aria-label="Search tracks">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- ── Main Content ────────────────────────────── -->
+        <main class="app-shell__content" id="main-content">
+
+            <!-- My Active Track -->
+            <section class="active-track" aria-label="My active track">
+                <p class="active-track__label">My Active Track</p>
+                <article class="hero-card">
+                    <div class="hero-card__image-wrapper">
+                        <img
+                            class="hero-card__image"
+                            src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=390&h=180&fit=crop"
+                            alt="Books and study materials on a desk, representing the Beginner Storyteller learning track"
+                            width="390"
+                            height="180"
+                            loading="eager"
+                        >
+                        <span class="hero-card__tag tag--beginner">Beginner</span>
+                    </div>
+                    <div class="hero-card__body">
+                        <h2 class="hero-card__name">Beginner Storyteller</h2>
+                        <div class="hero-card__session">
+                            <svg class="hero-card__session-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                            <span>Session 13: The Resolution</span>
+                        </div>
+
+                        <div class="progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" aria-label="Track progress: 12 of 20 sessions completed">
+                            <div class="progress__header">
+                                <span class="progress__label">Progress</span>
+                                <span class="progress__count">12 / 20 sessions</span>
+                            </div>
+                            <div class="progress__bar">
+                                <div class="progress__fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+
+                        <button class="btn-continue" type="button" aria-label="Continue Beginner Storyteller track">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                            Continue
+                        </button>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Recommended For You -->
+            <section class="recommended" aria-label="Recommended tracks for you">
+                <div class="section-header">
+                    <h2 class="section-title">Recommended For You</h2>
+                    <a href="#all-tracks" class="section-link" aria-label="View all tracks">See all</a>
+                </div>
+                <div class="rec-scroll" role="list">
+                    <a href="#track-creator" class="rec-card" role="listitem">
+                        <div class="rec-card__image-wrapper">
+                            <img
+                                class="rec-card__image"
+                                src="https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=280&h=180&fit=crop"
+                                alt="Podcast microphone and headphones representing the Content Creator track"
+                                width="280"
+                                height="180"
+                                loading="lazy"
+                            >
+                            <span class="rec-card__tag tag--creator">Creator</span>
+                        </div>
+                        <div class="rec-card__body">
+                            <h3 class="rec-card__name">Content Creator</h3>
+                            <p class="rec-card__desc">Build your creative voice</p>
+                            <div class="rec-card__meta">
+                                <span>15 sessions</span>
+                                <span class="rec-card__meta-dot" aria-hidden="true"></span>
+                                <span>Intermediate</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Available Tracks -->
+            <section class="available-tracks" aria-label="Available learning tracks">
+                <div class="section-header">
+                    <h2 class="section-title">Available Tracks</h2>
+                </div>
+                <div class="track-list" role="list">
+
+                    <!-- Founder Pitch — Unlocked -->
+                    <a href="#track-founder" class="track-item" role="listitem">
+                        <div class="track-item__thumb-wrapper">
+                            <img
+                                class="track-item__thumb"
+                                src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=160&h=160&fit=crop"
+                                alt="Speaker presenting on stage, representing the Founder Pitch track"
+                                width="160"
+                                height="160"
+                                loading="lazy"
+                            >
+                        </div>
+                        <div class="track-item__body">
+                            <div class="track-item__top">
+                                <span class="track-item__name">Founder Pitch</span>
+                                <span class="track-item__tag tag--founder">Founder</span>
+                            </div>
+                            <div class="track-item__meta">
+                                <span>12 sessions</span>
+                                <span class="track-item__meta-dot" aria-hidden="true"></span>
+                                <span class="track-item__status track-item__status--unlocked">🔓 Unlocked</span>
+                            </div>
+                        </div>
+                        <svg class="track-item__chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </a>
+
+                    <!-- Interview Prep — Locked -->
+                    <div class="track-item track-item--locked" role="listitem" aria-label="Interview Prep track, locked until Level 5">
+                        <div class="track-item__thumb-wrapper">
+                            <img
+                                class="track-item__thumb"
+                                src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=160&h=160&fit=crop"
+                                alt="Professional woman in an office setting"
+                                width="160"
+                                height="160"
+                                loading="lazy"
+                            >
+                            <svg class="track-item__lock" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <div class="track-item__body">
+                            <div class="track-item__top">
+                                <span class="track-item__name">Interview Prep</span>
+                                <span class="track-item__tag tag--interview">Interview</span>
+                            </div>
+                            <div class="track-item__meta">
+                                <span>10 sessions</span>
+                                <span class="track-item__meta-dot" aria-hidden="true"></span>
+                                <span class="track-item__status track-item__status--locked">🔒 Level 5</span>
+                            </div>
+                        </div>
+                        <svg class="track-item__chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </div>
+
+                    <!-- Social & Dating — Locked -->
+                    <div class="track-item track-item--locked" role="listitem" aria-label="Social and Dating track, locked until Level 5">
+                        <div class="track-item__thumb-wrapper">
+                            <img
+                                class="track-item__thumb"
+                                src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=160&h=160&fit=crop"
+                                alt="Group of friends laughing together outdoors"
+                                width="160"
+                                height="160"
+                                loading="lazy"
+                            >
+                            <svg class="track-item__lock" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <div class="track-item__body">
+                            <div class="track-item__top">
+                                <span class="track-item__name">Social &amp; Dating</span>
+                                <span class="track-item__tag tag--social">Social</span>
+                            </div>
+                            <div class="track-item__meta">
+                                <span>8 sessions</span>
+                                <span class="track-item__meta-dot" aria-hidden="true"></span>
+                                <span class="track-item__status track-item__status--locked">🔒 Level 5</span>
+                            </div>
+                        </div>
+                        <svg class="track-item__chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </div>
+
+                    <!-- Leadership Comm. — Locked -->
+                    <div class="track-item track-item--locked" role="listitem" aria-label="Leadership Communication track, locked until Level 10">
+                        <div class="track-item__thumb-wrapper">
+                            <img
+                                class="track-item__thumb"
+                                src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=160&h=160&fit=crop"
+                                alt="Team collaborating around a whiteboard"
+                                width="160"
+                                height="160"
+                                loading="lazy"
+                            >
+                            <svg class="track-item__lock" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <div class="track-item__body">
+                            <div class="track-item__top">
+                                <span class="track-item__name">Leadership Comm.</span>
+                                <span class="track-item__tag tag--leadership">Leadership</span>
+                            </div>
+                            <div class="track-item__meta">
+                                <span>16 sessions</span>
+                                <span class="track-item__meta-dot" aria-hidden="true"></span>
+                                <span class="track-item__status track-item__status--locked">🔒 Level 10</span>
+                            </div>
+                        </div>
+                        <svg class="track-item__chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ── Bottom Navigation ───────────────────────── -->
+        <nav class="app-shell__nav" aria-label="Main navigation">
+
+            <a href="#practice" class="nav-item" aria-label="Practice">
+                <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="6"/>
+                    <circle cx="12" cy="12" r="2"/>
+                </svg>
+                <span class="nav-item__label">Practice</span>
+            </a>
+
+            <a href="#progress" class="nav-item" aria-label="Progress">
+                <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                <span class="nav-item__label">Progress</span>
+            </a>
+
+            <button class="nav-item nav-item--record" aria-label="Record a new story">
+                <span class="nav-fab">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" y1="19" x2="12" y2="23"/>
+                        <line x1="8" y1="23" x2="16" y2="23"/>
+                    </svg>
+                </span>
+                <span class="nav-item__label">Record</span>
+            </button>
+
+            <a href="#community" class="nav-item" aria-label="Community">
+                <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span class="nav-item__label">Community</span>
+            </a>
+
+            <a href="#tracks" class="nav-item active" aria-label="Tracks" aria-current="page">
+                <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                </svg>
+                <span class="nav-item__label">Tracks</span>
+            </a>
+
+        </nav>
+
+    </div>
+</body>
+</html>

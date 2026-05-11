@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StoryCraft — Onboarding Flow</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    /* Screen management */
+    section[data-screen] {
+      display: none;
+      opacity: 0;
+      transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 100%;
+    }
+
+    section[data-screen].active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    section[data-screen].visible {
+      opacity: 1;
+    }
+
+    /* Shared button styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      font-family: var(--font-family-sans);
+      font-weight: var(--btn-font-weight);
+      letter-spacing: var(--btn-letter-spacing);
+      border: none;
+      cursor: pointer;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+      min-height: var(--touch-target-min);
+      border-radius: var(--btn-radius);
+      text-decoration: none;
+      line-height: 1;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: var(--color-primary-contrast);
+      height: var(--btn-height-lg);
+      padding: 0 var(--space-8);
+      font-size: var(--font-size-base);
+      box-shadow: var(--shadow-glow-primary);
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-dark);
+    }
+
+    .btn-secondary {
+      background: var(--color-bg-elevated);
+      color: var(--color-primary);
+      height: var(--btn-height-lg);
+      padding: 0 var(--space-8);
+      font-size: var(--font-size-base);
+      border: 2px solid var(--color-primary);
+      width: 100%;
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-primary-subtle);
+    }
+
+    .btn-ghost {
+      background: none;
+      color: var(--color-text-secondary);
+      height: var(--btn-height-md);
+      padding: 0 var(--space-4);
+      font-size: var(--font-size-sm);
+    }
+
+    .btn-ghost:hover {
+      color: var(--color-primary);
+    }
+
+    .btn-recording {
+      background: var(--color-recording);
+      color: var(--color-text-inverse);
+      height: var(--btn-height-lg);
+      padding: 0 var(--space-8);
+      font-size: var(--font-size-base);
+      box-shadow: var(--shadow-glow-recording);
+      width: 100%;
+    }
+
+    .btn-recording:hover {
+      background: var(--color-recording-dark);
+    }
+
+    /* Shared layout helpers */
+    .screen-content {
+      flex: 1;
+      padding: 0 var(--space-page-x);
+    }
+
+    .screen-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      height: var(--header-height);
+      padding: 0 var(--space-page-x);
+      position: sticky;
+      top: 0;
+      background: var(--color-bg-primary);
+      z-index: var(--z-sticky);
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-primary);
+      border-radius: var(--radius-full);
+      margin-left: calc(-1 * var(--space-2));
+      transition: background var(--transition-fast);
+    }
+
+    .back-btn:hover {
+      background: var(--color-primary-subtle);
+    }
+
+    .back-btn svg {
+      width: var(--icon-lg);
+      height: var(--icon-lg);
+    }
+
+    .screen-title {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      line-height: var(--line-height-tight);
+    }
+
+    .screen-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin-top: var(--space-1);
+    }
+
+    /* Card */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+    }
+
+    .card-body {
+      padding: var(--card-padding);
+    }
+
+    /* Tag / Badge */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      height: var(--badge-height);
+      padding: 0 var(--badge-padding-x);
+      border-radius: var(--badge-radius);
+      font-size: var(--badge-font-size);
+      font-weight: var(--font-weight-semibold);
+      letter-spacing: var(--letter-spacing-wide);
+    }
+
+    .tag-violet {
+      background: var(--color-primary-subtle);
+      color: var(--color-primary);
+    }
+
+    .tag-accent {
+      background: var(--color-accent-subtle);
+      color: var(--color-accent);
+    }
+
+    /* Inputs */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1-5);
+    }
+
+    .input-group label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-secondary);
+    }
+
+    .input-group input {
+      height: var(--input-height);
+      border-radius: var(--input-radius);
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      padding: 0 var(--input-padding-x);
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-base);
+      color: var(--color-text-primary);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--input-border-focus);
+      box-shadow: 0 0 0 3px var(--color-primary-subtle);
+    }
+
+    .input-group input::placeholder {
+      color: var(--color-text-disabled);
+    }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-sm);
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--color-border-default);
+    }
+
+    /* =====================================================================
+       Screen 1: Welcome
+       ===================================================================== */
+    .welcome-hero {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      overflow: hidden;
+    }
+
+    .welcome-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .welcome-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 30%,
+        var(--color-bg-primary) 95%
+      );
+    }
+
+    .welcome-body {
+      padding: 0 var(--space-page-x);
+      margin-top: calc(-1 * var(--space-20));
+      position: relative;
+      z-index: var(--z-above);
+    }
+
+    .welcome-brand {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      line-height: var(--line-height-tight);
+    }
+
+    .welcome-tagline {
+      font-size: var(--font-size-md);
+      color: var(--color-text-secondary);
+      margin-top: var(--space-2);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .welcome-values {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-top: var(--space-6);
+    }
+
+    .welcome-value {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .welcome-value-icon {
+      font-size: var(--font-size-xl);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      flex-shrink: 0;
+    }
+
+    .welcome-ctas {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-3);
+      margin-top: var(--space-8);
+      padding-bottom: var(--space-6);
+    }
+
+    .welcome-privacy {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      text-align: center;
+      margin-top: var(--space-4);
+      padding-bottom: var(--space-6);
+    }
+
+    /* =====================================================================
+       Screen 2: First Prompt
+       ===================================================================== */
+    .prompt-card-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .prompt-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-3);
+    }
+
+    .prompt-meta-dot {
+      width: 3px;
+      height: 3px;
+      background: var(--color-text-disabled);
+      border-radius: var(--radius-full);
+    }
+
+    .prompt-title {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      line-height: var(--line-height-snug);
+      margin-top: var(--space-2);
+    }
+
+    .prompt-encourage {
+      text-align: center;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-tertiary);
+      font-style: italic;
+      margin-top: var(--space-4);
+    }
+
+    /* =====================================================================
+       Screen 3: Recording
+       ===================================================================== */
+    .recording-screen {
+      background: var(--color-bg-primary);
+    }
+
+    .recording-top {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-page-x);
+    }
+
+    .recording-prompt-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .recording-timer {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-recording);
+    }
+
+    .recording-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--color-recording);
+      border-radius: var(--radius-full);
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .recording-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8) var(--space-page-x);
+      gap: var(--space-10);
+    }
+
+    .waveform {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--waveform-bar-gap);
+      height: 120px;
+      width: 100%;
+    }
+
+    .waveform-bar {
+      width: var(--waveform-bar-width);
+      background: var(--waveform-active-color);
+      border-radius: var(--radius-full);
+      animation: wave 1.2s ease-in-out infinite;
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: scaleY(0.3); }
+      50% { transform: scaleY(1); }
+    }
+
+    .framework-guide {
+      display: flex;
+      gap: var(--space-1);
+      width: 100%;
+    }
+
+    .framework-step {
+      flex: 1;
+      text-align: center;
+      padding: var(--space-2) 0;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-disabled);
+      border-bottom: 2px solid var(--color-border-subtle);
+      transition: color var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .framework-step.active {
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+
+    .recording-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-4);
+      padding-bottom: var(--space-8);
+    }
+
+    .stop-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-full);
+      background: var(--color-recording);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-glow-recording);
+      animation: pulse-ring 2s ease-out infinite;
+      transition: transform var(--transition-fast);
+    }
+
+    .stop-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .stop-btn:active {
+      transform: scale(0.95);
+    }
+
+    .stop-btn svg {
+      width: 28px;
+      height: 28px;
+      color: var(--color-text-inverse);
+    }
+
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 var(--color-recording-pulse), var(--shadow-glow-recording); }
+      70% { box-shadow: 0 0 0 16px transparent, var(--shadow-glow-recording); }
+      100% { box-shadow: 0 0 0 0 transparent, var(--shadow-glow-recording); }
+    }
+
+    .pause-link {
+      background: none;
+      border: none;
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-sm);
+      font-family: var(--font-family-sans);
+      cursor: pointer;
+      min-height: var(--touch-target-min);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--space-4);
+    }
+
+    .pause-link:hover {
+      color: var(--color-text-secondary);
+    }
+
+    /* =====================================================================
+       Screen 4: Processing
+       ===================================================================== */
+    .processing-screen {
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-page-x);
+      min-height: 100%;
+    }
+
+    .processing-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-8);
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .spinner {
+      width: 56px;
+      height: 56px;
+      border: 3px solid var(--color-border-subtle);
+      border-top-color: var(--color-primary);
+      border-radius: var(--radius-full);
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .processing-text {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-lg);
+      color: var(--color-text-primary);
+      text-align: center;
+    }
+
+    .checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      width: 100%;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      opacity: 0;
+      transform: translateY(8px);
+      animation: check-in 300ms ease forwards;
+    }
+
+    .checklist li:nth-child(1) { animation-delay: 200ms; }
+    .checklist li:nth-child(2) { animation-delay: 500ms; }
+    .checklist li:nth-child(3) { animation-delay: 800ms; }
+    .checklist li:nth-child(4) { animation-delay: 1100ms; }
+    .checklist li:nth-child(5) { animation-delay: 1400ms; }
+
+    @keyframes check-in {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .check-done {
+      color: var(--color-success);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .check-pending {
+      color: var(--color-text-disabled);
+    }
+
+    .checklist li span.mono {
+      font-family: var(--font-family-mono);
+      font-weight: var(--font-weight-medium);
+    }
+
+    /* =====================================================================
+       Screen 5: First Feedback
+       ===================================================================== */
+    .feedback-card {
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    .feedback-card-strength {
+      background: var(--color-success-subtle);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+    }
+
+    .feedback-card-improve {
+      background: var(--color-primary-subtle);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+    }
+
+    .feedback-icon {
+      font-size: var(--font-size-xl);
+      flex-shrink: 0;
+    }
+
+    .feedback-text {
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-relaxed);
+      color: var(--color-text-primary);
+    }
+
+    .score-row {
+      display: flex;
+      gap: var(--space-4);
+    }
+
+    .score-item {
+      flex: 1;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      text-align: center;
+    }
+
+    .score-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .score-value {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      margin-top: var(--space-1);
+      line-height: 1;
+    }
+
+    .score-voice .score-value { color: var(--color-feedback-voice); }
+    .score-story .score-value { color: var(--color-feedback-story); }
+
+    .feedback-ctas {
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    .feedback-ctas .btn {
+      flex: 1;
+    }
+
+    /* =====================================================================
+       Screen 6: Signup
+       ===================================================================== */
+    .social-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-3);
+      width: 100%;
+      height: var(--btn-height-lg);
+      border-radius: var(--btn-radius);
+      border: 1px solid var(--color-border-default);
+      background: var(--color-bg-elevated);
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast);
+      min-height: var(--touch-target-min);
+    }
+
+    .social-btn:hover {
+      background: var(--color-bg-secondary);
+      border-color: var(--color-border-strong);
+    }
+
+    .social-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* =====================================================================
+       Screen 7: Goal Selection
+       ===================================================================== */
+    .goal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    .goal-card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: var(--card-radius);
+      padding: var(--card-padding);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      text-align: center;
+      cursor: pointer;
+      transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+      min-height: var(--touch-target-min);
+    }
+
+    .goal-card:hover {
+      border-color: var(--color-primary-light);
+    }
+
+    .goal-card:active {
+      transform: scale(0.97);
+    }
+
+    .goal-card.selected {
+      border-color: var(--color-primary);
+      background: var(--color-primary-subtle);
+    }
+
+    .goal-emoji {
+      font-size: var(--font-size-2xl);
+    }
+
+    .goal-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+      line-height: var(--line-height-snug);
+    }
+
+    /* =====================================================================
+       Screen 8: Track Recommendation
+       ===================================================================== */
+    .track-card-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .track-title {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      margin-top: var(--space-2);
+    }
+
+    .track-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-top: var(--space-1);
+    }
+
+    .progress-bar-track {
+      width: 100%;
+      height: 8px;
+      background: var(--color-bg-tertiary);
+      border-radius: var(--radius-full);
+      margin-top: var(--space-4);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--color-primary);
+      border-radius: var(--radius-full);
+      transition: width var(--transition-slow);
+    }
+
+    /* =====================================================================
+       Confetti
+       ===================================================================== */
+    .confetti-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: var(--z-max);
+      overflow: hidden;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      top: -10px;
+      animation: confetti-fall 2.5s ease-out forwards;
+    }
+
+    @keyframes confetti-fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* =====================================================================
+       Prototype Nav Bar
+       ===================================================================== */
+    .proto-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 10000;
+      background: #f1f5f9;
+      border-top: 1px solid #cbd5e1;
+      padding: 6px 8px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .proto-nav button {
+      flex-shrink: 0;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-family: var(--font-family-sans);
+      font-weight: var(--font-weight-medium);
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #334155;
+      transition: background 100ms, border-color 100ms;
+      min-height: 28px;
+    }
+
+    .proto-nav button:hover {
+      background: #e2e8f0;
+    }
+
+    .proto-nav button.active {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+
+    /* Offset app content so proto-nav doesn't overlap */
+    .app-shell {
+      padding-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" role="main">
+
+    <!-- ================================================================
+         Screen 1: Welcome
+         ================================================================ -->
+    <section data-screen="welcome" aria-label="Welcome to StoryCraft">
+      <div class="welcome-hero">
+        <img
+          src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=390&h=480&fit=crop"
+          alt="Person speaking confidently on stage"
+          width="390" height="480"
+        >
+        <div class="welcome-hero-overlay" aria-hidden="true"></div>
+      </div>
+
+      <div class="welcome-body">
+        <h1 class="welcome-brand">StoryCraft</h1>
+        <p class="welcome-tagline">Your voice has a story worth telling</p>
+
+        <div class="welcome-values" role="list">
+          <div class="welcome-value" role="listitem">
+            <span class="welcome-value-icon" aria-hidden="true">🎙️</span>
+            <span><strong>Record</strong> your stories with guided prompts</span>
+          </div>
+          <div class="welcome-value" role="listitem">
+            <span class="welcome-value-icon" aria-hidden="true">📊</span>
+            <span><strong>AI Feedback</strong> on voice &amp; storytelling skills</span>
+          </div>
+          <div class="welcome-value" role="listitem">
+            <span class="welcome-value-icon" aria-hidden="true">📈</span>
+            <span><strong>Track Growth</strong> and improve every session</span>
+          </div>
+        </div>
+
+        <div class="welcome-ctas">
+          <button class="btn btn-primary" onclick="showScreen('first-prompt')" aria-label="Try it free with no signup needed">
+            Try it free — no signup needed
+          </button>
+          <button class="btn btn-ghost" onclick="showScreen('signup')" aria-label="I already have an account, go to sign in">
+            I already have an account
+          </button>
+        </div>
+
+        <p class="welcome-privacy" aria-label="Privacy note">🔒 Your recordings stay private. Always.</p>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         Screen 2: First Prompt
+         ================================================================ -->
+    <section data-screen="first-prompt" aria-label="Your first prompt">
+      <div class="screen-header">
+        <button class="back-btn" onclick="showScreen('welcome')" aria-label="Go back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        </button>
+      </div>
+
+      <div class="screen-content">
+        <h1 class="screen-title" style="margin-top: var(--space-2);">Here's your first prompt</h1>
+
+        <div class="card" style="margin-top: var(--space-6);">
+          <img
+            class="prompt-card-image"
+            src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=390&h=200&fit=crop"
+            alt="Delicious meal on a table"
+            width="390" height="200"
+          >
+          <div class="card-body">
+            <span class="tag tag-accent">First Story</span>
+            <h2 class="prompt-title">Tell me about your favorite meal in 60 seconds</h2>
+            <div class="prompt-meta">
+              <span>60 seconds</span>
+              <span class="prompt-meta-dot" aria-hidden="true"></span>
+              <span>Beginner</span>
+              <span class="prompt-meta-dot" aria-hidden="true"></span>
+              <span>No framework</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: var(--space-8);">
+          <button class="btn btn-recording" onclick="showScreen('recording')" aria-label="Start recording">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 18v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            START RECORDING
+          </button>
+        </div>
+
+        <p class="prompt-encourage">Don't worry about being perfect. Just talk.</p>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         Screen 3: Recording
+         ================================================================ -->
+    <section data-screen="recording" class="recording-screen" aria-label="Recording in progress">
+      <div class="recording-top">
+        <button class="back-btn" onclick="showScreen('first-prompt')" aria-label="Go back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        </button>
+        <span class="recording-prompt-text">Tell me about your favorite meal</span>
+        <div class="recording-timer" aria-live="polite" aria-label="Recording time: 47 seconds of 60">
+          <span class="recording-dot" aria-hidden="true"></span>
+          <span>00:47 / 01:00</span>
+        </div>
+      </div>
+
+      <div class="recording-main">
+        <div class="waveform" aria-hidden="true" id="waveform"></div>
+
+        <div class="framework-guide" role="list" aria-label="Story framework guide">
+          <div class="framework-step active" role="listitem" aria-current="step">Hook</div>
+          <div class="framework-step" role="listitem">Build</div>
+          <div class="framework-step" role="listitem">Climax</div>
+          <div class="framework-step" role="listitem">Resolution</div>
+        </div>
+      </div>
+
+      <div class="recording-controls">
+        <button class="stop-btn" onclick="showScreen('processing')" aria-label="Stop recording">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        </button>
+        <button class="pause-link" aria-label="Pause recording">Pause</button>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         Screen 4: Processing
+         ================================================================ -->
+    <section data-screen="processing" class="processing-screen" aria-label="Analyzing your recording">
+      <div class="processing-inner">
+        <div class="spinner" role="status" aria-label="Loading">
+          <span class="sr-only">Analyzing…</span>
+        </div>
+        <p class="processing-text">Analyzing your storytelling…</p>
+        <ul class="checklist" role="list">
+          <li><span class="check-done" aria-hidden="true">✓</span> Duration: <span class="mono">0:47</span></li>
+          <li><span class="check-done" aria-hidden="true">✓</span> Pace: <span class="mono">138 wpm</span></li>
+          <li><span class="check-done" aria-hidden="true">✓</span> Filler words: <span class="mono">3</span></li>
+          <li><span class="check-pending" aria-hidden="true">◌</span> Analyzing story structure…</li>
+          <li><span class="check-pending" aria-hidden="true">◌</span> Scoring narrative arc…</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         Screen 5: First Feedback
+         ================================================================ -->
+    <section data-screen="first-feedback" aria-label="Your first feedback">
+      <div class="screen-header">
+        <button class="back-btn" onclick="showScreen('recording')" aria-label="Go back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        </button>
+        <h1 class="screen-title" style="font-size: var(--font-size-lg);">Your First Feedback</h1>
+      </div>
+
+      <div class="screen-content" style="padding-top: var(--space-5);">
+        <div style="display:flex; flex-direction:column; gap: var(--space-4);">
+          <div class="feedback-card feedback-card-strength">
+            <span class="feedback-icon" aria-hidden="true">⭐</span>
+            <p class="feedback-text">Your opening hook grabbed attention in the first 5 seconds</p>
+          </div>
+
+          <div class="feedback-card feedback-card-improve">
+            <span class="feedback-icon" aria-hidden="true">💡</span>
+            <p class="feedback-text">Try pausing before your punchline — it builds anticipation</p>
+          </div>
+        </div>
+
+        <div class="score-row" style="margin-top: var(--space-6);">
+          <div class="score-item score-voice">
+            <div class="score-label">Voice</div>
+            <div class="score-value">5.4</div>
+          </div>
+          <div class="score-item score-story">
+            <div class="score-label">Story</div>
+            <div class="score-value">4.7</div>
+          </div>
+        </div>
+
+        <div class="feedback-ctas" style="margin-top: var(--space-8);">
+          <button class="btn btn-secondary" onclick="showScreen('recording')" aria-label="Try recording again">Try Again</button>
+          <button class="btn btn-primary" onclick="showScreen('signup')" aria-label="Continue to sign up">Continue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         Screen 6: Signup
+         ================================================================ -->
+    <section data-screen="signup" aria-label="Create your account">
+      <div class="screen-header">
+        <button class="back-btn" onclick="showScreen('first-feedback')" aria-label="Go back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        </button>
+      </div>
+
+      <div class="screen-content">
+        <h1 class="screen-title" style="margin-top: var(--space-2);">Save your progress</h1>
+        <p class="screen-subtitle">Create an account to track your improvement</p>
+
+        <div style="display:flex; flex-direction:column; gap: var(--space-3); margin-top: var(--space-6);">
+          <button class="social-btn" aria-label="Continue with Apple">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+            Continue with Apple
+          </button>
+          <button class="social-btn" aria-label="Continue with Google">
+            <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Continue with Google
+          </button>
+        </div>
+
+        <div class="divider" style="margin-top: var(--space-6);">or</div>
+
+        <form style="display:flex; flex-direction:column; gap: var(--space-4); margin-top: var(--space-6);" onsubmit="event.preventDefault(); showScreen('goal-selection');">
+          <div class="input-group">
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email" required>
+          </div>
+          <div class="input-group">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" placeholder="Create a password" autocomplete="new-password" minlength="8" required>
+          </div>
+          <button class="btn btn-primary" type="submit" aria-label="Create account">Create Account</button>
+        </form>
+
+        <div style="text-align: center; margin-top: var(--space-4); padding-bottom: var(--space-6);">
+          <button class="btn btn-ghost" onclick="showScreen('goal-selection')" aria-label="Skip signup for now">Skip for now</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         Screen 7: Goal Selection
+         ================================================================ -->
+    <section data-screen="goal-selection" aria-label="Select your goals">
+      <div class="screen-header">
+        <button class="back-btn" onclick="showScreen('signup')" aria-label="Go back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        </button>
+      </div>
+
+      <div class="screen-content">
+        <h1 class="screen-title" style="margin-top: var(--space-2);">What brings you here?</h1>
+        <p class="screen-subtitle">Select your goals to personalize your experience</p>
+
+        <div class="goal-grid" style="margin-top: var(--space-6);" role="group" aria-label="Goal options">
+          <button class="goal-card" onclick="this.classList.toggle('selected')" aria-pressed="false" aria-label="Better at work presentations">
+            <span class="goal-emoji" aria-hidden="true">🎤</span>
+            <span class="goal-label">Better at work presentations</span>
+          </button>
+          <button class="goal-card" onclick="this.classList.toggle('selected')" aria-pressed="false" aria-label="Content creation confidence">
+            <span class="goal-emoji" aria-hidden="true">🎬</span>
+            <span class="goal-label">Content creation confidence</span>
+          </button>
+          <button class="goal-card" onclick="this.classList.toggle('selected')" aria-pressed="false" aria-label="Nail my startup pitch">
+            <span class="goal-emoji" aria-hidden="true">🚀</span>
+            <span class="goal-label">Nail my startup pitch</span>
+          </button>
+          <button class="goal-card" onclick="this.classList.toggle('selected')" aria-pressed="false" aria-label="Interview preparation">
+            <span class="goal-emoji" aria-hidden="true">💼</span>
+            <span class="goal-label">Interview preparation</span>
+          </button>
+          <button class="goal-card" onclick="this.classList.toggle('selected')" aria-pressed="false" aria-label="Social storytelling">
+            <span class="goal-emoji" aria-hidden="true">🗣️</span>
+            <span class="goal-label">Social storytelling</span>
+          </button>
+          <button class="goal-card" onclick="this.classList.toggle('selected')" aria-pressed="false" aria-label="Leadership communication">
+            <span class="goal-emoji" aria-hidden="true">👔</span>
+            <span class="goal-label">Leadership communication</span>
+          </button>
+        </div>
+
+        <div style="margin-top: var(--space-8); padding-bottom: var(--space-6);">
+          <button class="btn btn-primary" onclick="showScreen('track-recommendation')" aria-label="Continue to track recommendation">Continue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         Screen 8: Track Recommendation
+         ================================================================ -->
+    <section data-screen="track-recommendation" aria-label="Your recommended track">
+      <div class="screen-header">
+        <button class="back-btn" onclick="showScreen('goal-selection')" aria-label="Go back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        </button>
+      </div>
+
+      <div class="screen-content">
+        <h1 class="screen-title" style="margin-top: var(--space-2);">Your recommended track</h1>
+
+        <div class="card" style="margin-top: var(--space-6);">
+          <img
+            class="track-card-image"
+            src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=390&h=200&fit=crop"
+            alt="Books and study materials representing the beginner track"
+            width="390" height="200"
+          >
+          <div class="card-body">
+            <span class="tag tag-violet">Beginner</span>
+            <h2 class="track-title">Beginner Storyteller</h2>
+            <p class="track-desc">20 sessions · Build your storytelling foundation</p>
+            <div class="progress-bar-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Track progress: 0%">
+              <div class="progress-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; gap: var(--space-3); margin-top: var(--space-8); padding-bottom: var(--space-6);">
+          <button class="btn btn-primary" onclick="launchConfetti()" aria-label="Start the track">Start Track</button>
+          <button class="btn btn-ghost" aria-label="Browse all available tracks">Browse All Tracks</button>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- .app-shell -->
+
+  <!-- Prototype Navigation -->
+  <nav class="proto-nav" aria-label="Prototype screen navigation">
+    <button onclick="showScreen('welcome')">1. Welcome</button>
+    <button onclick="showScreen('first-prompt')">2. Prompt</button>
+    <button onclick="showScreen('recording')">3. Record</button>
+    <button onclick="showScreen('processing')">4. Process</button>
+    <button onclick="showScreen('first-feedback')">5. Feedback</button>
+    <button onclick="showScreen('signup')">6. Signup</button>
+    <button onclick="showScreen('goal-selection')">7. Goals</button>
+    <button onclick="showScreen('track-recommendation')">8. Track</button>
+  </nav>
+
+  <script>
+    let currentScreen = null;
+    let processingTimer = null;
+
+    function showScreen(id) {
+      if (processingTimer) {
+        clearTimeout(processingTimer);
+        processingTimer = null;
+      }
+
+      const next = document.querySelector(`[data-screen="${id}"]`);
+      if (!next) return;
+
+      // Update proto-nav active state
+      document.querySelectorAll('.proto-nav button').forEach(function(btn) {
+        btn.classList.remove('active');
+      });
+      const screenNames = [
+        'welcome','first-prompt','recording','processing',
+        'first-feedback','signup','goal-selection','track-recommendation'
+      ];
+      const idx = screenNames.indexOf(id);
+      if (idx >= 0) {
+        document.querySelectorAll('.proto-nav button')[idx].classList.add('active');
+      }
+
+      if (currentScreen) {
+        const prev = currentScreen;
+        prev.classList.remove('visible');
+        setTimeout(function() {
+          prev.classList.remove('active');
+          activateScreen(next);
+        }, 250);
+      } else {
+        activateScreen(next);
+      }
+
+      function activateScreen(el) {
+        el.classList.add('active');
+        // Force reflow
+        void el.offsetHeight;
+        requestAnimationFrame(function() {
+          el.classList.add('visible');
+        });
+        currentScreen = el;
+
+        if (id === 'processing') {
+          processingTimer = setTimeout(function() {
+            showScreen('first-feedback');
+          }, 2000);
+        }
+      }
+    }
+
+    // Goal card aria-pressed toggling
+    document.querySelectorAll('.goal-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        var pressed = this.getAttribute('aria-pressed') === 'true';
+        this.setAttribute('aria-pressed', String(!pressed));
+      });
+    });
+
+    // Generate waveform bars
+    (function() {
+      var waveform = document.getElementById('waveform');
+      for (var i = 0; i < 40; i++) {
+        var bar = document.createElement('div');
+        bar.className = 'waveform-bar';
+        var minH = 12;
+        var maxH = 100;
+        var h = Math.floor(Math.random() * (maxH - minH) + minH);
+        bar.style.height = h + 'px';
+        bar.style.animationDelay = (Math.random() * 1.2).toFixed(2) + 's';
+        bar.style.animationDuration = (0.8 + Math.random() * 0.8).toFixed(2) + 's';
+        waveform.appendChild(bar);
+      }
+    })();
+
+    // Confetti
+    function launchConfetti() {
+      var container = document.createElement('div');
+      container.className = 'confetti-container';
+      document.body.appendChild(container);
+
+      var colors = [
+        'var(--color-primary)', 'var(--color-secondary)',
+        'var(--color-accent)', 'var(--color-recording)',
+        '#FBBF24', '#EC4899'
+      ];
+      var rawColors = ['#6366F1','#14B8A6','#F97316','#EF4444','#FBBF24','#EC4899'];
+
+      for (var i = 0; i < 60; i++) {
+        var piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + '%';
+        piece.style.background = rawColors[Math.floor(Math.random() * rawColors.length)];
+        piece.style.animationDelay = (Math.random() * 0.8).toFixed(2) + 's';
+        piece.style.animationDuration = (1.5 + Math.random() * 1.5).toFixed(2) + 's';
+        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        piece.style.width = (6 + Math.random() * 8) + 'px';
+        piece.style.height = (6 + Math.random() * 8) + 'px';
+        container.appendChild(piece);
+      }
+
+      setTimeout(function() {
+        container.remove();
+        showScreen('welcome');
+      }, 2800);
+    }
+
+    // Initialize
+    showScreen('welcome');
+  </script>
+</body>
+</html>

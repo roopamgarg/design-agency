@@ -1,0 +1,588 @@
+/* ==========================================================================
+   StoryCraft — Design Tokens
+   Visual system: Warm, approachable, audio-first, Headspace-meets-Duolingo
+   Accessibility: WCAG 2.1 AA
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* --------------------------------------------------------------------------
+     Colors — Light Mode
+     Palette: Warm violet, teal, sunset orange, warm ivory
+     -------------------------------------------------------------------------- */
+
+  --color-primary: #6366F1;
+  --color-primary-light: #818CF8;
+  --color-primary-dark: #4F46E5;
+  --color-primary-subtle: rgba(99, 102, 241, 0.08);
+  --color-primary-contrast: #FFFFFF;
+
+  --color-secondary: #14B8A6;
+  --color-secondary-light: #2DD4BF;
+  --color-secondary-dark: #0D9488;
+  --color-secondary-subtle: rgba(20, 184, 166, 0.08);
+  --color-secondary-contrast: #FFFFFF;
+
+  --color-accent: #F97316;
+  --color-accent-light: #FB923C;
+  --color-accent-dark: #EA580C;
+  --color-accent-subtle: rgba(249, 115, 22, 0.08);
+
+  --color-recording: #EF4444;
+  --color-recording-light: #F87171;
+  --color-recording-dark: #DC2626;
+  --color-recording-subtle: rgba(239, 68, 68, 0.10);
+  --color-recording-pulse: rgba(239, 68, 68, 0.25);
+
+  /* Semantic — Status colors */
+  --color-success: #10B981;
+  --color-success-light: #34D399;
+  --color-success-subtle: rgba(16, 185, 129, 0.08);
+
+  --color-warning: #F59E0B;
+  --color-warning-light: #FBBF24;
+  --color-warning-subtle: rgba(245, 158, 11, 0.08);
+
+  --color-error: #EF4444;
+  --color-error-light: #F87171;
+  --color-error-subtle: rgba(239, 68, 68, 0.08);
+
+  --color-info: #0EA5E9;
+  --color-info-light: #38BDF8;
+  --color-info-subtle: rgba(14, 165, 233, 0.08);
+
+  /* Feedback dimension colors */
+  --color-feedback-voice: #6366F1;
+  --color-feedback-story: #F97316;
+  --color-feedback-filler: #EF4444;
+  --color-feedback-pace: #F59E0B;
+  --color-feedback-emotion: #10B981;
+  --color-feedback-structure: #0EA5E9;
+
+  /* Track colors */
+  --color-track-beginner: #6366F1;
+  --color-track-creator: #F97316;
+  --color-track-founder: #0EA5E9;
+  --color-track-interview: #14B8A6;
+  --color-track-social: #EC4899;
+  --color-track-leadership: #8B5CF6;
+
+  /* Track subtle backgrounds (for cohort icons, etc.) */
+  --color-track-founder-subtle: rgba(14, 165, 233, 0.1);
+  --color-track-creator-subtle: rgba(249, 115, 22, 0.1);
+  --color-track-leadership-subtle: rgba(139, 92, 246, 0.1);
+
+  /* Surfaces */
+  --color-bg-primary: #FFFBF7;
+  --color-bg-secondary: #F7F3EF;
+  --color-bg-tertiary: #EFEBE6;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-overlay: rgba(30, 27, 46, 0.6);
+  --color-bg-scrim: rgba(30, 27, 46, 0.4);
+
+  /* Overlay gradient intensities */
+  --color-overlay-heavy: rgba(0, 0, 0, 0.82);
+  --color-overlay-medium: rgba(0, 0, 0, 0.5);
+  --color-overlay-light: rgba(0, 0, 0, 0.25);
+
+  /* Overlay-context borders and meta text */
+  --color-border-overlay: rgba(255, 255, 255, 0.15);
+  --color-text-overlay-muted: rgba(255, 255, 255, 0.75);
+
+  /* Text */
+  --color-text-primary: #1E1B2E;
+  --color-text-secondary: #4A4559;
+  --color-text-tertiary: #7A7589;
+  --color-text-disabled: #B0ABBA;
+  --color-text-inverse: #FFFFFF;
+  --color-text-link: #4F46E5;
+
+  /* Borders */
+  --color-border-default: #E5E0DA;
+  --color-border-subtle: #F0EBE5;
+  --color-border-strong: #C9C4BE;
+  --color-border-focus: #6366F1;
+
+  /* --------------------------------------------------------------------------
+     Typography
+     System: Inter for UI, Merriweather for editorial, JetBrains Mono for metrics
+     -------------------------------------------------------------------------- */
+
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-family-display: 'Merriweather', Georgia, serif;
+  --font-family-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+  /* Font Sizes — Modular scale 1.25 (Major Third) */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 1.875rem;
+  --font-size-3xl: 2.25rem;
+  --font-size-4xl: 3rem;
+  --font-size-5xl: 3.75rem;
+
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.35;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 1.8;
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+
+  /* --------------------------------------------------------------------------
+     Spacing — 4px base unit
+     -------------------------------------------------------------------------- */
+
+  --space-0: 0;
+  --space-0-5: 0.125rem;
+  --space-1: 0.25rem;
+  --space-1-5: 0.375rem;
+  --space-2: 0.5rem;
+  --space-2-5: 0.625rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 1.75rem;
+  --space-8: 2rem;
+  --space-9: 2.25rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-14: 3.5rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* Layout */
+  --space-page-x: var(--space-5);
+  --space-content-max: 420px;
+  --space-card-padding: var(--space-5);
+
+  /* --------------------------------------------------------------------------
+     Border Radius
+     -------------------------------------------------------------------------- */
+
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+
+  /* --------------------------------------------------------------------------
+     Shadows — Soft, warm-tinted
+     -------------------------------------------------------------------------- */
+
+  --shadow-xs: 0 1px 2px rgba(30, 27, 46, 0.04);
+  --shadow-sm: 0 2px 4px rgba(30, 27, 46, 0.06);
+  --shadow-md: 0 4px 12px rgba(30, 27, 46, 0.08);
+  --shadow-lg: 0 8px 24px rgba(30, 27, 46, 0.10);
+  --shadow-xl: 0 16px 48px rgba(30, 27, 46, 0.12);
+  --shadow-2xl: 0 24px 64px rgba(30, 27, 46, 0.16);
+  --shadow-inner: inset 0 2px 4px rgba(30, 27, 46, 0.04);
+  --shadow-glow-primary: 0 0 20px rgba(99, 102, 241, 0.25);
+  --shadow-glow-recording: 0 0 24px rgba(239, 68, 68, 0.3);
+  --shadow-glow-accent: 0 0 20px rgba(249, 115, 22, 0.25);
+  --shadow-glow-voice: drop-shadow(0 0 6px rgba(99, 102, 241, 0.3));
+  --shadow-glow-story: drop-shadow(0 0 6px rgba(249, 115, 22, 0.3));
+
+  /* Heatmap intensity colors */
+  --color-heatmap-low: rgba(99, 102, 241, 0.2);
+  --color-heatmap-mid: rgba(99, 102, 241, 0.45);
+
+  /* --------------------------------------------------------------------------
+     Transitions & Motion
+     -------------------------------------------------------------------------- */
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-deliberate: 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* --------------------------------------------------------------------------
+     Z-Index Scale
+     -------------------------------------------------------------------------- */
+
+  --z-base: 0;
+  --z-above: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-drawer: 400;
+  --z-modal-backdrop: 500;
+  --z-modal: 600;
+  --z-popover: 700;
+  --z-tooltip: 800;
+  --z-toast: 900;
+  --z-max: 9999;
+
+  /* --------------------------------------------------------------------------
+     Breakpoints (reference)
+     -------------------------------------------------------------------------- */
+
+  --breakpoint-sm: 375px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  /* --------------------------------------------------------------------------
+     Component-Specific Tokens
+     -------------------------------------------------------------------------- */
+
+  /* Cards */
+  --card-radius: var(--radius-xl);
+  --card-padding: var(--space-5);
+  --card-shadow: var(--shadow-md);
+  --card-bg: var(--color-bg-elevated);
+  --card-border: var(--color-border-subtle);
+
+  /* Buttons */
+  --btn-height-sm: 36px;
+  --btn-height-md: 44px;
+  --btn-height-lg: 52px;
+  --btn-radius: var(--radius-full);
+  --btn-font-weight: var(--font-weight-semibold);
+  --btn-letter-spacing: var(--letter-spacing-wide);
+
+  /* Inputs */
+  --input-height: 48px;
+  --input-radius: var(--radius-lg);
+  --input-border: var(--color-border-default);
+  --input-border-focus: var(--color-border-focus);
+  --input-bg: var(--color-bg-elevated);
+  --input-padding-x: var(--space-4);
+
+  /* Avatars */
+  --avatar-xs: 28px;
+  --avatar-sm: 36px;
+  --avatar-md: 48px;
+  --avatar-lg: 64px;
+  --avatar-xl: 96px;
+  --avatar-2xl: 128px;
+  --avatar-border: 2px solid var(--color-bg-elevated);
+
+  /* Badges */
+  --badge-height: 22px;
+  --badge-radius: var(--radius-full);
+  --badge-font-size: var(--font-size-xs);
+  --badge-padding-x: var(--space-2);
+
+  /* Bottom Navigation */
+  --nav-height: 64px;
+  --nav-bg: var(--color-bg-elevated);
+  --nav-border: var(--color-border-subtle);
+  --nav-icon-size: 24px;
+  --nav-label-size: var(--font-size-xs);
+
+  /* Recording FAB */
+  --fab-size: 64px;
+  --fab-color: var(--color-recording);
+  --fab-icon-size: 28px;
+
+  /* Bottom Sheet */
+  --sheet-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  --sheet-handle-width: 36px;
+  --sheet-handle-height: 4px;
+  --sheet-handle-radius: var(--radius-full);
+
+  /* Touch targets (accessibility) */
+  --touch-target-min: 44px;
+
+  /* Content widths */
+  --content-width-narrow: 320px;
+  --content-width-base: 420px;
+  --content-width-wide: 560px;
+
+  /* App shell */
+  --app-shell-width: 390px;
+  --header-height: 56px;
+
+  /* --------------------------------------------------------------------------
+     Icon Sizes
+     -------------------------------------------------------------------------- */
+  --icon-xs: 12px;
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --icon-xl: 28px;
+  --icon-2xl: 32px;
+  --icon-3xl: 40px;
+  --icon-4xl: 48px;
+
+  /* --------------------------------------------------------------------------
+     Focus Ring
+     -------------------------------------------------------------------------- */
+  --focus-ring: 2px solid var(--color-primary);
+  --focus-ring-offset: 2px;
+
+  /* --------------------------------------------------------------------------
+     Waveform
+     -------------------------------------------------------------------------- */
+  --waveform-bar-width: 3px;
+  --waveform-bar-gap: 2px;
+  --waveform-idle-color: var(--color-primary);
+  --waveform-active-color: var(--color-recording);
+  --waveform-bg-color: var(--color-bg-tertiary);
+}
+
+/* --------------------------------------------------------------------------
+   Dark Mode (via data-theme attribute)
+   -------------------------------------------------------------------------- */
+
+:root[data-theme="dark"] {
+  --color-bg-primary: #0F0D1A;
+  --color-bg-secondary: #1A1726;
+  --color-bg-tertiary: #252133;
+  --color-bg-elevated: #1A1726;
+  --color-bg-overlay: rgba(0, 0, 0, 0.7);
+  --color-bg-scrim: rgba(0, 0, 0, 0.5);
+
+  --color-text-primary: #F5F0EB;
+  --color-text-secondary: #C9C1B8;
+  --color-text-tertiary: #8A7F93;
+  --color-text-disabled: #5A5268;
+  --color-text-link: #818CF8;
+
+  --color-border-default: #352F42;
+  --color-border-subtle: #252133;
+  --color-border-strong: #4A4358;
+
+  --color-primary: #818CF8;
+  --color-primary-light: #A5B4FC;
+  --color-primary-dark: #6366F1;
+  --color-primary-subtle: rgba(129, 140, 248, 0.12);
+
+  --color-secondary: #2DD4BF;
+  --color-accent: #FB923C;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.4);
+
+  --card-bg: var(--color-bg-elevated);
+  --card-border: var(--color-border-default);
+  --input-bg: var(--color-bg-secondary);
+  --input-border: var(--color-border-default);
+  --nav-bg: var(--color-bg-elevated);
+  --nav-border: var(--color-border-default);
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-normal: 0ms;
+    --transition-slow: 0ms;
+    --transition-deliberate: 0ms;
+    --transition-spring: 0ms;
+  }
+}
+
+/* ==========================================================================
+   App Shell — Mobile-first, phone-frame on desktop
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-shell {
+  width: 100%;
+  max-width: var(--app-shell-width);
+  min-height: 100vh;
+  margin: 0 auto;
+  background: var(--color-bg-primary);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.app-shell__header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-page-x);
+  background: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.app-shell__content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: calc(var(--nav-height) + var(--space-8));
+}
+
+.app-shell__nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-shell-width);
+  height: var(--nav-height);
+  background: var(--nav-bg);
+  border-top: 1px solid var(--nav-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: var(--z-sticky);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-text-tertiary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+}
+
+.nav-item:hover,
+.nav-item:focus-visible {
+  color: var(--color-primary);
+}
+
+.nav-item.active {
+  color: var(--color-primary);
+}
+
+.nav-item__icon {
+  width: var(--nav-icon-size);
+  height: var(--nav-icon-size);
+}
+
+.nav-item__label {
+  font-size: var(--nav-label-size);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.nav-item--record {
+  position: relative;
+  margin-top: calc(-1 * var(--space-6));
+}
+
+.nav-item--record .nav-fab {
+  width: var(--fab-size);
+  height: var(--fab-size);
+  border-radius: var(--radius-full);
+  background: var(--fab-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-glow-recording);
+  border: 3px solid var(--color-bg-elevated);
+  transition: transform var(--transition-spring), box-shadow var(--transition-normal);
+}
+
+.nav-item--record:hover .nav-fab {
+  transform: scale(1.08);
+}
+
+.nav-item--record .nav-fab svg {
+  color: var(--color-text-inverse);
+  width: var(--fab-icon-size);
+  height: var(--fab-icon-size);
+}
+
+/* Desktop phone-frame treatment */
+@media (min-width: 768px) {
+  body {
+    background: var(--color-bg-tertiary);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: var(--space-8) 0;
+    min-height: 100vh;
+  }
+
+  .app-shell {
+    max-width: var(--app-shell-width);
+    min-height: 844px;
+    max-height: 900px;
+    border-radius: var(--radius-3xl);
+    box-shadow: var(--shadow-2xl);
+    overflow: hidden;
+  }
+
+  .app-shell__nav {
+    position: absolute;
+    border-radius: 0 0 var(--radius-3xl) var(--radius-3xl);
+  }
+}
+
+/* Focus-visible for accessibility */
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Utility classes */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

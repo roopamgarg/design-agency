@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Feedback — StoryCraft</title>
+    <link rel="stylesheet" href="../tokens.css">
+    <style>
+        /* ── Layout ───────────────────────────────────────────── */
+
+        .feedback-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-4) var(--space-page-x) var(--space-8);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-5);
+        }
+
+        /* ── Header ──────────────────────────────────────────── */
+
+        .feedback-header {
+            position: sticky;
+            top: 0;
+            z-index: var(--z-sticky);
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-page-x);
+            background: var(--color-bg-primary);
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+
+        .feedback-header__title {
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--touch-target-min);
+            height: var(--touch-target-min);
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--color-text-primary);
+            border-radius: var(--radius-full);
+            transition: background var(--transition-fast);
+        }
+
+        .icon-btn:hover {
+            background: var(--color-primary-subtle);
+        }
+
+        .icon-btn svg {
+            width: var(--icon-lg);
+            height: var(--icon-lg);
+        }
+
+        /* ── Score Cards ─────────────────────────────────────── */
+
+        .scores-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: var(--space-3);
+            align-items: stretch;
+        }
+
+        .score-card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            padding: var(--space-4);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-1);
+            text-align: center;
+        }
+
+        .score-card--voice {
+            border-top: 3px solid var(--color-feedback-voice);
+        }
+
+        .score-card--story {
+            border-top: 3px solid var(--color-feedback-story);
+        }
+
+        .score-card__label {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            color: var(--color-text-tertiary);
+        }
+
+        .score-card__label--voice {
+            color: var(--color-feedback-voice);
+        }
+
+        .score-card__label--story {
+            color: var(--color-feedback-story);
+        }
+
+        .score-card__value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            line-height: var(--line-height-tight);
+            color: var(--color-text-primary);
+        }
+
+        .score-card__delta {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-success);
+        }
+
+        .combined-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-1);
+            padding: var(--space-2) var(--space-3);
+        }
+
+.combined-score__label {
+    font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            color: var(--color-text-tertiary);
+            text-align: center;
+            line-height: var(--line-height-tight);
+        }
+
+        .combined-score__value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            line-height: var(--line-height-tight);
+            background: linear-gradient(135deg, var(--color-feedback-voice), var(--color-feedback-story));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ── Waveform Playback ───────────────────────────────── */
+
+        .waveform-card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            padding: var(--space-4);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .waveform-player {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .play-btn {
+            flex-shrink: 0;
+            width: var(--touch-target-min);
+            height: var(--touch-target-min);
+            border-radius: var(--radius-full);
+            border: none;
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .play-btn:hover {
+            transform: scale(1.06);
+            box-shadow: var(--shadow-glow-primary);
+        }
+
+        .play-btn svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
+
+        .waveform-track {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .waveform-bars {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: var(--waveform-bar-gap);
+            height: 40px;
+            padding: 0 var(--space-1);
+        }
+
+        .waveform-bar {
+            flex: 1;
+            border-radius: var(--radius-sm);
+            background: var(--waveform-bg-color);
+            transition: background var(--transition-fast);
+            min-width: var(--waveform-bar-width);
+        }
+
+        .waveform-bar--played {
+            background: var(--color-primary-light);
+        }
+
+        .waveform-annotation {
+            position: absolute;
+            top: -4px;
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+            border: 2px solid var(--card-bg);
+            transform: translateX(-50%);
+            z-index: var(--z-above);
+        }
+
+        .waveform-annotation--filler {
+            background: var(--color-feedback-filler);
+            left: 30%;
+        }
+
+        .waveform-annotation--pace {
+            background: var(--color-feedback-pace);
+            left: 60%;
+        }
+
+        .waveform-annotation--emotion {
+            background: var(--color-feedback-emotion);
+            left: 80%;
+        }
+
+        .waveform-time {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .waveform-legend {
+            display: flex;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1-5);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+            flex-shrink: 0;
+        }
+
+        .legend-dot--filler { background: var(--color-feedback-filler); }
+        .legend-dot--pace   { background: var(--color-feedback-pace); }
+        .legend-dot--emotion{ background: var(--color-feedback-emotion); }
+
+        /* ── Metric Sections ─────────────────────────────────── */
+
+        .metrics-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .metrics-section__heading {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            color: var(--color-text-tertiary);
+            padding-left: var(--space-1);
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            padding: var(--space-4);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--card-border);
+            border-left: 3px solid transparent;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .metric-card--voice {
+            border-left-color: var(--color-feedback-voice);
+        }
+
+        .metric-card--story {
+            border-left-color: var(--color-feedback-story);
+        }
+
+        .metric-card__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-3);
+        }
+
+        .metric-card__name {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-primary);
+        }
+
+        .metric-card__score {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-secondary);
+            flex-shrink: 0;
+        }
+
+        .metric-card__bar-track {
+            height: 6px;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .metric-card__bar-fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            transition: width var(--transition-slow);
+        }
+
+        .metric-card__bar-fill--voice {
+            background: var(--color-feedback-voice);
+        }
+
+        .metric-card__bar-fill--story {
+            background: var(--color-feedback-story);
+        }
+
+        .metric-card__detail {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-relaxed);
+        }
+
+        .metric-card summary {
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .metric-card summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .metric-card summary::marker {
+            display: none;
+            content: "";
+        }
+
+        .metric-card__expand-icon {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+            color: var(--color-text-tertiary);
+            transition: transform var(--transition-fast);
+            flex-shrink: 0;
+        }
+
+        details[open] .metric-card__expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .metric-card__expanded {
+            padding-top: var(--space-2);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        /* ── AI Insight ──────────────────────────────────────── */
+
+        .insight-card {
+            background: var(--color-primary-subtle);
+            border-radius: var(--card-radius);
+            padding: var(--space-4) var(--space-5);
+            border: 1px solid var(--color-feedback-voice);
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .insight-card__icon {
+            flex-shrink: 0;
+            width: var(--icon-xl);
+            height: var(--icon-xl);
+            color: var(--color-feedback-voice);
+            margin-top: var(--space-0-5);
+        }
+
+        .insight-card__body {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+
+        .insight-card__label {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            color: var(--color-feedback-voice);
+        }
+
+        .insight-card__text {
+            font-size: var(--font-size-sm);
+            line-height: var(--line-height-relaxed);
+            color: var(--color-text-primary);
+        }
+
+.insight-card__text mark {
+    background: var(--color-primary-subtle);
+            color: inherit;
+            border-radius: var(--radius-sm);
+            padding: 0 var(--space-0-5);
+        }
+
+        /* ── Action Buttons ──────────────────────────────────── */
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            padding-top: var(--space-2);
+        }
+
+        .actions__row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-3);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: var(--btn-height-lg);
+            border-radius: var(--btn-radius);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            font-weight: var(--btn-font-weight);
+            letter-spacing: var(--btn-letter-spacing);
+            cursor: pointer;
+            transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn--primary {
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn--primary:hover {
+            background: var(--color-primary-dark);
+            box-shadow: var(--shadow-glow-primary);
+        }
+
+        .btn--secondary {
+            background: transparent;
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .btn--secondary:hover {
+            background: var(--color-primary-subtle);
+        }
+
+        .btn--ghost {
+            background: transparent;
+            color: var(--color-text-secondary);
+        }
+
+        .btn--ghost:hover {
+            color: var(--color-primary);
+            background: var(--color-primary-subtle);
+        }
+
+        .sr-only--focusable:focus-visible {
+            position: fixed;
+            top: var(--space-2);
+            left: var(--space-2);
+            width: auto;
+            height: auto;
+            padding: var(--space-2) var(--space-4);
+            clip: auto;
+            white-space: normal;
+            overflow: visible;
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            z-index: var(--z-max);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="sr-only sr-only--focusable">Skip to content</a>
+    <div class="app-shell" data-screen="feedback-dashboard">
+
+        <!-- Header -->
+        <header class="feedback-header" role="banner">
+            <button class="icon-btn" aria-label="Go back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M19 12H5"/>
+                    <path d="M12 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <h1 class="feedback-header__title">Session Feedback</h1>
+            <button class="icon-btn" aria-label="Share feedback">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                    <polyline points="16 6 12 2 8 6"/>
+                    <line x1="12" y1="2" x2="12" y2="15"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Scrollable content -->
+        <main class="feedback-content" role="main" id="main-content">
+
+            <!-- Dual Score Cards -->
+            <section class="scores-row" aria-label="Overall scores">
+                <div class="score-card score-card--voice" role="group" aria-label="Voice score">
+                    <span class="score-card__label score-card__label--voice">Voice</span>
+                    <span class="score-card__value" aria-label="7.2 out of 10">7.2</span>
+                    <span class="score-card__delta" aria-label="Up 0.4 from last session">&#8593; +0.4</span>
+                </div>
+
+                <div class="combined-score" role="group" aria-label="Combined storytelling power score">
+                    <span class="combined-score__label">Storytelling<br>Power</span>
+                    <span class="combined-score__value" aria-label="7.0 out of 10">7.0</span>
+                </div>
+
+                <div class="score-card score-card--story" role="group" aria-label="Story score">
+                    <span class="score-card__label score-card__label--story">Story</span>
+                    <span class="score-card__value" aria-label="6.8 out of 10">6.8</span>
+                    <span class="score-card__delta" aria-label="Up 0.6 from last session">&#8593; +0.6</span>
+                </div>
+            </section>
+
+            <!-- Waveform Playback -->
+            <section class="waveform-card" aria-label="Session recording playback">
+                <div class="waveform-player">
+                    <button class="play-btn" aria-label="Play recording">
+                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <polygon points="6,3 20,12 6,21"/>
+                        </svg>
+                    </button>
+                    <div class="waveform-track">
+                        <div class="waveform-bars" role="img" aria-label="Audio waveform with annotations: filler words at 30%, pace change at 60%, emotional peak at 80%">
+                            <!-- Annotation dots -->
+                            <span class="waveform-annotation waveform-annotation--filler" aria-hidden="true"></span>
+                            <span class="waveform-annotation waveform-annotation--pace" aria-hidden="true"></span>
+                            <span class="waveform-annotation waveform-annotation--emotion" aria-hidden="true"></span>
+                            <!-- Bars: varying heights to mimic waveform -->
+                            <span class="waveform-bar" style="height:30%"></span>
+                            <span class="waveform-bar" style="height:50%"></span>
+                            <span class="waveform-bar" style="height:40%"></span>
+                            <span class="waveform-bar" style="height:65%"></span>
+                            <span class="waveform-bar" style="height:80%"></span>
+                            <span class="waveform-bar" style="height:55%"></span>
+                            <span class="waveform-bar" style="height:70%"></span>
+                            <span class="waveform-bar" style="height:90%"></span>
+                            <span class="waveform-bar" style="height:60%"></span>
+                            <span class="waveform-bar" style="height:45%"></span>
+                            <span class="waveform-bar" style="height:75%"></span>
+                            <span class="waveform-bar" style="height:85%"></span>
+                            <span class="waveform-bar" style="height:50%"></span>
+                            <span class="waveform-bar" style="height:35%"></span>
+                            <span class="waveform-bar" style="height:60%"></span>
+                            <span class="waveform-bar" style="height:95%"></span>
+                            <span class="waveform-bar" style="height:70%"></span>
+                            <span class="waveform-bar" style="height:55%"></span>
+                            <span class="waveform-bar" style="height:40%"></span>
+                            <span class="waveform-bar" style="height:80%"></span>
+                            <span class="waveform-bar" style="height:65%"></span>
+                            <span class="waveform-bar" style="height:90%"></span>
+                            <span class="waveform-bar" style="height:45%"></span>
+                            <span class="waveform-bar" style="height:70%"></span>
+                            <span class="waveform-bar" style="height:55%"></span>
+                            <span class="waveform-bar" style="height:85%"></span>
+                            <span class="waveform-bar" style="height:60%"></span>
+                            <span class="waveform-bar" style="height:75%"></span>
+                            <span class="waveform-bar" style="height:50%"></span>
+                            <span class="waveform-bar" style="height:65%"></span>
+                            <span class="waveform-bar" style="height:40%"></span>
+                            <span class="waveform-bar" style="height:70%"></span>
+                            <span class="waveform-bar" style="height:90%"></span>
+                            <span class="waveform-bar" style="height:55%"></span>
+                            <span class="waveform-bar" style="height:80%"></span>
+                            <span class="waveform-bar" style="height:45%"></span>
+                            <span class="waveform-bar" style="height:60%"></span>
+                            <span class="waveform-bar" style="height:75%"></span>
+                            <span class="waveform-bar" style="height:50%"></span>
+                            <span class="waveform-bar" style="height:85%"></span>
+                        </div>
+                        <div class="waveform-time">
+                            <time>0:00</time>
+                            <time>1:23</time>
+                        </div>
+                    </div>
+                </div>
+                <div class="waveform-legend" aria-label="Annotation legend">
+                    <span class="legend-item"><span class="legend-dot legend-dot--filler" aria-hidden="true"></span> Filler Words</span>
+                    <span class="legend-item"><span class="legend-dot legend-dot--pace" aria-hidden="true"></span> Pace</span>
+                    <span class="legend-item"><span class="legend-dot legend-dot--emotion" aria-hidden="true"></span> Emotional Peak</span>
+                </div>
+            </section>
+
+            <!-- Voice Metrics -->
+            <section class="metrics-section" aria-label="Voice metrics">
+                <h2 class="metrics-section__heading">Voice Metrics</h2>
+
+                <details class="metric-card metric-card--voice" open>
+                    <summary>
+                        <div class="metric-card__header">
+                            <span class="metric-card__name">Pace</span>
+                            <span class="metric-card__score">8 / 10</span>
+                        </div>
+                        <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </summary>
+                    <div class="metric-card__expanded">
+                        <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--voice" style="width:80%"></div></div>
+                        <p class="metric-card__detail">Your pacing was excellent, averaging 142 WPM with natural variation that kept listeners engaged.</p>
+                    </div>
+                </details>
+
+                <details class="metric-card metric-card--voice">
+                    <summary>
+                        <div class="metric-card__header">
+                            <span class="metric-card__name">Filler Words</span>
+                            <span class="metric-card__score">7 / 10</span>
+                        </div>
+                        <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </summary>
+                    <div class="metric-card__expanded">
+                        <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--voice" style="width:70%"></div></div>
+                        <p class="metric-card__detail">4 filler words detected — down from 7 last session. Great improvement!</p>
+                    </div>
+                </details>
+
+                <details class="metric-card metric-card--voice">
+                    <summary>
+                        <div class="metric-card__header">
+                            <span class="metric-card__name">Intonation</span>
+                            <span class="metric-card__score">7 / 10</span>
+                        </div>
+                        <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </summary>
+                    <div class="metric-card__expanded">
+                        <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--voice" style="width:70%"></div></div>
+                        <p class="metric-card__detail">Good vocal range with clear emphasis on key points. Try varying pitch more during transitions.</p>
+                    </div>
+                </details>
+
+                <details class="metric-card metric-card--voice">
+                    <summary>
+                        <div class="metric-card__header">
+                            <span class="metric-card__name">Clarity</span>
+                            <span class="metric-card__score">8 / 10</span>
+                        </div>
+                        <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </summary>
+                    <div class="metric-card__expanded">
+                        <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--voice" style="width:80%"></div></div>
+                        <p class="metric-card__detail">Excellent articulation throughout. Words were crisp and easy to follow.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Story Metrics -->
+            <section class="metrics-section" aria-label="Story metrics">
+                <h2 class="metrics-section__heading">Story Metrics</h2>
+
+                <details class="metric-card metric-card--story" open>
+                    <summary>
+                        <div class="metric-card__header">
+                            <span class="metric-card__name">Hook Strength</span>
+                            <span class="metric-card__score">6 / 10</span>
+                        </div>
+                        <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </summary>
+                    <div class="metric-card__expanded">
+                        <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--story" style="width:60%"></div></div>
+                        <p class="metric-card__detail">Your opening grabbed attention in the first 5 seconds — try adding a question or surprising fact to make it even stronger.</p>
+                    </div>
+                </details>
+
+                <details class="metric-card metric-card--story">
+                    <summary>
+                        <div class="metric-card__header">
+                            <span class="metric-card__name">Narrative Arc</span>
+                            <span class="metric-card__score">7 / 10</span>
+                        </div>
+                        <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </summary>
+                    <div class="metric-card__expanded">
+                        <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--story" style="width:70%"></div></div>
+                        <p class="metric-card__detail">Clear beginning, middle, and end. The rising tension worked well — the resolution could use a bit more breathing room.</p>
+                    </div>
+                </details>
+
+                <details class="metric-card metric-card--story">
+                    <summary>
+                        <div class="metric-card__header">
+                            <span class="metric-card__name">Engagement</span>
+                            <span class="metric-card__score">7 / 10</span>
+                        </div>
+                        <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </summary>
+                    <div class="metric-card__expanded">
+                        <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--story" style="width:70%"></div></div>
+                        <p class="metric-card__detail">Strong emotional connection. Your personal anecdote at 0:35 was the most engaging moment.</p>
+                    </div>
+                </details>
+
+                <details class="metric-card metric-card--story">
+                    <summary>
+                        <div class="metric-card__header">
+                            <span class="metric-card__name">Persuasion</span>
+                            <span class="metric-card__score">6 / 10</span>
+                        </div>
+                        <svg class="metric-card__expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </summary>
+                    <div class="metric-card__expanded">
+                        <div class="metric-card__bar-track"><div class="metric-card__bar-fill metric-card__bar-fill--story" style="width:60%"></div></div>
+                        <p class="metric-card__detail">Good call-to-action at the end. Adding a concrete example earlier would strengthen your argument.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- AI Insight -->
+            <section class="insight-card" aria-label="AI coaching insight">
+                <svg class="insight-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <div class="insight-card__body">
+                    <span class="insight-card__label">AI Insight</span>
+                    <p class="insight-card__text">
+                        At <mark>0:42</mark> you said <mark>"kind of"</mark> — try a confident pause instead. Your hook landed well but the resolution at <mark>1:15</mark> felt rushed — slow down for the payoff.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <nav class="actions" aria-label="Session actions">
+                <div class="actions__row">
+                    <button class="btn btn--secondary" type="button">Try Again</button>
+                    <button class="btn btn--primary" type="button">Done</button>
+                </div>
+                <button class="btn btn--ghost" type="button">Share to Challenge</button>
+            </nav>
+
+        </main>
+    </div>
+</body>
+</html>

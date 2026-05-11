@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Reference — StoryCraft</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            color: var(--color-text-primary);
+            background: var(--color-bg-primary);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page-header {
+            padding: var(--space-12) var(--space-8) var(--space-8);
+            text-align: center;
+            border-bottom: 1px solid var(--color-border-subtle);
+            background: var(--color-bg-elevated);
+        }
+        .page-header h1 {
+            font-family: var(--font-family-serif);
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            letter-spacing: var(--letter-spacing-tight);
+            margin-bottom: var(--space-2);
+        }
+        .page-header p {
+            font-size: var(--font-size-md);
+            color: var(--color-text-secondary);
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        main { max-width: 1200px; margin: 0 auto; padding: var(--space-8); }
+
+        section { margin-bottom: var(--space-16); }
+        section > h2 {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-2);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+        section > p.section-desc {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-6);
+        }
+
+        .swatch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .swatch {
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        .swatch__color {
+            height: 72px;
+            display: flex;
+            align-items: flex-end;
+            padding: var(--space-2);
+        }
+        .swatch__info {
+            padding: var(--space-3);
+        }
+        .swatch__name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            margin-bottom: 2px;
+            word-break: break-all;
+        }
+        .swatch__value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .type-sample {
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border-subtle);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-4);
+        }
+        .type-row {
+            display: flex;
+            align-items: baseline;
+            gap: var(--space-4);
+            padding: var(--space-3) 0;
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .type-row:last-child { border-bottom: none; }
+        .type-row__label {
+            min-width: 140px;
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            flex-shrink: 0;
+        }
+        .type-row__sample { flex: 1; }
+
+        .spacing-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            align-items: flex-end;
+        }
+        .spacing-item {
+            text-align: center;
+        }
+        .spacing-item__bar {
+            background: var(--color-primary);
+            border-radius: var(--radius-sm);
+            margin: 0 auto var(--space-2);
+            width: 32px;
+            opacity: 0.7;
+        }
+        .spacing-item__label {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+        .spacing-item__value {
+            font-family: var(--font-family-mono);
+            font-size: 10px;
+            color: var(--color-text-disabled);
+        }
+
+        .radius-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-6);
+            align-items: center;
+        }
+        .radius-item {
+            text-align: center;
+        }
+        .radius-item__box {
+            width: 64px;
+            height: 64px;
+            background: var(--color-primary-subtle);
+            border: 2px solid var(--color-primary);
+            margin: 0 auto var(--space-2);
+        }
+        .radius-item__label {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .shadow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: var(--space-6);
+        }
+        .shadow-item {
+            text-align: center;
+        }
+        .shadow-item__box {
+            width: 100%;
+            height: 80px;
+            background: var(--color-bg-elevated);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-2);
+        }
+        .shadow-item__label {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .z-index-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .z-index-table th, .z-index-table td {
+            padding: var(--space-2) var(--space-4);
+            text-align: left;
+            border-bottom: 1px solid var(--color-border-subtle);
+            font-size: var(--font-size-sm);
+        }
+        .z-index-table th {
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            font-size: var(--font-size-xs);
+            letter-spacing: var(--letter-spacing-wider);
+        }
+        .z-index-table td:first-child {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            color: var(--color-primary);
+        }
+        .z-index-table td:nth-child(2) {
+            font-family: var(--font-family-mono);
+        }
+
+        .transition-demo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-6);
+        }
+        .transition-item {
+            text-align: center;
+        }
+        .transition-item__box {
+            width: 80px;
+            height: 80px;
+            background: var(--color-primary);
+            border-radius: var(--radius-lg);
+            margin: 0 auto var(--space-2);
+            cursor: pointer;
+        }
+        .transition-item__box:hover {
+            transform: scale(1.1);
+            border-radius: var(--radius-full);
+        }
+        .transition-item__label {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        .color-category {
+            margin-bottom: var(--space-6);
+        }
+        .color-category h3 {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wider);
+            margin-bottom: var(--space-3);
+        }
+    </style>
+</head>
+<body>
+
+<header class="page-header">
+    <h1>StoryCraft Tokens</h1>
+    <p>Complete visual reference for all design tokens. Warm violet palette with audio-first metaphors.</p>
+</header>
+
+<main>
+
+    <!-- ================================================================ -->
+    <!-- COLORS                                                           -->
+    <!-- ================================================================ -->
+    <section data-tokens="colors">
+        <h2>Colors</h2>
+        <p class="section-desc">Warm violet primary, sunset accents, ivory surfaces. Calming enough for vulnerability, engaging enough for daily return.</p>
+
+        <div class="color-category">
+            <h3>Primary</h3>
+            <div class="swatch-grid">
+                <div class="swatch"><div class="swatch__color" style="background:#6366F1;"></div><div class="swatch__info"><div class="swatch__name">--color-primary</div><div class="swatch__value">#6366F1</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#A5B4FC;"></div><div class="swatch__info"><div class="swatch__name">--color-primary-light</div><div class="swatch__value">#A5B4FC</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#4338CA;"></div><div class="swatch__info"><div class="swatch__name">--color-primary-dark</div><div class="swatch__value">#4338CA</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:rgba(99,102,241,0.08);"></div><div class="swatch__info"><div class="swatch__name">--color-primary-subtle</div><div class="swatch__value">rgba(99,102,241,0.08)</div></div></div>
+            </div>
+        </div>
+
+        <div class="color-category">
+            <h3>Secondary & Accent</h3>
+            <div class="swatch-grid">
+                <div class="swatch"><div class="swatch__color" style="background:#14B8A6;"></div><div class="swatch__info"><div class="swatch__name">--color-secondary</div><div class="swatch__value">#14B8A6</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#5EEAD4;"></div><div class="swatch__info"><div class="swatch__name">--color-secondary-light</div><div class="swatch__value">#5EEAD4</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#0D9488;"></div><div class="swatch__info"><div class="swatch__name">--color-secondary-dark</div><div class="swatch__value">#0D9488</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#F97316;"></div><div class="swatch__info"><div class="swatch__name">--color-accent</div><div class="swatch__value">#F97316</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#FDBA74;"></div><div class="swatch__info"><div class="swatch__name">--color-accent-light</div><div class="swatch__value">#FDBA74</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#C2410C;"></div><div class="swatch__info"><div class="swatch__name">--color-accent-dark</div><div class="swatch__value">#C2410C</div></div></div>
+            </div>
+        </div>
+
+        <div class="color-category">
+            <h3>Semantic</h3>
+            <div class="swatch-grid">
+                <div class="swatch"><div class="swatch__color" style="background:#10B981;"></div><div class="swatch__info"><div class="swatch__name">--color-success</div><div class="swatch__value">#10B981</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#F59E0B;"></div><div class="swatch__info"><div class="swatch__name">--color-warning</div><div class="swatch__value">#F59E0B</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#EF4444;"></div><div class="swatch__info"><div class="swatch__name">--color-error</div><div class="swatch__value">#EF4444</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#0EA5E9;"></div><div class="swatch__info"><div class="swatch__name">--color-info</div><div class="swatch__value">#0EA5E9</div></div></div>
+            </div>
+        </div>
+
+        <div class="color-category">
+            <h3>Recording</h3>
+            <div class="swatch-grid">
+                <div class="swatch"><div class="swatch__color" style="background:#EF4444;"></div><div class="swatch__info"><div class="swatch__name">--color-recording</div><div class="swatch__value">#EF4444</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#FCA5A5;"></div><div class="swatch__info"><div class="swatch__name">--color-recording-pulse</div><div class="swatch__value">#FCA5A5</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#DC2626;"></div><div class="swatch__info"><div class="swatch__name">--color-recording-active</div><div class="swatch__value">#DC2626</div></div></div>
+            </div>
+        </div>
+
+        <div class="color-category">
+            <h3>Feedback Dimensions</h3>
+            <div class="swatch-grid">
+                <div class="swatch"><div class="swatch__color" style="background:#6366F1;"></div><div class="swatch__info"><div class="swatch__name">--color-feedback-voice</div><div class="swatch__value">#6366F1 (violet)</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#F97316;"></div><div class="swatch__info"><div class="swatch__name">--color-feedback-story</div><div class="swatch__value">#F97316 (orange)</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#EF4444;"></div><div class="swatch__info"><div class="swatch__name">--color-feedback-filler</div><div class="swatch__value">#EF4444 (red)</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#F59E0B;"></div><div class="swatch__info"><div class="swatch__name">--color-feedback-pace</div><div class="swatch__value">#F59E0B (amber)</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#10B981;"></div><div class="swatch__info"><div class="swatch__name">--color-feedback-emotion</div><div class="swatch__value">#10B981 (green)</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#0EA5E9;"></div><div class="swatch__info"><div class="swatch__name">--color-feedback-structure</div><div class="swatch__value">#0EA5E9 (sky)</div></div></div>
+            </div>
+        </div>
+
+        <div class="color-category">
+            <h3>Surfaces</h3>
+            <div class="swatch-grid">
+                <div class="swatch"><div class="swatch__color" style="background:#FFFBF7; border: 1px solid #E8E2F0;"></div><div class="swatch__info"><div class="swatch__name">--color-bg-primary</div><div class="swatch__value">#FFFBF7</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#FEF3E2; border: 1px solid #E8E2F0;"></div><div class="swatch__info"><div class="swatch__name">--color-bg-secondary</div><div class="swatch__value">#FEF3E2</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#FFF7ED; border: 1px solid #E8E2F0;"></div><div class="swatch__info"><div class="swatch__name">--color-bg-tertiary</div><div class="swatch__value">#FFF7ED</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#FFFFFF; border: 1px solid #E8E2F0;"></div><div class="swatch__info"><div class="swatch__name">--color-bg-elevated</div><div class="swatch__value">#FFFFFF</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#1A1625;"></div><div class="swatch__info"><div class="swatch__name">--color-bg-recording</div><div class="swatch__value">#1A1625</div></div></div>
+            </div>
+        </div>
+
+        <div class="color-category">
+            <h3>Text</h3>
+            <div class="swatch-grid">
+                <div class="swatch"><div class="swatch__color" style="background:#1E1B2E;"></div><div class="swatch__info"><div class="swatch__name">--color-text-primary</div><div class="swatch__value">#1E1B2E</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#4A4458;"></div><div class="swatch__info"><div class="swatch__name">--color-text-secondary</div><div class="swatch__value">#4A4458</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#8B83A0;"></div><div class="swatch__info"><div class="swatch__name">--color-text-tertiary</div><div class="swatch__value">#8B83A0</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#B8B2C8;"></div><div class="swatch__info"><div class="swatch__name">--color-text-disabled</div><div class="swatch__value">#B8B2C8</div></div></div>
+            </div>
+        </div>
+
+        <div class="color-category">
+            <h3>Borders</h3>
+            <div class="swatch-grid">
+                <div class="swatch"><div class="swatch__color" style="background:#E8E2F0; border: 1px solid #C4BCD4;"></div><div class="swatch__info"><div class="swatch__name">--color-border-default</div><div class="swatch__value">#E8E2F0</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#F3EFF8; border: 1px solid #E8E2F0;"></div><div class="swatch__info"><div class="swatch__name">--color-border-subtle</div><div class="swatch__value">#F3EFF8</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#C4BCD4;"></div><div class="swatch__info"><div class="swatch__name">--color-border-strong</div><div class="swatch__value">#C4BCD4</div></div></div>
+            </div>
+        </div>
+
+        <div class="color-category">
+            <h3>Track Colors</h3>
+            <div class="swatch-grid">
+                <div class="swatch"><div class="swatch__color" style="background:#6366F1;"></div><div class="swatch__info"><div class="swatch__name">--color-track-beginner</div><div class="swatch__value">#6366F1</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#F97316;"></div><div class="swatch__info"><div class="swatch__name">--color-track-creator</div><div class="swatch__value">#F97316</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#0EA5E9;"></div><div class="swatch__info"><div class="swatch__name">--color-track-founder</div><div class="swatch__value">#0EA5E9</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#14B8A6;"></div><div class="swatch__info"><div class="swatch__name">--color-track-interview</div><div class="swatch__value">#14B8A6</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#EC4899;"></div><div class="swatch__info"><div class="swatch__name">--color-track-social</div><div class="swatch__value">#EC4899</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#8B5CF6;"></div><div class="swatch__info"><div class="swatch__name">--color-track-leadership</div><div class="swatch__value">#8B5CF6</div></div></div>
+            </div>
+        </div>
+
+        <div class="color-category">
+            <h3>Dark Mode Surfaces</h3>
+            <div class="swatch-grid">
+                <div class="swatch"><div class="swatch__color" style="background:#0F0D1A;"></div><div class="swatch__info"><div class="swatch__name">--color-bg-primary (dark)</div><div class="swatch__value">#0F0D1A</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#1A1726;"></div><div class="swatch__info"><div class="swatch__name">--color-bg-secondary (dark)</div><div class="swatch__value">#1A1726</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#252133;"></div><div class="swatch__info"><div class="swatch__name">--color-bg-tertiary (dark)</div><div class="swatch__value">#252133</div></div></div>
+                <div class="swatch"><div class="swatch__color" style="background:#2A2540;"></div><div class="swatch__info"><div class="swatch__name">--color-bg-elevated (dark)</div><div class="swatch__value">#2A2540</div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- TYPOGRAPHY                                                       -->
+    <!-- ================================================================ -->
+    <section data-tokens="typography">
+        <h2>Typography</h2>
+        <p class="section-desc">Inter for UI, Merriweather for story prompts and editorial moments, JetBrains Mono for metrics and timers.</p>
+
+        <div class="type-sample">
+            <h3 style="font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:var(--letter-spacing-wider);margin-bottom:var(--space-4);">Font Families</h3>
+            <div class="type-row">
+                <div class="type-row__label">--font-family-sans</div>
+                <div class="type-row__sample" style="font-family: var(--font-family-sans); font-size: var(--font-size-lg);">
+                    Inter — The quick brown fox jumps over the lazy dog
+                </div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">--font-family-serif</div>
+                <div class="type-row__sample" style="font-family: var(--font-family-serif); font-size: var(--font-size-lg);">
+                    Merriweather — Tell me a story about a moment that changed everything
+                </div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">--font-family-mono</div>
+                <div class="type-row__sample" style="font-family: var(--font-family-mono); font-size: var(--font-size-lg);">
+                    JetBrains Mono — 02:34 | Score: 7.4 | +2.1
+                </div>
+            </div>
+        </div>
+
+        <div class="type-sample">
+            <h3 style="font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:var(--letter-spacing-wider);margin-bottom:var(--space-4);">Font Size Scale</h3>
+            <div class="type-row">
+                <div class="type-row__label">--font-size-5xl<br><span style="color:var(--color-text-disabled);">60px / 3.75rem</span></div>
+                <div class="type-row__sample" style="font-size: var(--font-size-5xl); font-weight: var(--font-weight-bold); line-height: var(--line-height-tight); letter-spacing: var(--letter-spacing-tight);">Your Story</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">--font-size-4xl<br><span style="color:var(--color-text-disabled);">48px / 3rem</span></div>
+                <div class="type-row__sample" style="font-size: var(--font-size-4xl); font-weight: var(--font-weight-bold); line-height: var(--line-height-tight); letter-spacing: var(--letter-spacing-tight);">Practice Daily</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">--font-size-3xl<br><span style="color:var(--color-text-disabled);">36px / 2.25rem</span></div>
+                <div class="type-row__sample" style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); line-height: var(--line-height-tight);">Your Progress</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">--font-size-2xl<br><span style="color:var(--color-text-disabled);">30px / 1.875rem</span></div>
+                <div class="type-row__sample" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); line-height: var(--line-height-snug);">Section Heading</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">--font-size-xl<br><span style="color:var(--color-text-disabled);">24px / 1.5rem</span></div>
+                <div class="type-row__sample" style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold); line-height: var(--line-height-snug);">Card Heading</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">--font-size-lg<br><span style="color:var(--color-text-disabled);">20px / 1.25rem</span></div>
+                <div class="type-row__sample" style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">Prompt Title</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">--font-size-md<br><span style="color:var(--color-text-disabled);">18px / 1.125rem</span></div>
+                <div class="type-row__sample" style="font-size: var(--font-size-md);">Large body text for important descriptions</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">--font-size-base<br><span style="color:var(--color-text-disabled);">16px / 1rem</span></div>
+                <div class="type-row__sample" style="font-size: var(--font-size-base);">Default body text for general content and UI labels</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">--font-size-sm<br><span style="color:var(--color-text-disabled);">14px / 0.875rem</span></div>
+                <div class="type-row__sample" style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Secondary text, input labels, metadata</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">--font-size-xs<br><span style="color:var(--color-text-disabled);">12px / 0.75rem</span></div>
+                <div class="type-row__sample" style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">Captions, badges, timestamps, fine print</div>
+            </div>
+        </div>
+
+        <div class="type-sample">
+            <h3 style="font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:var(--letter-spacing-wider);margin-bottom:var(--space-4);">Font Weights</h3>
+            <div class="type-row">
+                <div class="type-row__label">300 Light</div>
+                <div class="type-row__sample" style="font-weight:300;font-size:var(--font-size-lg);">Light weight for subtle emphasis</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">400 Regular</div>
+                <div class="type-row__sample" style="font-weight:400;font-size:var(--font-size-lg);">Regular weight for body text</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">500 Medium</div>
+                <div class="type-row__sample" style="font-weight:500;font-size:var(--font-size-lg);">Medium weight for labels</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">600 Semibold</div>
+                <div class="type-row__sample" style="font-weight:600;font-size:var(--font-size-lg);">Semibold for subheadings</div>
+            </div>
+            <div class="type-row">
+                <div class="type-row__label">700 Bold</div>
+                <div class="type-row__sample" style="font-weight:700;font-size:var(--font-size-lg);">Bold for headings and emphasis</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- SPACING                                                          -->
+    <!-- ================================================================ -->
+    <section data-tokens="spacing">
+        <h2>Spacing</h2>
+        <p class="section-desc">4px base unit. Consistent spatial rhythm across all components.</p>
+
+        <div class="spacing-grid">
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:4px;"></div><div class="spacing-item__label">--space-1</div><div class="spacing-item__value">4px</div></div>
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:8px;"></div><div class="spacing-item__label">--space-2</div><div class="spacing-item__value">8px</div></div>
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:12px;"></div><div class="spacing-item__label">--space-3</div><div class="spacing-item__value">12px</div></div>
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:16px;"></div><div class="spacing-item__label">--space-4</div><div class="spacing-item__value">16px</div></div>
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:20px;"></div><div class="spacing-item__label">--space-5</div><div class="spacing-item__value">20px</div></div>
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:24px;"></div><div class="spacing-item__label">--space-6</div><div class="spacing-item__value">24px</div></div>
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:32px;"></div><div class="spacing-item__label">--space-8</div><div class="spacing-item__value">32px</div></div>
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:40px;"></div><div class="spacing-item__label">--space-10</div><div class="spacing-item__value">40px</div></div>
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:48px;"></div><div class="spacing-item__label">--space-12</div><div class="spacing-item__value">48px</div></div>
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:56px;"></div><div class="spacing-item__label">--space-14</div><div class="spacing-item__value">56px</div></div>
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:64px;"></div><div class="spacing-item__label">--space-16</div><div class="spacing-item__value">64px</div></div>
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:80px;"></div><div class="spacing-item__label">--space-20</div><div class="spacing-item__value">80px</div></div>
+            <div class="spacing-item"><div class="spacing-item__bar" style="height:96px;"></div><div class="spacing-item__label">--space-24</div><div class="spacing-item__value">96px</div></div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- BORDER RADIUS                                                    -->
+    <!-- ================================================================ -->
+    <section data-tokens="radius">
+        <h2>Border Radius</h2>
+        <p class="section-desc">Rounded corners from subtle to fully circular.</p>
+
+        <div class="radius-grid">
+            <div class="radius-item"><div class="radius-item__box" style="border-radius:0;"></div><div class="radius-item__label">--radius-none<br>0</div></div>
+            <div class="radius-item"><div class="radius-item__box" style="border-radius:4px;"></div><div class="radius-item__label">--radius-sm<br>4px</div></div>
+            <div class="radius-item"><div class="radius-item__box" style="border-radius:8px;"></div><div class="radius-item__label">--radius-md<br>8px</div></div>
+            <div class="radius-item"><div class="radius-item__box" style="border-radius:12px;"></div><div class="radius-item__label">--radius-lg<br>12px</div></div>
+            <div class="radius-item"><div class="radius-item__box" style="border-radius:16px;"></div><div class="radius-item__label">--radius-xl<br>16px</div></div>
+            <div class="radius-item"><div class="radius-item__box" style="border-radius:20px;"></div><div class="radius-item__label">--radius-2xl<br>20px</div></div>
+            <div class="radius-item"><div class="radius-item__box" style="border-radius:24px;"></div><div class="radius-item__label">--radius-3xl<br>24px</div></div>
+            <div class="radius-item"><div class="radius-item__box" style="border-radius:9999px;"></div><div class="radius-item__label">--radius-full<br>9999px</div></div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- SHADOWS                                                          -->
+    <!-- ================================================================ -->
+    <section data-tokens="shadows">
+        <h2>Shadows</h2>
+        <p class="section-desc">Warm-tinted elevation shadows and glow effects for interactive states.</p>
+
+        <div class="shadow-grid">
+            <div class="shadow-item"><div class="shadow-item__box" style="box-shadow: var(--shadow-xs);"></div><div class="shadow-item__label">--shadow-xs</div></div>
+            <div class="shadow-item"><div class="shadow-item__box" style="box-shadow: var(--shadow-sm);"></div><div class="shadow-item__label">--shadow-sm</div></div>
+            <div class="shadow-item"><div class="shadow-item__box" style="box-shadow: var(--shadow-md);"></div><div class="shadow-item__label">--shadow-md</div></div>
+            <div class="shadow-item"><div class="shadow-item__box" style="box-shadow: var(--shadow-lg);"></div><div class="shadow-item__label">--shadow-lg</div></div>
+            <div class="shadow-item"><div class="shadow-item__box" style="box-shadow: var(--shadow-xl);"></div><div class="shadow-item__label">--shadow-xl</div></div>
+            <div class="shadow-item"><div class="shadow-item__box" style="box-shadow: var(--shadow-2xl);"></div><div class="shadow-item__label">--shadow-2xl</div></div>
+        </div>
+
+        <h3 style="font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:var(--letter-spacing-wider);margin:var(--space-8) 0 var(--space-4);">Glow Effects</h3>
+        <div class="shadow-grid">
+            <div class="shadow-item"><div class="shadow-item__box" style="box-shadow: var(--shadow-glow-primary);"></div><div class="shadow-item__label">--shadow-glow-primary</div></div>
+            <div class="shadow-item"><div class="shadow-item__box" style="box-shadow: var(--shadow-glow-recording);"></div><div class="shadow-item__label">--shadow-glow-recording</div></div>
+            <div class="shadow-item"><div class="shadow-item__box" style="box-shadow: var(--shadow-glow-streak);"></div><div class="shadow-item__label">--shadow-glow-streak</div></div>
+            <div class="shadow-item"><div class="shadow-item__box" style="box-shadow: var(--shadow-glow-success);"></div><div class="shadow-item__label">--shadow-glow-success</div></div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- TRANSITIONS                                                      -->
+    <!-- ================================================================ -->
+    <section data-tokens="transitions">
+        <h2>Transitions</h2>
+        <p class="section-desc">Calming, purposeful motion. Hover over the boxes to see each timing curve.</p>
+
+        <div class="transition-demo">
+            <div class="transition-item">
+                <div class="transition-item__box" style="transition: all var(--transition-fast);"></div>
+                <div class="transition-item__label">--transition-fast<br>150ms</div>
+            </div>
+            <div class="transition-item">
+                <div class="transition-item__box" style="transition: all var(--transition-normal);"></div>
+                <div class="transition-item__label">--transition-normal<br>250ms</div>
+            </div>
+            <div class="transition-item">
+                <div class="transition-item__box" style="transition: all var(--transition-slow);"></div>
+                <div class="transition-item__label">--transition-slow<br>400ms</div>
+            </div>
+            <div class="transition-item">
+                <div class="transition-item__box" style="transition: all var(--transition-deliberate);"></div>
+                <div class="transition-item__label">--transition-deliberate<br>600ms</div>
+            </div>
+            <div class="transition-item">
+                <div class="transition-item__box" style="transition: all var(--transition-spring);"></div>
+                <div class="transition-item__label">--transition-spring<br>500ms bounce</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- Z-INDEX                                                          -->
+    <!-- ================================================================ -->
+    <section data-tokens="z-index">
+        <h2>Z-Index Scale</h2>
+        <p class="section-desc">Layering system for overlapping elements.</p>
+
+        <div style="background: var(--color-bg-elevated); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-xl); overflow: hidden;">
+            <table class="z-index-table">
+                <thead>
+                    <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>--z-base</td><td>0</td><td>Default stacking</td></tr>
+                    <tr><td>--z-above</td><td>1</td><td>Slightly raised elements</td></tr>
+                    <tr><td>--z-dropdown</td><td>100</td><td>Dropdown menus</td></tr>
+                    <tr><td>--z-sticky</td><td>200</td><td>Sticky headers, bottom nav</td></tr>
+                    <tr><td>--z-fixed</td><td>300</td><td>Fixed-position elements</td></tr>
+                    <tr><td>--z-drawer</td><td>400</td><td>Side drawers, panels</td></tr>
+                    <tr><td>--z-modal-backdrop</td><td>500</td><td>Modal overlay backdrop</td></tr>
+                    <tr><td>--z-modal</td><td>600</td><td>Modal dialogs, bottom sheets</td></tr>
+                    <tr><td>--z-popover</td><td>700</td><td>Popovers, tooltips</td></tr>
+                    <tr><td>--z-tooltip</td><td>800</td><td>Tooltip overlays</td></tr>
+                    <tr><td>--z-toast</td><td>900</td><td>Toast notifications</td></tr>
+                    <tr><td>--z-max</td><td>9999</td><td>Emergency override layer</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

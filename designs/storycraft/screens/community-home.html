@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community — StoryCraft</title>
+    <link rel="stylesheet" href="../tokens.css">
+    <style>
+        /* ── Header ─────────────────────────────────────── */
+
+        .header-title {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .icon-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--touch-target-min);
+            height: var(--touch-target-min);
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--color-text-secondary);
+            border-radius: var(--radius-full);
+            transition: background var(--transition-fast), color var(--transition-fast);
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: var(--color-primary-subtle);
+            color: var(--color-primary);
+        }
+
+        .icon-btn svg {
+            width: var(--icon-lg);
+            height: var(--icon-lg);
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+            background: var(--color-accent);
+            border: 2px solid var(--color-bg-primary);
+        }
+
+        /* ── Challenge Hero Card ────────────────────────── */
+
+        .challenge-hero {
+            margin: var(--space-4) var(--space-page-x);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .challenge-hero__image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .challenge-hero__overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to top,
+                var(--color-overlay-heavy) 0%,
+                var(--color-overlay-medium) 50%,
+                var(--color-overlay-light) 100%
+            );
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: var(--space-card-padding);
+        }
+
+        .challenge-hero__badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1-5);
+            padding: var(--space-1) var(--space-3);
+            background: var(--color-primary-subtle);
+            border: 1px solid var(--color-border-overlay);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-primary-light);
+            letter-spacing: var(--letter-spacing-wider);
+            text-transform: uppercase;
+            width: fit-content;
+            margin-bottom: var(--space-3);
+            backdrop-filter: blur(8px);
+        }
+
+        .challenge-hero__title {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-inverse);
+            line-height: var(--line-height-snug);
+            margin-bottom: var(--space-3);
+        }
+
+        .challenge-hero__meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-overlay-muted);
+            margin-bottom: var(--space-4);
+        }
+
+        .challenge-hero__meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1-5);
+        }
+
+        .challenge-hero__meta-item svg {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+            opacity: 0.8;
+        }
+
+        .btn-record-entry {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            height: var(--btn-height-md);
+            padding: 0 var(--space-6);
+            background: var(--color-recording);
+            color: var(--color-text-inverse);
+            border: none;
+            border-radius: var(--btn-radius);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-sm);
+            font-weight: var(--btn-font-weight);
+            letter-spacing: var(--btn-letter-spacing);
+            cursor: pointer;
+            box-shadow: var(--shadow-glow-recording);
+            transition: transform var(--transition-spring), box-shadow var(--transition-normal);
+            width: 100%;
+        }
+
+        .btn-record-entry:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-record-entry svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
+
+        /* ── Your Rank Badge ────────────────────────────── */
+
+        .rank-badge {
+            margin: var(--space-4) var(--space-page-x) var(--space-2);
+            padding: var(--space-4) var(--space-card-padding);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .rank-badge__left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .rank-badge__icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-lg);
+            background: var(--color-primary-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-primary);
+        }
+
+        .rank-badge__icon svg {
+            width: var(--icon-lg);
+            height: var(--icon-lg);
+        }
+
+        .rank-badge__label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            font-weight: var(--font-weight-medium);
+            letter-spacing: var(--letter-spacing-wide);
+            text-transform: uppercase;
+        }
+
+        .rank-badge__value {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-mono);
+        }
+
+        .rank-badge__trend {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-success);
+            background: var(--color-success-subtle);
+            padding: var(--space-1) var(--space-2-5);
+            border-radius: var(--radius-full);
+        }
+
+        .rank-badge__trend svg {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+        }
+
+        /* ── Section Headers ────────────────────────────── */
+
+        .section {
+            padding: var(--space-5) var(--space-page-x) var(--space-2);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-4);
+        }
+
+        .section-title {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .section-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .section-link {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-primary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .section-link:hover {
+            color: var(--color-primary-dark);
+        }
+
+        .section-link--muted {
+            color: var(--color-text-tertiary);
+        }
+
+        .section-link--muted:hover {
+            color: var(--color-text-secondary);
+        }
+
+        /* ── Story Cards ────────────────────────────────── */
+
+        .story-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+        }
+
+        .story-card + .story-card {
+            margin-top: var(--space-3);
+        }
+
+        .story-card:hover {
+            box-shadow: var(--card-shadow);
+            transform: translateY(-1px);
+        }
+
+        .story-card__rank {
+            font-size: var(--font-size-lg);
+            line-height: 1;
+            flex-shrink: 0;
+            width: var(--space-7);
+            text-align: center;
+        }
+
+        .story-card__avatar {
+            width: var(--avatar-sm);
+            height: var(--avatar-sm);
+            border-radius: var(--radius-full);
+            object-fit: cover;
+            border: var(--avatar-border);
+            flex-shrink: 0;
+        }
+
+        .story-card__info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .story-card__name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .story-card__waveform {
+            display: flex;
+            align-items: flex-end;
+            gap: var(--waveform-bar-gap);
+            height: 16px;
+            margin-top: var(--space-1);
+        }
+
+        .story-card__waveform-bar {
+            width: var(--waveform-bar-width);
+            border-radius: var(--radius-full);
+            background: var(--waveform-idle-color);
+            opacity: 0.5;
+        }
+
+        .story-card__duration {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            font-family: var(--font-family-mono);
+            margin-top: var(--space-0-5);
+        }
+
+        .story-card__actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            flex-shrink: 0;
+        }
+
+        .play-btn {
+            width: var(--touch-target-min);
+            height: var(--touch-target-min);
+            border-radius: var(--radius-full);
+            border: none;
+            background: var(--color-primary-subtle);
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background var(--transition-fast), transform var(--transition-fast);
+        }
+
+        .play-btn:hover {
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            transform: scale(1.08);
+        }
+
+        .play-btn svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
+
+        .vote-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-1) var(--space-2);
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--color-accent);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            font-family: var(--font-family-sans);
+            transition: transform var(--transition-fast);
+            min-height: var(--touch-target-min);
+        }
+
+        .vote-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .vote-btn svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+            fill: var(--color-accent);
+        }
+
+        /* ── Cohort Cards ───────────────────────────────── */
+
+        .cohort-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .cohort-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .cohort-card:hover {
+            box-shadow: var(--card-shadow);
+            transform: translateY(-1px);
+        }
+
+        .cohort-card__icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xl);
+            flex-shrink: 0;
+        }
+
+        .cohort-card__icon--founders {
+            background: var(--color-track-founder-subtle);
+        }
+
+        .cohort-card__icon--creators {
+            background: var(--color-track-creator-subtle);
+        }
+
+        .cohort-card__icon--leaders {
+            background: var(--color-track-leadership-subtle);
+        }
+
+        .cohort-card__info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cohort-card__name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .cohort-card__count {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            margin-top: var(--space-0-5);
+        }
+
+        .cohort-card__avatars {
+            display: flex;
+            flex-shrink: 0;
+        }
+
+        .cohort-card__avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-full);
+            object-fit: cover;
+            border: 2px solid var(--card-bg);
+            margin-left: -8px;
+        }
+
+        .cohort-card__avatar:first-child {
+            margin-left: 0;
+        }
+
+        .cohort-card__more {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-full);
+            background: var(--color-bg-tertiary);
+            border: 2px solid var(--card-bg);
+            margin-left: -8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-tertiary);
+        }
+
+        .cohort-card__chevron {
+            color: var(--color-text-tertiary);
+            flex-shrink: 0;
+        }
+
+        .cohort-card__chevron svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
+
+        /* ── Bottom Spacer ──────────────────────────────── */
+
+        .bottom-spacer {
+            height: var(--space-6);
+        }
+
+        .sr-only--focusable:focus-visible {
+            position: fixed;
+            top: var(--space-2);
+            left: var(--space-2);
+            width: auto;
+            height: auto;
+            padding: var(--space-2) var(--space-4);
+            clip: auto;
+            white-space: normal;
+            overflow: visible;
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            z-index: var(--z-max);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="sr-only sr-only--focusable">Skip to content</a>
+    <div class="app-shell" data-screen="community-home">
+
+        <!-- ── Header ───────────────────────────────────── -->
+        <header class="app-shell__header">
+            <h1 class="header-title">Community</h1>
+            <div class="header-actions">
+                <button class="icon-btn" aria-label="Notifications">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span class="notification-dot" aria-label="New notifications"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ── Main Content ─────────────────────────────── -->
+        <main class="app-shell__content" id="main-content">
+
+            <!-- This Week's Challenge -->
+            <section class="challenge-hero" aria-label="This week's challenge">
+                <img
+                    class="challenge-hero__image"
+                    src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=390&h=200&fit=crop"
+                    alt="Group of people gathered together, representing community storytelling"
+                    width="390"
+                    height="200"
+                >
+                <div class="challenge-hero__overlay">
+                    <span class="challenge-hero__badge">
+                        <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                        This Week's Challenge
+                    </span>
+                    <h2 class="challenge-hero__title">Tell a 2-minute story about a time you completely failed</h2>
+                    <div class="challenge-hero__meta">
+                        <span class="challenge-hero__meta-item">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Ends in 3 days
+                        </span>
+                        <span class="challenge-hero__meta-item">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            142 submissions so far
+                        </span>
+                    </div>
+                    <button class="btn-record-entry" aria-label="Record your challenge entry">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        </svg>
+                        RECORD MY ENTRY
+                    </button>
+                </div>
+            </section>
+
+            <!-- Your Rank -->
+            <div class="rank-badge" aria-label="Your current rank">
+                <div class="rank-badge__left">
+                    <div class="rank-badge__icon">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="rank-badge__label">Your Rank</span>
+                        <div class="rank-badge__value">#14 <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-regular); color: var(--color-text-tertiary);">of 142</span></div>
+                    </div>
+                </div>
+                <span class="rank-badge__trend" aria-label="Rank trending up">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+                    </svg>
+                    +3
+                </span>
+            </div>
+
+            <!-- Top Stories This Week -->
+            <section class="section" aria-label="Top stories this week">
+                <div class="section-header">
+                    <h2 class="section-title">Top Stories This Week</h2>
+                    <div class="section-actions">
+                        <a href="#browse-all" class="section-link section-link--muted">Browse All</a>
+                        <a href="#leaderboard" class="section-link">Leaderboard</a>
+                    </div>
+                </div>
+
+                <!-- 1st Place -->
+                <article class="story-card" aria-label="First place: Anonymous_42">
+                    <span class="story-card__rank" aria-label="First place">🥇</span>
+                    <img class="story-card__avatar" src="https://i.pravatar.cc/36?img=3" alt="Anonymous_42 avatar" width="36" height="36" loading="lazy">
+                    <div class="story-card__info">
+                        <p class="story-card__name">Anonymous_42</p>
+                        <div class="story-card__waveform" aria-hidden="true">
+                            <span class="story-card__waveform-bar" style="height: 5px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 10px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 7px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 14px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 11px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 16px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 12px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 8px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 13px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 9px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 15px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 6px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 11px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 14px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 8px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 12px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 7px;"></span>
+                        </div>
+                        <span class="story-card__duration">1:54</span>
+                    </div>
+                    <div class="story-card__actions">
+                        <button class="play-btn" aria-label="Play story by Anonymous_42">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                <polygon points="6 3 20 12 6 21 6 3"/>
+                            </svg>
+                        </button>
+                        <button class="vote-btn" aria-label="Vote for Anonymous_42, 38 votes">
+                            <svg aria-hidden="true" viewBox="0 0 24 24">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                            38
+                        </button>
+                    </div>
+                </article>
+
+                <!-- 2nd Place -->
+                <article class="story-card" aria-label="Second place: StorytellerK">
+                    <span class="story-card__rank" aria-label="Second place">🥈</span>
+                    <img class="story-card__avatar" src="https://i.pravatar.cc/36?img=7" alt="StorytellerK avatar" width="36" height="36" loading="lazy">
+                    <div class="story-card__info">
+                        <p class="story-card__name">StorytellerK</p>
+                        <div class="story-card__waveform" aria-hidden="true">
+                            <span class="story-card__waveform-bar" style="height: 8px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 12px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 6px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 11px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 15px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 9px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 14px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 7px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 13px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 10px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 16px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 5px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 12px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 9px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 14px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 7px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 11px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 8px;"></span>
+                        </div>
+                        <span class="story-card__duration">2:01</span>
+                    </div>
+                    <div class="story-card__actions">
+                        <button class="play-btn" aria-label="Play story by StorytellerK">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                <polygon points="6 3 20 12 6 21 6 3"/>
+                            </svg>
+                        </button>
+                        <button class="vote-btn" aria-label="Vote for StorytellerK, 31 votes">
+                            <svg aria-hidden="true" viewBox="0 0 24 24">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                            31
+                        </button>
+                    </div>
+                </article>
+
+                <!-- 3rd Place -->
+                <article class="story-card" aria-label="Third place: PitchPro">
+                    <span class="story-card__rank" aria-label="Third place">🥉</span>
+                    <img class="story-card__avatar" src="https://i.pravatar.cc/36?img=15" alt="PitchPro avatar" width="36" height="36" loading="lazy">
+                    <div class="story-card__info">
+                        <p class="story-card__name">PitchPro</p>
+                        <div class="story-card__waveform" aria-hidden="true">
+                            <span class="story-card__waveform-bar" style="height: 10px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 6px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 13px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 9px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 15px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 7px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 11px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 14px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 8px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 16px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 5px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 12px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 10px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 7px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 13px;"></span>
+                            <span class="story-card__waveform-bar" style="height: 9px;"></span>
+                        </div>
+                        <span class="story-card__duration">1:47</span>
+                    </div>
+                    <div class="story-card__actions">
+                        <button class="play-btn" aria-label="Play story by PitchPro">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                <polygon points="6 3 20 12 6 21 6 3"/>
+                            </svg>
+                        </button>
+                        <button class="vote-btn" aria-label="Vote for PitchPro, 28 votes">
+                            <svg aria-hidden="true" viewBox="0 0 24 24">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                            28
+                        </button>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Track Cohorts -->
+            <section class="section" aria-label="Track cohorts">
+                <div class="section-header">
+                    <h2 class="section-title">Track Cohorts</h2>
+                </div>
+                <div class="cohort-list" role="list">
+
+                    <a href="#cohort-founders" class="cohort-card" role="listitem">
+                        <div class="cohort-card__icon cohort-card__icon--founders" aria-hidden="true">🚀</div>
+                        <div class="cohort-card__info">
+                            <p class="cohort-card__name">Founders</p>
+                            <p class="cohort-card__count">23 active</p>
+                        </div>
+                        <div class="cohort-card__avatars">
+                            <img class="cohort-card__avatar" src="https://i.pravatar.cc/24?img=10" alt="" width="24" height="24" loading="lazy">
+                            <img class="cohort-card__avatar" src="https://i.pravatar.cc/24?img=11" alt="" width="24" height="24" loading="lazy">
+                            <img class="cohort-card__avatar" src="https://i.pravatar.cc/24?img=12" alt="" width="24" height="24" loading="lazy">
+                            <span class="cohort-card__more" aria-label="20 more members">+20</span>
+                        </div>
+                        <span class="cohort-card__chevron" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </span>
+                    </a>
+
+                    <a href="#cohort-creators" class="cohort-card" role="listitem">
+                        <div class="cohort-card__icon cohort-card__icon--creators" aria-hidden="true">🎬</div>
+                        <div class="cohort-card__info">
+                            <p class="cohort-card__name">Creators</p>
+                            <p class="cohort-card__count">45 active</p>
+                        </div>
+                        <div class="cohort-card__avatars">
+                            <img class="cohort-card__avatar" src="https://i.pravatar.cc/24?img=20" alt="" width="24" height="24" loading="lazy">
+                            <img class="cohort-card__avatar" src="https://i.pravatar.cc/24?img=21" alt="" width="24" height="24" loading="lazy">
+                            <img class="cohort-card__avatar" src="https://i.pravatar.cc/24?img=22" alt="" width="24" height="24" loading="lazy">
+                            <span class="cohort-card__more" aria-label="42 more members">+42</span>
+                        </div>
+                        <span class="cohort-card__chevron" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </span>
+                    </a>
+
+                    <a href="#cohort-leaders" class="cohort-card" role="listitem">
+                        <div class="cohort-card__icon cohort-card__icon--leaders" aria-hidden="true">👔</div>
+                        <div class="cohort-card__info">
+                            <p class="cohort-card__name">Leaders</p>
+                            <p class="cohort-card__count">12 active</p>
+                        </div>
+                        <div class="cohort-card__avatars">
+                            <img class="cohort-card__avatar" src="https://i.pravatar.cc/24?img=30" alt="" width="24" height="24" loading="lazy">
+                            <img class="cohort-card__avatar" src="https://i.pravatar.cc/24?img=31" alt="" width="24" height="24" loading="lazy">
+                            <img class="cohort-card__avatar" src="https://i.pravatar.cc/24?img=32" alt="" width="24" height="24" loading="lazy">
+                            <span class="cohort-card__more" aria-label="9 more members">+9</span>
+                        </div>
+                        <span class="cohort-card__chevron" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </span>
+                    </a>
+
+                </div>
+            </section>
+
+            <div class="bottom-spacer"></div>
+
+        </main>
+
+        <!-- ── Bottom Navigation ────────────────────────── -->
+        <nav class="app-shell__nav" aria-label="Main navigation">
+
+            <a href="#practice" class="nav-item" aria-label="Practice">
+                <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+                </svg>
+                <span class="nav-item__label">Practice</span>
+            </a>
+
+            <a href="#progress" class="nav-item" aria-label="Progress">
+                <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+                </svg>
+                <span class="nav-item__label">Progress</span>
+            </a>
+
+            <button class="nav-item nav-item--record" aria-label="Record a new story">
+                <span class="nav-fab">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" y1="19" x2="12" y2="23"/>
+                        <line x1="8" y1="23" x2="16" y2="23"/>
+                    </svg>
+                </span>
+                <span class="nav-item__label">Record</span>
+            </button>
+
+            <a href="#community" class="nav-item active" aria-label="Community" aria-current="page">
+                <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span class="nav-item__label">Community</span>
+            </a>
+
+            <a href="#tracks" class="nav-item" aria-label="Tracks">
+                <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                </svg>
+                <span class="nav-item__label">Tracks</span>
+            </a>
+
+        </nav>
+
+    </div>
+</body>
+</html>
