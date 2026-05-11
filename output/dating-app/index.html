@@ -342,51 +342,34 @@
       display: none;
       width: 100%;
       height: 100%;
-      flex-direction: column;
-      align-items: center;
+      overflow-y: auto;
+      padding: 24px;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      align-content: flex-start;
     }
 
     .preview-frame-wrap[data-mode="screenshots"] .device-frame { display: none; }
     .preview-frame-wrap[data-mode="screenshots"] .screenshots-view { display: flex; }
 
-    .viewport-toggle {
-      display: inline-flex;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      margin-bottom: 16px;
-      flex-shrink: 0;
+    .screenshot-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
 
-    .viewport-toggle-btn {
-      padding: 5px 14px;
-      font-family: inherit;
+    .screenshot-card-label {
       font-size: 0.6875rem;
       font-weight: 600;
-      border: none;
-      cursor: pointer;
-      background: var(--surface);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       color: var(--text-3);
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      transition: background 120ms, color 120ms;
-    }
-    .viewport-toggle-btn:not(:last-child) { border-right: 1px solid var(--border); }
-    .viewport-toggle-btn:hover { background: var(--elevated); color: var(--text-2); }
-    .viewport-toggle-btn.active { background: var(--text-1); color: #fff; }
-    .viewport-toggle-btn svg { width: 12px; height: 12px; }
-
-    .screenshot-frame {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow-y: auto;
-      width: 100%;
     }
 
-    .screenshot-frame img {
+    .screenshot-card img {
       display: block;
       height: auto;
       border-radius: var(--radius-lg);
@@ -394,13 +377,13 @@
       border: 1px solid var(--border);
     }
 
-    .screenshot-frame[data-viewport="mobile"] img {
-      max-width: 390px;
+    .screenshot-card.mobile img {
+      max-width: 300px;
       width: 100%;
     }
 
-    .screenshot-frame[data-viewport="desktop"] img {
-      max-width: 100%;
+    .screenshot-card.desktop img {
+      max-width: 720px;
       width: 100%;
     }
 
@@ -490,18 +473,13 @@
           <iframe id="preview-iframe" title="Screen preview"></iframe>
         </div>
         <div class="screenshots-view" id="screenshots-view">
-          <div class="viewport-toggle" id="viewport-toggle">
-            <button class="viewport-toggle-btn active" data-viewport="mobile">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-              Mobile
-            </button>
-            <button class="viewport-toggle-btn" data-viewport="desktop">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-              Desktop
-            </button>
+          <div class="screenshot-card mobile">
+            <span class="screenshot-card-label">Mobile</span>
+            <img id="screenshot-mobile" alt="Mobile screenshot">
           </div>
-          <div class="screenshot-frame" id="screenshot-frame" data-viewport="mobile">
-            <img id="screenshot-img" alt="Screenshot preview">
+          <div class="screenshot-card desktop">
+            <span class="screenshot-card-label">Desktop</span>
+            <img id="screenshot-desktop" alt="Desktop screenshot">
           </div>
         </div>
       </div>
@@ -595,17 +573,15 @@
       });
     }
 
-    let screenshotViewport = "mobile";
-    const screenshotImg    = document.getElementById("screenshot-img");
-    const screenshotFrame  = document.getElementById("screenshot-frame");
-    const viewportToggle   = document.getElementById("viewport-toggle");
+    const screenshotMobileImg  = document.getElementById("screenshot-mobile");
+    const screenshotDesktopImg = document.getElementById("screenshot-desktop");
 
     function renderScreenshots(s) {
       const ss = s.screenshots;
-      const src = screenshotViewport === "mobile" ? ss.mobile : ss.desktop;
-      screenshotImg.src = src;
-      screenshotImg.alt = `${s.name} — ${screenshotViewport}`;
-      screenshotFrame.dataset.viewport = screenshotViewport;
+      screenshotMobileImg.src = ss.mobile;
+      screenshotMobileImg.alt = `${s.name} — Mobile`;
+      screenshotDesktopImg.src = ss.desktop;
+      screenshotDesktopImg.alt = `${s.name} — Desktop`;
     }
 
     function setViewMode(mode) {
@@ -676,15 +652,6 @@
       const btn = e.target.closest(".mode-toggle-btn");
       if (!btn || btn.dataset.mode === viewMode) return;
       setViewMode(btn.dataset.mode);
-    });
-    viewportToggle.addEventListener("click", (e) => {
-      const btn = e.target.closest(".viewport-toggle-btn");
-      if (!btn || btn.dataset.viewport === screenshotViewport) return;
-      screenshotViewport = btn.dataset.viewport;
-      viewportToggle.querySelectorAll(".viewport-toggle-btn").forEach(b => {
-        b.classList.toggle("active", b.dataset.viewport === screenshotViewport);
-      });
-      renderScreenshots(flatScreens[activeIndex]);
     });
 
     document.addEventListener("keydown", (e) => {
