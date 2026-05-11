@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StoryCraft — Screenshot Gallery</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0f0f11;
+    color: #e4e4e7;
+    padding: 2rem;
+    line-height: 1.5;
+  }
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #fff;
+  }
+  .subtitle {
+    color: #71717a;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+  .controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .controls button {
+    padding: 0.4rem 1rem;
+    border: 1px solid #27272a;
+    border-radius: 6px;
+    background: #18181b;
+    color: #a1a1aa;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+  }
+  .controls button:hover { border-color: #3f3f46; color: #e4e4e7; }
+  .controls button.active { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+  .screen-section {
+    margin-bottom: 2.5rem;
+    border: 1px solid #27272a;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #18181b;
+  }
+  .screen-header {
+    padding: 0.75rem 1.25rem;
+    background: #1e1e22;
+    border-bottom: 1px solid #27272a;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .screen-number {
+    background: #7c3aed;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .screen-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #fff;
+  }
+  .screenshots-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    align-items: start;
+  }
+  .screenshots-row.desktop-only { grid-template-columns: 1fr; }
+  .screenshots-row.mobile-only  { grid-template-columns: 200px; }
+  .screenshot-wrapper {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #27272a;
+    background: #0f0f11;
+  }
+  .screenshot-wrapper img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .viewport-badge {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    background: rgba(0,0,0,0.7);
+    color: #d4d4d8;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    backdrop-filter: blur(4px);
+  }
+  .hidden { display: none !important; }
+  @media (max-width: 768px) {
+    body { padding: 1rem; }
+    .screenshots-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<h1>StoryCraft — Screenshot Gallery</h1>
+<p class="subtitle">16 screens · Mobile (390px) & Desktop (1440px) viewports · Generated <span id="date"></span></p>
+
+<div class="controls">
+  <button class="active" data-filter="all">All</button>
+  <button data-filter="mobile">Mobile only</button>
+  <button data-filter="desktop">Desktop only</button>
+</div>
+
+<div id="gallery"></div>
+
+<script>
+const screens = [
+  { num: '01', slug: '01-onboarding-value',   title: 'Onboarding — Value Proposition' },
+  { num: '02', slug: '02-onboarding-mic',      title: 'Onboarding — Microphone Setup' },
+  { num: '03', slug: '03-onboarding-tracks',   title: 'Onboarding — Track Selection' },
+  { num: '04', slug: '04-auth',                title: 'Authentication' },
+  { num: '05', slug: '05-home',                title: 'Home' },
+  { num: '06', slug: '06-recording-studio',    title: 'Recording Studio' },
+  { num: '07', slug: '07-analysis-feedback',   title: 'Analysis & Feedback' },
+  { num: '08', slug: '08-progress-dashboard',  title: 'Progress Dashboard' },
+  { num: '09', slug: '09-learning-tracks',     title: 'Learning Tracks' },
+  { num: '10', slug: '10-track-detail',        title: 'Track Detail' },
+  { num: '11', slug: '11-community-hub',       title: 'Community Hub' },
+  { num: '12', slug: '12-recording-playback',  title: 'Recording Playback' },
+  { num: '13', slug: '13-settings',            title: 'Settings' },
+  { num: '14', slug: '14-subscription-tiers',  title: 'Subscription Tiers' },
+  { num: '15', slug: '15-challenge-detail',    title: 'Challenge Detail' },
+  { num: '16', slug: '16-leaderboard',         title: 'Leaderboard' },
+];
+
+document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const gallery = document.getElementById('gallery');
+
+screens.forEach(s => {
+  const section = document.createElement('div');
+  section.className = 'screen-section';
+  section.innerHTML = `
+    <div class="screen-header">
+      <span class="screen-number">${s.num}</span>
+      <span class="screen-title">${s.title}</span>
+    </div>
+    <div class="screenshots-row">
+      <div class="screenshot-wrapper" data-viewport="mobile">
+        <span class="viewport-badge">Mobile 390px</span>
+        <img src="${s.slug}-mobile.png" alt="${s.title} — Mobile" loading="lazy">
+      </div>
+      <div class="screenshot-wrapper" data-viewport="desktop">
+        <span class="viewport-badge">Desktop 1440px</span>
+        <img src="${s.slug}-desktop.png" alt="${s.title} — Desktop" loading="lazy">
+      </div>
+    </div>`;
+  gallery.appendChild(section);
+});
+
+document.querySelector('.controls').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+
+  const filter = e.target.dataset.filter;
+  document.querySelectorAll('.screenshots-row').forEach(row => {
+    row.classList.remove('desktop-only', 'mobile-only');
+    row.querySelectorAll('.screenshot-wrapper').forEach(w => w.classList.remove('hidden'));
+
+    if (filter === 'mobile') {
+      row.classList.add('mobile-only');
+      row.querySelectorAll('[data-viewport="desktop"]').forEach(w => w.classList.add('hidden'));
+    } else if (filter === 'desktop') {
+      row.classList.add('desktop-only');
+      row.querySelectorAll('[data-viewport="mobile"]').forEach(w => w.classList.add('hidden'));
+    }
+  });
+});
+</script>
+</body>
+</html>
