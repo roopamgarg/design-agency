@@ -653,6 +653,7 @@
         const doc = iframe.contentDocument || iframe.contentWindow.document;
         if (doc && doc.documentElement) {
           doc.documentElement.setAttribute("data-theme", currentTheme);
+          doc.documentElement.style.colorScheme = currentTheme === "dark" ? "only dark" : "only light";
         }
       } catch (e) {}
     }

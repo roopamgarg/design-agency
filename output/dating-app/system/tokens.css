@@ -383,7 +383,7 @@
 
 /* Dark mode overrides */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root {
     --color-bg-primary: var(--color-dark-bg-primary);
     --color-bg-secondary: var(--color-dark-bg-secondary);
     --color-bg-tertiary: var(--color-dark-bg-tertiary);
