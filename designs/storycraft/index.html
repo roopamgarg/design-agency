@@ -266,13 +266,15 @@
 
     @media (max-width: 768px) {
       :root { --sidebar-w: 100%; }
-      .shell { flex-direction: column; }
+      body { overflow: auto; }
+      .shell { flex-direction: column; overflow: visible; min-height: 0; }
       .sidebar {
         width: 100%; max-height: 40vh; border-right: none;
-        border-bottom: 1px solid var(--border); overflow: hidden;
+        border-bottom: 1px solid var(--border); overflow-y: auto;
       }
-      .sidebar.collapsed { max-height: 0; visibility: hidden; border-bottom-width: 0; }
-      .preview-frame-wrap { padding: 12px; }
+      .sidebar.collapsed { max-height: 0; overflow: hidden; visibility: hidden; border-bottom-width: 0; }
+      .preview-panel { min-height: 0; overflow: visible; }
+      .preview-frame-wrap { padding: 12px; overflow-y: auto; min-height: 60vh; }
       .device-frame { max-width: 100%; border-radius: var(--radius-md); }
       .open-tab-btn .btn-label { display: none; }
       .open-tab-btn { padding: 6px 8px; gap: 0; }
