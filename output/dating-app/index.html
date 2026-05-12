@@ -387,23 +387,12 @@
       width: 100%;
     }
 
-    @media (max-width: 768px) {
-      :root { --sidebar-w: 100%; }
-      .shell { flex-direction: column; }
-      .sidebar {
-        width: 100%;
-        max-height: 40vh;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-      }
-      .sidebar.collapsed { display: none; }
-      .preview-frame-wrap { padding: 12px; }
-      .device-frame { max-width: 100%; border-radius: var(--radius-md); }
-      .toggle-sidebar-btn { display: flex; }
+    .sidebar {
+      transition: margin-left 250ms ease, max-height 250ms ease, visibility 250ms, border-bottom-width 250ms;
     }
 
     .toggle-sidebar-btn {
-      display: none;
+      display: flex;
       width: 32px;
       height: 32px;
       border-radius: var(--radius-sm);
@@ -413,11 +402,33 @@
       cursor: pointer;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
+      transition: background 120ms;
     }
+    .toggle-sidebar-btn:hover { background: var(--elevated); }
     .toggle-sidebar-btn svg { width: 16px; height: 16px; }
 
+    .open-tab-btn .btn-label { white-space: nowrap; }
+
+    @media (min-width: 769px) {
+      .sidebar.collapsed { margin-left: calc(-1 * var(--sidebar-w)); visibility: hidden; }
+    }
+
     @media (max-width: 768px) {
-      .toggle-sidebar-btn { display: flex; }
+      :root { --sidebar-w: 100%; }
+      .shell { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        max-height: 40vh;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        overflow: hidden;
+      }
+      .sidebar.collapsed { max-height: 0; visibility: hidden; border-bottom-width: 0; }
+      .preview-frame-wrap { padding: 12px; }
+      .device-frame { max-width: 100%; border-radius: var(--radius-md); }
+      .open-tab-btn .btn-label { display: none; }
+      .open-tab-btn { padding: 6px 8px; gap: 0; }
     }
   </style>
 </head>
@@ -462,9 +473,9 @@
             Screenshots
           </button>
         </div>
-        <button class="open-tab-btn" id="btn-open-tab">
+        <button class="open-tab-btn" id="btn-open-tab" title="Open in new tab">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          Open in new tab
+          <span class="btn-label">Open in new tab</span>
         </button>
       </div>
 
