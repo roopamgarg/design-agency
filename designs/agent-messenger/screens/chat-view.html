@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat View — Agent Messenger</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-normal);
+        color: var(--color-text-primary);
+        background: var(--color-bg-primary);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .messenger-shell {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) 1fr var(--context-panel-width);
+        min-height: 100vh;
+      }
+
+      /* ===== SIDEBAR (condensed for chat) ===== */
+      .sidebar {
+        background: var(--color-bg-sidebar);
+        border-right: 1px solid var(--color-border-default);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .sidebar__header {
+        padding: var(--space-4);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        border-bottom: 1px solid var(--color-border-default);
+        min-height: var(--header-height);
+      }
+
+      .sidebar__ws-avatar {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-md);
+        background: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-primary-contrast);
+        font-weight: var(--font-weight-bold);
+        font-size: var(--font-size-sm);
+        flex-shrink: 0;
+      }
+
+      .sidebar__ws-name {
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-base);
+      }
+
+      .sidebar__section {
+        padding: var(--space-2) var(--space-3);
+      }
+
+      .sidebar__section-title {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+        padding: var(--space-1) var(--space-2);
+        margin-bottom: var(--space-1);
+      }
+
+      .sidebar__channel {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-1-5) var(--space-2);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-sm);
+        transition: background var(--transition-fast);
+        min-height: 36px;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        font-family: var(--font-family-sans);
+      }
+
+      .sidebar__channel:hover { background: var(--color-bg-hover); }
+      .sidebar__channel--active {
+        background: var(--color-bg-active);
+        color: var(--color-text-primary);
+      }
+
+      .sidebar__channel-hash {
+        color: var(--color-text-tertiary);
+        font-weight: var(--font-weight-medium);
+        width: 18px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .sidebar__channel-badge {
+        margin-left: auto;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        background: var(--color-primary);
+        color: var(--color-primary-contrast);
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        border-radius: var(--badge-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sidebar__agent {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-1-5) var(--space-2);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        min-height: 36px;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        font-family: var(--font-family-sans);
+        color: inherit;
+      }
+
+      .sidebar__agent:hover { background: var(--color-bg-hover); }
+
+      .sidebar__agent-avi {
+        width: 24px;
+        height: 24px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .sidebar__agent-name {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+      }
+
+      .sidebar__agent-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-full);
+        flex-shrink: 0;
+      }
+
+      .sidebar__footer {
+        margin-top: auto;
+        padding: var(--space-3) var(--space-4);
+        border-top: 1px solid var(--color-border-default);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .sidebar__user-avi {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .sidebar__user-name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+      }
+
+      /* ===== MAIN: CHAT AREA (Zone 2) ===== */
+      .chat-area {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--color-bg-primary);
+      }
+
+      .chat-header {
+        display: flex;
+        align-items: center;
+        padding: 0 var(--space-5);
+        min-height: var(--header-height);
+        border-bottom: 1px solid var(--color-border-default);
+        gap: var(--space-3);
+      }
+
+      .chat-header__channel {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .chat-header__hash {
+        font-size: var(--font-size-lg);
+        color: var(--color-text-tertiary);
+        font-weight: var(--font-weight-medium);
+      }
+
+      .chat-header__name {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .chat-header__desc {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        margin-left: var(--space-3);
+        padding-left: var(--space-3);
+        border-left: 1px solid var(--color-border-default);
+      }
+
+      .chat-header__actions {
+        margin-left: auto;
+        display: flex;
+        gap: var(--space-1);
+      }
+
+      .chat-header__btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        transition: background var(--transition-fast);
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+      }
+
+      .chat-header__btn:hover { background: var(--color-bg-hover); }
+      .chat-header__btn svg { width: 18px; height: 18px; }
+
+      /* Agent activity strip */
+      .activity-strip {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-2) var(--space-5);
+        background: var(--color-bg-secondary);
+        border-bottom: 1px solid var(--color-border-default);
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        overflow-x: auto;
+      }
+
+      .activity-strip__item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1-5);
+        white-space: nowrap;
+      }
+
+      .activity-strip__avatar {
+        width: 20px;
+        height: 20px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .activity-strip__dot {
+        width: 6px;
+        height: 6px;
+        border-radius: var(--radius-full);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .activity-strip__dot { animation: none; opacity: 1; }
+        .streaming-indicator__dot { animation: none; opacity: 0.6; }
+      }
+
+      /* Messages list */
+      .messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-4) var(--space-5);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .message {
+        display: flex;
+        gap: var(--space-3);
+        max-width: var(--msg-max-width);
+      }
+
+      .message--user { align-self: flex-end; flex-direction: row-reverse; }
+
+      .message__avatar {
+        width: var(--avatar-md);
+        height: var(--avatar-md);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        flex-shrink: 0;
+        margin-top: var(--space-0-5);
+      }
+
+      .message__body { flex: 1; min-width: 0; }
+
+      .message__meta {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-bottom: var(--space-1);
+      }
+
+      .message--user .message__meta { flex-direction: row-reverse; }
+
+      .message__author {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-primary);
+      }
+
+      .message__agent-badge {
+        font-size: var(--font-size-2xs);
+        padding: 1px 6px;
+        border-radius: var(--badge-radius);
+        font-weight: var(--font-weight-medium);
+      }
+
+      .message__time {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .message__bubble {
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--radius-msg);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-relaxed);
+      }
+
+      .message--agent .message__bubble {
+        background: var(--color-msg-agent-bg);
+        border: 1px solid var(--color-border-default);
+        border-top-left-radius: var(--radius-msg-tail);
+      }
+
+      .message--user .message__bubble {
+        background: var(--color-msg-user-bg);
+        border-top-right-radius: var(--radius-msg-tail);
+        color: var(--color-text-primary);
+      }
+
+      .message--system .message__bubble {
+        background: var(--color-msg-system-bg);
+        border: 1px solid var(--color-border-subtle);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        text-align: center;
+        border-radius: var(--radius-lg);
+        padding: var(--space-2) var(--space-4);
+      }
+
+      .message--system {
+        align-self: center;
+        max-width: none;
+      }
+
+      /* Markdown rendering in messages */
+      .message__bubble p { margin-bottom: var(--space-2); }
+      .message__bubble p:last-child { margin-bottom: 0; }
+
+      .message__bubble strong {
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-primary);
+      }
+
+      .message__bubble em { font-style: italic; }
+
+      .message__bubble code {
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-xs);
+        background: var(--color-msg-code-bg);
+        padding: 2px 6px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--color-msg-code-border);
+      }
+
+      .message__bubble ul, .message__bubble ol {
+        padding-left: var(--space-5);
+        margin: var(--space-2) 0;
+      }
+
+      .message__bubble li {
+        margin-bottom: var(--space-1);
+        font-size: var(--font-size-sm);
+      }
+
+      /* Code block */
+      .code-block {
+        margin: var(--space-3) 0;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        border: 1px solid var(--color-msg-code-border);
+      }
+
+      .code-block__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-2) var(--space-3);
+        background: var(--color-msg-code-bg);
+        border-bottom: 1px solid var(--color-msg-code-border);
+      }
+
+      .code-block__lang {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+        font-family: var(--font-family-mono);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+      }
+
+      .code-block__copy {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: var(--space-1) var(--space-2);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-family-sans);
+        transition: background var(--transition-fast);
+      }
+
+      .code-block__copy:hover {
+        background: var(--color-bg-hover);
+        color: var(--color-text-secondary);
+      }
+
+      .code-block__body {
+        padding: var(--space-3) var(--space-4);
+        background: var(--color-msg-code-bg);
+        overflow-x: auto;
+      }
+
+      .code-block__body pre {
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-xs);
+        line-height: 1.6;
+        color: var(--color-text-secondary);
+        white-space: pre;
+      }
+
+      .code-block__body .kw { color: var(--color-agent-2); }
+      .code-block__body .fn { color: var(--color-agent-3); }
+      .code-block__body .str { color: var(--color-agent-6); }
+      .code-block__body .cm { color: var(--color-text-tertiary); }
+      .code-block__body .num { color: var(--color-agent-4); }
+
+      /* Tool usage badge */
+      .tool-usage {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1-5);
+        padding: var(--space-1) var(--space-2);
+        background: var(--tool-badge-bg);
+        border: 1px solid var(--tool-badge-border);
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-2xs);
+        color: var(--tool-badge-text);
+        margin: var(--space-2) 0;
+      }
+
+      .tool-usage__icon {
+        width: 14px;
+        height: 14px;
+        color: var(--color-agent-3);
+      }
+
+      /* Task card inline */
+      .task-card-inline {
+        margin: var(--space-3) 0;
+        padding: var(--space-3);
+        background: var(--color-card-task-bg);
+        border: 1px solid var(--color-card-task-border);
+        border-radius: var(--radius-lg);
+      }
+
+      .task-card-inline__header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-bottom: var(--space-2);
+      }
+
+      .task-card-inline__icon {
+        width: 16px;
+        height: 16px;
+        color: var(--color-accent);
+      }
+
+      .task-card-inline__label {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-accent);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+      }
+
+      .task-card-inline__title {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+        margin-bottom: var(--space-1);
+      }
+
+      .task-card-inline__meta {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      .task-card-inline__status {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+      }
+
+      .task-card-inline__dot {
+        width: 6px;
+        height: 6px;
+        border-radius: var(--radius-full);
+      }
+
+      /* Streaming indicator */
+      .streaming-indicator {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: var(--space-1) 0;
+      }
+
+      .streaming-indicator__dot {
+        width: 4px;
+        height: 4px;
+        border-radius: var(--radius-full);
+        background: var(--color-text-tertiary);
+        animation: streamDot 1.4s infinite ease-in-out;
+      }
+
+      .streaming-indicator__dot:nth-child(2) { animation-delay: 0.2s; }
+      .streaming-indicator__dot:nth-child(3) { animation-delay: 0.4s; }
+
+      @keyframes streamDot {
+        0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+        40% { opacity: 1; transform: scale(1); }
+      }
+
+      /* Thread reply link */
+      .thread-link {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-top: var(--space-2);
+        padding: var(--space-1-5) 0;
+        cursor: pointer;
+        font-size: var(--font-size-xs);
+        color: var(--color-text-link);
+        font-weight: var(--font-weight-medium);
+        border: none;
+        background: none;
+      }
+
+      .thread-link:hover { text-decoration: underline; }
+
+      .thread-link__avatars {
+        display: flex;
+      }
+
+      .thread-link__avatar {
+        width: 20px;
+        height: 20px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        border: 2px solid var(--color-bg-primary);
+        margin-left: -6px;
+      }
+
+      .thread-link__avatar:first-child { margin-left: 0; }
+
+      /* Message reactions */
+      .message__reactions {
+        display: flex;
+        gap: var(--space-1);
+        margin-top: var(--space-2);
+        flex-wrap: wrap;
+      }
+
+      .reaction {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: 2px 8px;
+        background: var(--color-bg-tertiary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-2xs);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .reaction:hover { background: var(--color-bg-elevated); }
+
+      .reaction__emoji { font-size: var(--font-size-sm); }
+      .reaction__count { color: var(--color-text-secondary); }
+
+      /* Composer */
+      .composer {
+        padding: var(--space-3) var(--space-5);
+        border-top: 1px solid var(--color-border-default);
+        background: var(--color-bg-primary);
+      }
+
+      .composer__wrap {
+        display: flex;
+        align-items: flex-end;
+        gap: var(--space-2);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-xl);
+        padding: var(--space-2) var(--space-3);
+        transition: border-color var(--transition-fast);
+      }
+
+      .composer__wrap:focus-within {
+        border-color: var(--color-border-focus);
+        box-shadow: 0 0 0 3px var(--color-primary-subtle);
+      }
+
+      .composer__actions-left {
+        display: flex;
+        gap: var(--space-1);
+      }
+
+      .composer__btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-tertiary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        transition: color var(--transition-fast);
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+      }
+
+      .composer__btn:hover { color: var(--color-text-secondary); }
+      .composer__btn svg { width: 18px; height: 18px; }
+
+      .composer__input {
+        flex: 1;
+        border: none;
+        background: none;
+        color: var(--color-text-primary);
+        font-size: var(--font-size-base);
+        font-family: var(--font-family-sans);
+        line-height: var(--line-height-normal);
+        resize: none;
+        min-height: 36px;
+        max-height: 120px;
+        padding: var(--space-1-5) 0;
+      }
+
+      .composer__input::placeholder { color: var(--color-text-tertiary); }
+      .composer__input:focus { outline: none; }
+
+      .composer__send {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: var(--color-primary);
+        color: var(--color-primary-contrast);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        transition: background var(--transition-fast);
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+      }
+
+      .composer__send:hover { background: var(--color-primary-dark); }
+      .composer__send svg { width: 16px; height: 16px; }
+
+      .composer__hint {
+        text-align: center;
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+        padding-top: var(--space-1-5);
+      }
+
+      /* ===== THREAD PANEL (Zone 3) ===== */
+      .thread-panel {
+        background: var(--color-bg-secondary);
+        border-left: 1px solid var(--color-border-default);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .thread-panel__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-4);
+        min-height: var(--header-height);
+        border-bottom: 1px solid var(--color-border-default);
+      }
+
+      .thread-panel__title {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .thread-panel__close {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-tertiary);
+        cursor: pointer;
+        border-radius: var(--radius-sm);
+      }
+
+      .thread-panel__close:hover { background: var(--color-bg-hover); }
+      .thread-panel__close svg { width: 16px; height: 16px; }
+
+      .thread-panel__messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-3) var(--space-4);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .thread-msg {
+        display: flex;
+        gap: var(--space-2);
+      }
+
+      .thread-msg__avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .thread-msg__body { flex: 1; min-width: 0; }
+
+      .thread-msg__meta {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-bottom: var(--space-0-5);
+      }
+
+      .thread-msg__name {
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-primary);
+      }
+
+      .thread-msg__time {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .thread-msg__text {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        line-height: var(--line-height-relaxed);
+      }
+
+      .thread-panel__composer {
+        padding: var(--space-3) var(--space-4);
+        border-top: 1px solid var(--color-border-default);
+      }
+
+      .thread-panel__input-wrap {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-lg);
+        padding: var(--space-2) var(--space-3);
+      }
+
+      .thread-panel__input {
+        flex: 1;
+        border: none;
+        background: none;
+        color: var(--color-text-primary);
+        font-size: var(--font-size-sm);
+        font-family: var(--font-family-sans);
+      }
+
+      .thread-panel__input::placeholder { color: var(--color-text-tertiary); }
+      .thread-panel__input:focus { outline: none; }
+
+      .thread-panel__send {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: var(--color-primary);
+        color: var(--color-primary-contrast);
+        cursor: pointer;
+        border-radius: var(--radius-sm);
+      }
+
+      .thread-panel__send svg { width: 14px; height: 14px; }
+
+      /* ===== RESPONSIVE ===== */
+      .mobile-menu-btn {
+        display: none;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+      }
+
+      .mobile-menu-btn svg { width: 20px; height: 20px; }
+
+      @media (max-width: 1024px) {
+        .messenger-shell {
+          grid-template-columns: 1fr;
+        }
+        .sidebar { display: none; }
+        .thread-panel { display: none; }
+        .mobile-menu-btn { display: flex; }
+      }
+
+      @media (max-width: 768px) {
+        .messages { padding: var(--space-3) var(--space-4); }
+        .composer { padding: var(--space-3) var(--space-4); }
+        .chat-header { padding: 0 var(--space-4); }
+        .activity-strip { padding: var(--space-2) var(--space-4); }
+      }
+
+      @media (max-width: 390px) {
+        .message { max-width: 100%; }
+        .composer__actions-left { display: none; }
+      }
+    </style>
+</head>
+<body>
+  <div data-product="agent-messenger" data-screen="chat-view">
+    <div class="messenger-shell">
+
+      <!-- ===== SIDEBAR ===== -->
+      <nav class="sidebar" aria-label="Workspace navigation">
+        <div class="sidebar__header">
+          <div class="sidebar__ws-avatar">S</div>
+          <span class="sidebar__ws-name">StoryCraft</span>
+        </div>
+        <div class="sidebar__section">
+          <div class="sidebar__section-title">Channels</div>
+          <button class="sidebar__channel sidebar__channel--active" type="button" aria-current="page">
+            <span class="sidebar__channel-hash">#</span> engineering
+          </button>
+          <button class="sidebar__channel" type="button">
+            <span class="sidebar__channel-hash">#</span> general
+            <span class="sidebar__channel-badge">3</span>
+          </button>
+          <button class="sidebar__channel" type="button">
+            <span class="sidebar__channel-hash">#</span> design
+          </button>
+          <button class="sidebar__channel" type="button">
+            <span class="sidebar__channel-hash">#</span> marketing
+          </button>
+          <button class="sidebar__channel" type="button">
+            <span class="sidebar__channel-hash">#</span> research
+          </button>
+        </div>
+        <div class="sidebar__section">
+          <div class="sidebar__section-title">Agents</div>
+          <button class="sidebar__agent" type="button">
+            <img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=5" alt="Code Assistant">
+            <span class="sidebar__agent-name">Code Assistant</span>
+            <span class="sidebar__agent-dot" style="background: var(--color-status-working)"></span>
+          </button>
+          <button class="sidebar__agent" type="button">
+            <img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=1" alt="UX Architect">
+            <span class="sidebar__agent-name">UX Architect</span>
+            <span class="sidebar__agent-dot" style="background: var(--color-status-online)"></span>
+          </button>
+          <button class="sidebar__agent" type="button">
+            <img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=8" alt="Research Bot">
+            <span class="sidebar__agent-name">Research Bot</span>
+            <span class="sidebar__agent-dot" style="background: var(--color-status-online)"></span>
+          </button>
+        </div>
+        <div class="sidebar__footer">
+          <img class="sidebar__user-avi" src="https://i.pravatar.cc/64?img=33" alt="User">
+          <span class="sidebar__user-name">Alex Chen</span>
+        </div>
+      </nav>
+
+      <!-- ===== CHAT AREA ===== -->
+      <main class="chat-area">
+        <header class="chat-header">
+          <button class="mobile-menu-btn" aria-label="Open navigation menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+          </button>
+          <div class="chat-header__channel">
+            <span class="chat-header__hash">#</span>
+            <h1 class="chat-header__name">engineering</h1>
+          </div>
+          <span class="chat-header__desc">Backend API, infrastructure, and engineering tasks</span>
+          <div class="chat-header__actions">
+            <button class="chat-header__btn" aria-label="Search in channel">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </button>
+            <button class="chat-header__btn" aria-label="Pin messages">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17v5M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
+            </button>
+            <button class="chat-header__btn" aria-label="Channel members">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="activity-strip" aria-label="Agent activity">
+          <div class="activity-strip__item">
+            <img class="activity-strip__avatar" src="https://i.pravatar.cc/40?img=5" alt="Code Assistant">
+            <span class="activity-strip__dot" style="background: var(--color-status-working)"></span>
+            <span>Code Assistant is typing...</span>
+          </div>
+          <div class="activity-strip__item">
+            <img class="activity-strip__avatar" src="https://i.pravatar.cc/40?img=8" alt="Research Bot">
+            <span class="activity-strip__dot" style="background: var(--color-status-online)"></span>
+            <span>Research Bot is idle</span>
+          </div>
+        </div>
+
+        <div class="messages" role="log" aria-label="Chat messages">
+          <!-- System message -->
+          <div class="message message--system">
+            <div class="message__bubble">
+              <strong>Code Assistant</strong> joined #engineering — Today at 9:00 AM
+            </div>
+          </div>
+
+          <!-- User message -->
+          <div class="message message--user">
+            <img class="message__avatar" src="https://i.pravatar.cc/80?img=33" alt="Alex Chen">
+            <div class="message__body">
+              <div class="message__meta">
+                <span class="message__author">Alex Chen</span>
+                <span class="message__time">9:15 AM</span>
+              </div>
+              <div class="message__bubble">
+                <p>Hey @Code Assistant, can you refactor the authentication module to use JWT tokens? The current session-based approach is creating scaling issues.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agent message with markdown -->
+          <div class="message message--agent">
+            <img class="message__avatar" src="https://i.pravatar.cc/80?img=5" alt="Code Assistant">
+            <div class="message__body">
+              <div class="message__meta">
+                <span class="message__author">Code Assistant</span>
+                <span class="message__agent-badge" style="background: var(--color-agent-2-subtle); color: var(--color-agent-2);">Engineering</span>
+                <span class="message__time">9:16 AM</span>
+              </div>
+              <div class="message__bubble">
+                <p>I'll handle the JWT migration. Here's my approach:</p>
+                <ul>
+                  <li>Replace <code>express-session</code> with <code>jsonwebtoken</code></li>
+                  <li>Add refresh token rotation for security</li>
+                  <li>Migrate existing sessions with a backward-compatible wrapper</li>
+                  <li>Update all middleware to validate JWT headers</li>
+                </ul>
+
+                <div class="tool-usage">
+                  <svg class="tool-usage__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
+                  Used <strong>github</strong> — Checked current auth module structure
+                </div>
+
+                <p>Here's the core token generation function:</p>
+
+                <div class="code-block">
+                  <div class="code-block__header">
+                    <span class="code-block__lang">typescript</span>
+                    <button class="code-block__copy">Copy</button>
+                  </div>
+                  <div class="code-block__body">
+<pre><span class="kw">import</span> jwt <span class="kw">from</span> <span class="str">'jsonwebtoken'</span>;
+<span class="kw">import</span> { randomBytes } <span class="kw">from</span> <span class="str">'crypto'</span>;
+
+<span class="kw">interface</span> TokenPayload {
+  userId: <span class="kw">string</span>;
+  workspaceId: <span class="kw">string</span>;
+  permissions: <span class="kw">string</span>[];
+}
+
+<span class="kw">export function</span> <span class="fn">generateTokenPair</span>(payload: TokenPayload) {
+  <span class="kw">const</span> accessToken = jwt.<span class="fn">sign</span>(payload, process.env.JWT_SECRET!, {
+    expiresIn: <span class="str">'15m'</span>,
+    algorithm: <span class="str">'HS256'</span>,
+  });
+
+  <span class="kw">const</span> refreshToken = randomBytes(<span class="num">64</span>).<span class="fn">toString</span>(<span class="str">'hex'</span>);
+
+  <span class="kw">return</span> { accessToken, refreshToken };
+}</pre>
+                  </div>
+                </div>
+
+                <p>Estimated completion: <strong>~45 minutes</strong>. I'll update when done.</p>
+              </div>
+
+              <button class="thread-link">
+                <span class="thread-link__avatars">
+                  <img class="thread-link__avatar" src="https://i.pravatar.cc/40?img=33" alt="Alex">
+                  <img class="thread-link__avatar" src="https://i.pravatar.cc/40?img=5" alt="Code Assistant">
+                </span>
+                3 replies
+              </button>
+
+              <div class="message__reactions">
+                <span class="reaction"><span class="reaction__emoji">&#x1F44D;</span> <span class="reaction__count">2</span></span>
+                <span class="reaction"><span class="reaction__emoji">&#x1F680;</span> <span class="reaction__count">1</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agent message with task card -->
+          <div class="message message--agent">
+            <img class="message__avatar" src="https://i.pravatar.cc/80?img=5" alt="Code Assistant">
+            <div class="message__body">
+              <div class="message__meta">
+                <span class="message__author">Code Assistant</span>
+                <span class="message__agent-badge" style="background: var(--color-agent-2-subtle); color: var(--color-agent-2);">Engineering</span>
+                <span class="message__time">9:17 AM</span>
+              </div>
+              <div class="message__bubble">
+                <p>I've created a task to track this work:</p>
+                <div class="task-card-inline">
+                  <div class="task-card-inline__header">
+                    <svg class="task-card-inline__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                    <span class="task-card-inline__label">Task Created</span>
+                  </div>
+                  <div class="task-card-inline__title">Migrate authentication from sessions to JWT</div>
+                  <div class="task-card-inline__meta">
+                    <div class="task-card-inline__status">
+                      <span class="task-card-inline__dot" style="background: var(--color-status-working)"></span>
+                      Running
+                    </div>
+                    <span>Assigned to Code Assistant</span>
+                    <span>ETA 45m</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- User follow-up -->
+          <div class="message message--user">
+            <img class="message__avatar" src="https://i.pravatar.cc/80?img=33" alt="Alex Chen">
+            <div class="message__body">
+              <div class="message__meta">
+                <span class="message__author">Alex Chen</span>
+                <span class="message__time">9:20 AM</span>
+              </div>
+              <div class="message__bubble">
+                <p>Great approach. Make sure to also update the rate limiter middleware — it currently uses session IDs for tracking.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Streaming message -->
+          <div class="message message--agent">
+            <img class="message__avatar" src="https://i.pravatar.cc/80?img=5" alt="Code Assistant">
+            <div class="message__body">
+              <div class="message__meta">
+                <span class="message__author">Code Assistant</span>
+                <span class="message__agent-badge" style="background: var(--color-agent-2-subtle); color: var(--color-agent-2);">Engineering</span>
+                <span class="message__time">9:21 AM</span>
+              </div>
+              <div class="message__bubble">
+                <p>Good catch. I'll update the rate limiter to use the JWT <code>sub</code> claim instead of session IDs. Here's the updated middleware</p>
+                <div class="streaming-indicator" aria-label="Agent is typing">
+                  <span class="streaming-indicator__dot"></span>
+                  <span class="streaming-indicator__dot"></span>
+                  <span class="streaming-indicator__dot"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="composer">
+          <div class="composer__wrap">
+            <div class="composer__actions-left">
+              <button class="composer__btn" aria-label="Attach file">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              </button>
+              <button class="composer__btn" aria-label="Mention agent">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg>
+              </button>
+            </div>
+            <textarea class="composer__input" rows="1" placeholder="Message #engineering — @mention an agent to engage" aria-label="Message input"></textarea>
+            <button class="composer__send" aria-label="Send message">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="m22 2-11 11"/></svg>
+            </button>
+          </div>
+          <div class="composer__hint">Press Enter to send, Shift+Enter for new line. Use @ to mention agents.</div>
+        </div>
+      </main>
+
+      <!-- ===== THREAD PANEL ===== -->
+      <aside class="thread-panel" aria-label="Thread replies">
+        <div class="thread-panel__header">
+          <h2 class="thread-panel__title">Thread</h2>
+          <button class="thread-panel__close" aria-label="Close thread">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div class="thread-panel__messages">
+          <div class="thread-msg">
+            <img class="thread-msg__avatar" src="https://i.pravatar.cc/56?img=5" alt="Code Assistant">
+            <div class="thread-msg__body">
+              <div class="thread-msg__meta">
+                <span class="thread-msg__name">Code Assistant</span>
+                <span class="thread-msg__time">9:16 AM</span>
+              </div>
+              <div class="thread-msg__text">
+                I'll handle the JWT migration. Here's my approach: replace express-session with jsonwebtoken, add refresh token rotation...
+              </div>
+            </div>
+          </div>
+
+          <div class="thread-msg">
+            <img class="thread-msg__avatar" src="https://i.pravatar.cc/56?img=33" alt="Alex Chen">
+            <div class="thread-msg__body">
+              <div class="thread-msg__meta">
+                <span class="thread-msg__name">Alex Chen</span>
+                <span class="thread-msg__time">9:18 AM</span>
+              </div>
+              <div class="thread-msg__text">
+                Should we also consider adding token blacklisting for logout? Some endpoints need immediate revocation.
+              </div>
+            </div>
+          </div>
+
+          <div class="thread-msg">
+            <img class="thread-msg__avatar" src="https://i.pravatar.cc/56?img=5" alt="Code Assistant">
+            <div class="thread-msg__body">
+              <div class="thread-msg__meta">
+                <span class="thread-msg__name">Code Assistant</span>
+                <span class="thread-msg__time">9:19 AM</span>
+              </div>
+              <div class="thread-msg__text">
+                Yes, I'll implement a Redis-backed blacklist for immediate revocation. Short-lived access tokens (15 min) limit exposure, but the blacklist catches the edge case. Adding it to the scope.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="thread-panel__composer">
+          <div class="thread-panel__input-wrap">
+            <input class="thread-panel__input" type="text" placeholder="Reply in thread..." aria-label="Thread reply input">
+            <button class="thread-panel__send" aria-label="Send reply">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="m22 2-11 11"/></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>

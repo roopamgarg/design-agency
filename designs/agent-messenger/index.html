@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Messenger — UI Design Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/project-viewer.css">
+</head>
+<body>
+  <script>
+    window.PROJECT_CONFIG = {
+      title: "Agent Messenger",
+      backLink: "../../index.html",
+      counterText: "9 screens · 1 prototype",
+      accent: "#6366F1",
+      accentLight: "rgba(99, 102, 241, 0.08)",
+      accentHover: "rgba(99, 102, 241, 0.14)",
+      screenshotPaths: function (htmlFile) {
+        var slug = htmlFile.split("/").pop().replace(".html", "");
+        var isProto = htmlFile.includes("prototypes/");
+        return {
+          desktop: isProto ? "prototypes/screenshots/" + slug + "-desktop.png" : "screenshots/" + slug + ".png",
+          mobile:  isProto ? "prototypes/screenshots/" + slug + "-mobile.png"  : "screenshots/" + slug + ".png",
+        };
+      },
+      screens: [
+        { group: "Authentication", items: [
+          { num: 1, file: "screens/login.html",  name: "Login",   desc: "OAuth & email sign-in" },
+          { num: 2, file: "screens/signup.html",  name: "Sign Up", desc: "Create account flow" },
+        ]},
+        { group: "Core Workspace", items: [
+          { num: 3, file: "screens/workspace-dashboard.html", name: "Workspace Dashboard", desc: "Channels, agents & activity overview" },
+          { num: 4, file: "screens/chat-view.html",           name: "Chat View",           desc: "Messaging with streaming & code blocks" },
+          { num: 5, file: "screens/agent-config.html",        name: "Agent Config",         desc: "Agent identity, model & tools setup" },
+        ]},
+        { group: "Management", items: [
+          { num: 6, file: "screens/task-management.html",    name: "Task Management",    desc: "Status groups, filters & task details" },
+          { num: 7, file: "screens/agent-delegation.html",   name: "Agent Delegation",   desc: "Visual delegation chains & handoffs" },
+          { num: 8, file: "screens/workspace-settings.html", name: "Workspace Settings", desc: "Members, permissions & integrations" },
+        ]},
+        { group: "States", items: [
+          { num: 9, file: "screens/states.html", name: "UI States", desc: "Empty, loading, error & edge cases" },
+        ]},
+        { group: "Prototypes", type: "prototype", items: [
+          { num: "P1", file: "prototypes/messenger-flow.html", name: "Messenger Flow", desc: "Full onboarding → chat → delegation" },
+        ]},
+      ]
+    };
+  </script>
+  <script src="../../shared/project-viewer.js"></script>
+</body>
+</html>

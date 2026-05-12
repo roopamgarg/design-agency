@@ -1,0 +1,484 @@
+{
+  "product_summary": "Agent Messenger is a workspace-centric messaging platform where users communicate with AI agents built on external platforms (LangGraph, CrewAI, custom runtimes, etc.). It does NOT create or host agents — it provides a unified communication hub, organized by workspaces and channels, where externally-built agents can send and receive messages via API/webhook integration. The core value is giving users a dedicated, privacy-respecting place to interact with their AI agents without exposing personal messaging apps (WhatsApp, Telegram), while organizing conversations around projects rather than tools. Think 'Slack for AI agents' — agents are members that join from outside, not entities created inside the platform. The product handles messaging, workspace organization, conversation memory, task tracking, and agent activity transparency. The agents themselves — their intelligence, tools, and orchestration logic — live on their origin platforms.",
+
+  "clarification_from_board": {
+    "date": "2026-05-12",
+    "source": "Board comment on DES-81",
+    "statement": "We won't be creating agents. But we want to allow agents built on other platforms to send or receive messages through this app.",
+    "impact": "Fundamental shift: Agent Messenger is a communication interface, not an agent runtime. The product does not build, configure, or host agents. It provides a messaging layer that external agents connect to. Agent configuration (model, tools, prompts) happens on the origin platform. Agent Messenger handles: registration/connection of external agents, messaging UI, workspace organization, conversation persistence, and activity transparency."
+  },
+
+  "primary_workflows": [
+    {
+      "id": "WF-01",
+      "name": "Workspace Setup & Organization",
+      "description": "User creates a workspace (e.g. 'Startup', 'Client A'), creates project-specific channels, and invites/connects external agents. This is the foundational workflow — everything belongs to a workspace.",
+      "steps": [
+        "Create workspace with name and context",
+        "Create project-specific channels (#design, #marketing, #research)",
+        "Connect external agents to the workspace via API key / webhook URL",
+        "Assign connected agents to relevant channels",
+        "Upload relevant files to seed workspace context"
+      ],
+      "frequency": "Low (setup), then occasional maintenance",
+      "complexity": "Medium — requires understanding agent connection flow"
+    },
+    {
+      "id": "WF-02",
+      "name": "Connect External Agent",
+      "description": "User registers an agent built on an external platform (e.g. a LangGraph agent, a custom OpenAI assistant, a Paperclip agent). The connection provides the agent with API credentials and a webhook endpoint so it can send/receive messages through Agent Messenger. The agent's identity (name, avatar, description) is registered during connection but its intelligence, tools, and behavior remain on the origin platform.",
+      "steps": [
+        "Navigate to workspace agent settings",
+        "Add new agent connection (provide name, avatar, description)",
+        "Generate API key / configure webhook endpoint for the agent",
+        "Agent's external platform uses these credentials to send/receive messages",
+        "Optionally set channel access permissions (which channels the agent can participate in)",
+        "Verify connection with a test message"
+      ],
+      "frequency": "Occasional — done once per agent, then maintained",
+      "complexity": "Medium — involves external platform coordination"
+    },
+    {
+      "id": "WF-03",
+      "name": "Direct Agent Messaging",
+      "description": "User sends messages to a connected agent in a channel or DM. The message is relayed to the agent's external platform, which processes it and sends a response back through the API. Responses stream in and support markdown, code blocks, and attachments. Conversation history persists and is searchable within Agent Messenger.",
+      "steps": [
+        "Navigate to channel or agent DM",
+        "Compose message (text, file attachment, @-mention agent)",
+        "Message relayed to external agent via API/webhook",
+        "Agent's platform processes and streams response back",
+        "User reviews output, follows up in thread or main channel",
+        "Pin important messages for reference"
+      ],
+      "frequency": "Very high — core daily interaction",
+      "complexity": "Low — familiar chat UX"
+    },
+    {
+      "id": "WF-04",
+      "name": "Multi-Agent Channel Collaboration",
+      "description": "Multiple external agents participate in the same channel. Users can address specific agents or broadcast to all. Agents from different platforms can interact in shared context — the channel serves as a common communication space. Orchestration logic (if any) lives on the external platforms; Agent Messenger provides the shared messaging surface.",
+      "steps": [
+        "Connect multiple agents to the same channel",
+        "User posts a message mentioning specific agents or broadcasting",
+        "Each mentioned agent receives the message via its API connection",
+        "Agents respond in the channel, visible to the user and other agents",
+        "User monitors the conversation, provides direction",
+        "Agents on platforms with orchestration may coordinate externally and communicate results back"
+      ],
+      "frequency": "Medium — power-user workflow",
+      "complexity": "Medium — coordination happens externally, but the UX must surface it clearly"
+    },
+    {
+      "id": "WF-05",
+      "name": "Task Management & Monitoring",
+      "description": "Users create tasks and assign them to connected agents. Tasks are relayed to the agent's platform for execution. Status updates flow back through the API. Agent Messenger provides the tracking UI — the agent's platform handles actual execution.",
+      "steps": [
+        "Create task (from chat command, inline UI, or task panel)",
+        "Assign to a connected agent",
+        "Task relayed to agent's external platform",
+        "Agent platform sends status updates (Pending→Running→Completed/Failed)",
+        "User monitors progress via task panel or notifications",
+        "Review completed output when agent reports done"
+      ],
+      "frequency": "High — tightly coupled with messaging",
+      "complexity": "Medium — requires reliable API handshake for status updates"
+    },
+    {
+      "id": "WF-06",
+      "name": "Agent Activity Monitoring",
+      "description": "Users observe what connected agents are doing — which messages they've processed, their online/offline status, response latency, and any errors. Since agents run externally, transparency depends on what the agent's platform reports back through the API.",
+      "steps": [
+        "View agent status indicators (online/offline/processing)",
+        "Check agent activity log (messages sent/received, errors)",
+        "Review response latency and reliability metrics",
+        "Investigate failed message deliveries",
+        "Manage agent connection health (reconnect, rotate credentials)"
+      ],
+      "frequency": "Medium — operational hygiene",
+      "complexity": "Low-Medium — dependent on external platform reporting"
+    }
+  ],
+
+  "user_journeys": [
+    {
+      "id": "UJ-01",
+      "persona": "AI Power User",
+      "scenario": "Daily multi-project AI collaboration across platforms",
+      "journey": [
+        "Open Agent Messenger → land on last-used workspace",
+        "Check notification feed for messages from background agents",
+        "Switch to #research channel → message Research Agent (hosted on LangGraph) to compile competitor analysis",
+        "While waiting, switch to #writing channel → review draft from Content Agent (hosted on OpenAI Assistants)",
+        "Provide feedback in-thread → Content Agent revises",
+        "Switch back to #research → Research Agent has posted results",
+        "Pin research summary for reference",
+        "Create task for Strategy Agent (hosted on CrewAI): 'Generate pitch deck outline'"
+      ],
+      "success_criteria": "User manages 3+ agents from different platforms in one interface without switching between platform dashboards",
+      "pain_points_addressed": ["Workflow fragmentation across AI platforms", "No unified inbox for agents built on different tools", "Privacy — agents don't need access to personal messaging"]
+    },
+    {
+      "id": "UJ-02",
+      "persona": "Founder / Solopreneur",
+      "scenario": "Running a startup with agents from multiple AI platforms",
+      "journey": [
+        "Create 'MyStartup' workspace with channels: #product, #marketing, #ops",
+        "Connect agents: Product Strategist (custom GPT), Marketing Writer (Jasper API), Ops Bot (internal webhook)",
+        "In #product: ask Product Strategist to analyze feature requests from a CSV upload",
+        "In #marketing: instruct Marketing Writer to draft social media posts",
+        "Review all outputs in respective channels — one place, multiple AI providers",
+        "Approve final drafts → relay approval to agent platforms for execution",
+        "All conversations persist in workspace for future reference"
+      ],
+      "success_criteria": "Founder operates with multiple AI agents from different providers through a single, organized messaging hub",
+      "pain_points_addressed": ["Switching between AI platform dashboards", "No centralized conversation history", "Privacy concerns with personal messaging apps"]
+    },
+    {
+      "id": "UJ-03",
+      "persona": "Developer",
+      "scenario": "Communicating with development-focused agents",
+      "journey": [
+        "Create 'DevProject' workspace",
+        "Connect Code Agent (built on custom LangChain pipeline with GitHub access)",
+        "Connect Doc Agent (built on OpenAI with documentation retrieval)",
+        "In #dev channel: paste error log, message Code Agent",
+        "Code Agent (running on its own platform) diagnoses and posts code fix suggestions",
+        "Developer applies fix, then messages Doc Agent to update API docs",
+        "Both conversations tracked in the workspace with full history"
+      ],
+      "success_criteria": "Developer communicates with specialized agents in project context without managing each agent's platform separately",
+      "pain_points_addressed": ["Fragmented agent interfaces", "No persistent project-scoped conversation history"]
+    },
+    {
+      "id": "UJ-04",
+      "persona": "Team Lead / Manager",
+      "scenario": "Setting up a team workspace with shared AI agents",
+      "journey": [
+        "Create shared 'ProductTeam' workspace, invite team members",
+        "Connect the team's various AI agents to the workspace",
+        "Set channel permissions — which agents can access which channels",
+        "Team members message agents in shared channels, everyone sees the output",
+        "Audit agent activity — which agents are being used, response quality, errors",
+        "Manage agent connections — rotate API keys, add/remove agents as needed"
+      ],
+      "success_criteria": "Team shares access to AI agents in a controlled, auditable workspace",
+      "pain_points_addressed": ["No shared interface for team AI agent access", "Lack of audit trail for agent interactions"]
+    }
+  ],
+
+  "engagement_loops": [
+    {
+      "id": "EL-01",
+      "name": "Conversation Persistence → Contextual Continuity → Return Visits",
+      "description": "Agent Messenger persists all conversation history. When users return, they can pick up where they left off with full context. The workspace becomes the source of truth for all agent interactions. External agents that support memory can leverage conversation history passed via the API to maintain context.",
+      "trigger": "Every conversation",
+      "reward": "Continuous context across sessions — never lose what was discussed",
+      "retention_mechanism": "Conversation history lives only in Agent Messenger; leaving means losing organized access"
+    },
+    {
+      "id": "EL-02",
+      "name": "Task Delegation → Async Output → Notification",
+      "description": "User assigns a task to an external agent and moves on. Agent's platform processes asynchronously. Status updates and results flow back into Agent Messenger. User gets notified when complete. Creates a 'check back' loop.",
+      "trigger": "Task assignment to external agent",
+      "reward": "Completed work product delivered without platform-hopping",
+      "retention_mechanism": "Pending tasks create pull to return to Agent Messenger"
+    },
+    {
+      "id": "EL-03",
+      "name": "Agent Collection → Hub Consolidation → Dependency",
+      "description": "As users connect more agents from different platforms, Agent Messenger becomes their central AI communication hub. The cost of managing agents individually across platform dashboards increases relative to the convenience of the unified interface.",
+      "trigger": "Each new agent connected",
+      "reward": "One place for all AI agent communication",
+      "retention_mechanism": "Hub effect — the more agents connected, the more indispensable the hub becomes"
+    },
+    {
+      "id": "EL-04",
+      "name": "Workspace Growth → Organizational Value → Data Gravity",
+      "description": "As workspaces accumulate channels, agent conversations, files, and task history, the workspace becomes a valuable knowledge base. Multi-user workspaces amplify this — the shared conversation record has team value.",
+      "trigger": "Continuous workspace usage",
+      "reward": "Organized, searchable history of all AI interactions",
+      "retention_mechanism": "Data gravity — conversation history, pinned messages, files are locked to the workspace"
+    },
+    {
+      "id": "EL-05",
+      "name": "Multi-Platform Agent Discovery → Expansion",
+      "description": "Users start with one or two agents, then discover they can connect agents from any platform that supports the API. This expands their use of Agent Messenger to cover more workflows, driving deeper adoption.",
+      "trigger": "Successful use of first connected agent",
+      "reward": "Realization that any AI agent can be brought into the same interface",
+      "retention_mechanism": "Each new agent connection reinforces the hub pattern"
+    }
+  ],
+
+  "core_interactions": [
+    {
+      "id": "CI-01",
+      "name": "Send Message to Agent",
+      "description": "The atomic interaction — user types a message, it's relayed to the external agent's platform, and the response streams back. Must support markdown, code blocks, file attachments, and thread replies. Latency depends on the external platform but the UI must handle streaming and loading states gracefully.",
+      "criticality": "Essential — foundational interaction",
+      "ux_requirements": [
+        "Streaming response display (when agent platform supports it)",
+        "Loading/processing state for non-streaming agents",
+        "Rich markdown rendering (code, tables, lists)",
+        "File attachment support (sent to agent via API)",
+        "Thread/reply capability",
+        "Message pinning and search",
+        "Error handling when agent platform is unreachable"
+      ]
+    },
+    {
+      "id": "CI-02",
+      "name": "Switch Workspace / Channel",
+      "description": "Navigate between organizational contexts. Must be fast and preserve mental model. Users should always know which workspace they're in and which agents are available.",
+      "criticality": "Essential — primary navigation",
+      "ux_requirements": [
+        "Instant workspace switching (sidebar or switcher)",
+        "Channel list with unread indicators",
+        "Clear workspace identity in UI chrome",
+        "Connected agents roster per workspace",
+        "Preserve scroll/draft state on switch"
+      ]
+    },
+    {
+      "id": "CI-03",
+      "name": "Connect External Agent",
+      "description": "Register an agent from an external platform. This is NOT agent creation — the agent already exists elsewhere. The user provides identity metadata (name, avatar, description) and establishes the API/webhook connection. This is the gateway interaction that populates a workspace with AI participants.",
+      "criticality": "High — required to populate workspace with agents",
+      "ux_requirements": [
+        "Step-by-step connection wizard",
+        "API key generation and webhook URL display",
+        "Agent identity fields (name, avatar, short description, origin platform label)",
+        "Channel assignment (which channels can this agent access)",
+        "Connection test / verification flow",
+        "Documentation/examples for common platforms (LangChain, CrewAI, custom API)"
+      ]
+    },
+    {
+      "id": "CI-04",
+      "name": "Create & Monitor Tasks",
+      "description": "Structured work items assigned to connected agents. Tasks are relayed to the agent's external platform. Status updates flow back. Agent Messenger provides the tracking UI.",
+      "criticality": "High — differentiator from plain chat",
+      "ux_requirements": [
+        "Task creation from chat or dedicated panel",
+        "Status progression visualization (Pending→Running→Completed/Failed)",
+        "Assignment to specific connected agents",
+        "Notification on state changes",
+        "Graceful handling of agents that don't support task protocol"
+      ]
+    },
+    {
+      "id": "CI-05",
+      "name": "Monitor Agent Status & Activity",
+      "description": "See which connected agents are online, processing, or offline. View message delivery status and response metrics. Since agents run externally, this depends on what the agent's platform reports back — the UX must handle varying levels of transparency.",
+      "criticality": "High — trust and operational awareness",
+      "ux_requirements": [
+        "Online/offline/processing status indicators per agent",
+        "Message delivery confirmation (sent, delivered, read, responded)",
+        "Error states (connection lost, timeout, agent error)",
+        "Agent activity log (recent messages, tasks, errors)",
+        "Connection health dashboard"
+      ]
+    },
+    {
+      "id": "CI-06",
+      "name": "Manage Agent Connections & Permissions",
+      "description": "Control which agents can access which channels, rotate API credentials, disconnect agents. This is the permission layer — scoped to what Agent Messenger controls (channel access, message visibility) rather than agent capabilities (which are managed on the origin platform).",
+      "criticality": "High — privacy and security",
+      "ux_requirements": [
+        "Per-agent channel access controls",
+        "API key rotation and management",
+        "Agent disconnect/removal flow",
+        "Audit log of agent messages and access",
+        "Clear indication of what permissions Agent Messenger controls vs. what the origin platform controls"
+      ]
+    },
+    {
+      "id": "CI-07",
+      "name": "Search & Recall",
+      "description": "Find past messages, tasks, files, and agent outputs across workspace history. All conversation data lives in Agent Messenger regardless of which external platform the agent runs on — this is a key value proposition.",
+      "criticality": "Medium-High — grows with usage",
+      "ux_requirements": [
+        "Full-text search across messages, tasks, files",
+        "Filters by channel, agent, date, type",
+        "Pinned message quick access",
+        "Search within threads",
+        "Cross-agent search (find all conversations regardless of origin platform)"
+      ]
+    }
+  ],
+
+  "product_structure": [
+    {
+      "layer": "Workspace Shell",
+      "description": "Top-level container. Users can have multiple workspaces (Personal, Startup, Client A). Houses all sub-entities. Analogous to a Slack workspace but where AI agents are first-class members that connect from external platforms.",
+      "contains": ["Channels", "Connected Agents Registry", "Files", "Tasks", "Workspace Settings", "Member Management"]
+    },
+    {
+      "layer": "Channels",
+      "description": "Project-specific communication spaces. Support user-agent and agent-agent messaging. Agents from different external platforms can coexist in the same channel. The channel is the shared context boundary.",
+      "contains": ["Messages", "Threads", "Pinned Items", "File Attachments", "Linked Tasks", "Agent Access List"]
+    },
+    {
+      "layer": "Connected Agents Registry",
+      "description": "The roster of external agents connected to a workspace. Each entry stores: agent identity (name, avatar, description, origin platform), API credentials, webhook configuration, channel permissions, and connection status. The agent's intelligence, tools, and capabilities live on the origin platform — only the communication interface is registered here.",
+      "contains": ["Agent Identity Metadata", "API Credentials", "Webhook Configuration", "Channel Permissions", "Connection Status", "Origin Platform Label"]
+    },
+    {
+      "layer": "Messaging Relay",
+      "description": "The core routing layer that relays messages between the Agent Messenger UI and external agent platforms. Handles message formatting, delivery confirmation, streaming support, retry logic, and error handling. This is the product's central infrastructure — it bridges the gap between the user's chat interface and diverse external agent APIs.",
+      "contains": ["Message Router", "Webhook Dispatcher", "Stream Handler", "Delivery Tracking", "Retry Queue", "Error Handler"]
+    },
+    {
+      "layer": "Tasks",
+      "description": "Structured work items with lifecycle states. Tasks are created in Agent Messenger and relayed to the assigned agent's external platform for execution. Status updates flow back through the API. Agent Messenger owns the tracking UI; the external platform owns the execution.",
+      "contains": ["Task Definition", "Assignee (connected agent)", "Status (synced from external)", "Output/Artifacts", "Notification Triggers"]
+    },
+    {
+      "layer": "Conversation Persistence",
+      "description": "All messages — regardless of which external platform the agent runs on — are stored in Agent Messenger. This creates a unified, searchable conversation history across all agent interactions. This is a key differentiator: the user owns their conversation data, not the agent platform.",
+      "contains": ["Message Store", "Thread History", "Search Index", "Pinned Messages", "File Storage"]
+    },
+    {
+      "layer": "Agent Integration Protocol",
+      "description": "The API surface that external agent platforms use to connect to Agent Messenger. Includes: REST/WebSocket endpoints for sending and receiving messages, webhook registration, authentication (API keys), message format specification, task protocol, and streaming support. This is the product's developer-facing surface and a critical adoption driver.",
+      "contains": ["REST API", "WebSocket Endpoint", "Webhook Registration", "API Key Auth", "Message Schema", "Task Protocol", "Streaming Protocol", "SDK/Documentation"]
+    },
+    {
+      "layer": "Realtime Layer",
+      "description": "WebSocket-based delivery for message display, agent status updates, task state changes, and notifications. Bridges the gap between external agent response latency and the user's expectation of real-time chat.",
+      "contains": ["WebSocket Connections", "Streaming Response Bridge", "Status Updates", "Notification Delivery", "Presence Indicators"]
+    }
+  ],
+
+  "important_design_priorities": [
+    {
+      "id": "DP-01",
+      "priority": "Critical",
+      "principle": "Workspace-First Navigation",
+      "rationale": "Everything belongs to a workspace. The information architecture must be organized around workspaces and channels, not individual agents or platforms. Users should never feel lost — workspace context is omnipresent.",
+      "design_implications": [
+        "Workspace switcher must be prominent and always accessible",
+        "Channel sidebar scoped to active workspace",
+        "Connected agents roster shown per-workspace",
+        "All content (messages, tasks, files) contextualized by workspace"
+      ]
+    },
+    {
+      "id": "DP-02",
+      "priority": "Critical",
+      "principle": "Agent Identity Without Agent Creation",
+      "rationale": "Agents are NOT built in Agent Messenger — they're built elsewhere and connect via API. But agents must still have clear, distinct identity in the UI (name, avatar, role, origin platform). The design must convey that agents are external participants with persistent identity, not ephemeral chatbot sessions. Origin platform attribution matters for user trust.",
+      "design_implications": [
+        "Distinct avatars, names, and role labels for each connected agent",
+        "Origin platform badge/label (e.g., 'via LangGraph', 'via CrewAI')",
+        "Agent profile cards showing capabilities the agent has self-reported",
+        "Visual differentiation between messages from different agents",
+        "Clear 'connected from external platform' framing, not 'created here'"
+      ]
+    },
+    {
+      "id": "DP-03",
+      "priority": "Critical",
+      "principle": "Seamless External Agent Integration UX",
+      "rationale": "The connect-an-external-agent flow is the critical onboarding gate. If connecting an agent is hard, the product fails. The UX must make it easy to generate API credentials, set up webhooks, and verify the connection — while also providing docs/SDKs for common agent platforms.",
+      "design_implications": [
+        "Step-by-step agent connection wizard",
+        "One-click API key generation with copy-to-clipboard",
+        "Webhook URL display with test-ping button",
+        "Platform-specific setup guides (LangChain, CrewAI, OpenAI Assistants, custom)",
+        "Connection verification with clear success/failure states",
+        "Developer documentation as a first-class product surface"
+      ]
+    },
+    {
+      "id": "DP-04",
+      "priority": "Critical",
+      "principle": "Minimal, Focused UI",
+      "rationale": "The product has inherent complexity (workspaces, channels, external agents, tasks, permissions). The UI must hide this and present a clean chat-first interface. Advanced features (agent management, permissions, activity logs) are progressive disclosure.",
+      "design_implications": [
+        "Chat-first interface — messaging is the primary surface",
+        "Progressive disclosure of agent management features",
+        "Avoid dashboard-heavy layouts",
+        "Settings and agent management in overlays/panels, not main views",
+        "Clean, high-density information design"
+      ]
+    },
+    {
+      "id": "DP-05",
+      "priority": "High",
+      "principle": "Messaging as the Primary Metaphor",
+      "rationale": "The core experience is messaging agents. It must be best-in-class: fast, rich (markdown, code, attachments), threaded, and searchable. The chat interface is 80%+ of user time. Unlike ChatGPT, this is multi-agent and workspace-organized. Unlike Slack, the members are AI agents from external platforms.",
+      "design_implications": [
+        "Rich markdown rendering (code, tables, images, files)",
+        "Streaming response display with graceful fallback for non-streaming agents",
+        "Thread support for focused sub-conversations",
+        "Loading states for external agent response latency",
+        "Error handling UX when external agents are unreachable"
+      ]
+    },
+    {
+      "id": "DP-06",
+      "priority": "High",
+      "principle": "Privacy & Data Ownership",
+      "rationale": "The product exists because users don't want AI on personal messaging platforms. Agent Messenger must make clear: your conversations are stored here, not on the agent's platform (beyond what's needed for processing). Workspace data isolation must be obvious. The user owns the conversation record.",
+      "design_implications": [
+        "Clear messaging about data ownership (conversations stored in Agent Messenger)",
+        "Workspace-scoped data isolation",
+        "Per-agent channel access controls",
+        "No cross-workspace data leakage",
+        "Transparent about what data is sent to external agent platforms"
+      ]
+    },
+    {
+      "id": "DP-07",
+      "priority": "High",
+      "principle": "Graceful External Agent Variance",
+      "rationale": "External agents will have vastly different capabilities: some stream responses, some don't; some support tasks, some don't; some are fast, some are slow; some go offline. The UX must gracefully handle this variance without breaking the experience. This is a unique challenge — the product controls the UI but not the agents.",
+      "design_implications": [
+        "Graceful degradation for agents without streaming (show loading → complete response)",
+        "Connection status indicators (online/offline/error)",
+        "Timeout handling with user-friendly error messages",
+        "Capability badges (supports streaming, supports tasks, etc.)",
+        "Retry/reconnect flows for failed deliveries",
+        "Clear feedback when an agent is slow vs. broken"
+      ]
+    },
+    {
+      "id": "DP-08",
+      "priority": "High",
+      "principle": "Async Task Model with External Execution",
+      "rationale": "Tasks are created in Agent Messenger but executed on external platforms. The UX must handle the asynchronous nature: task sent → waiting for external platform → status updates arrive → output delivered. Notification design is critical since execution timing is unpredictable.",
+      "design_implications": [
+        "Notification center for completed/failed tasks",
+        "Task panel with status overview and 'waiting for external agent' states",
+        "Clear indication that execution happens on the agent's platform",
+        "Graceful handling when task updates never arrive (timeout/retry)",
+        "Output review in context"
+      ]
+    },
+    {
+      "id": "DP-09",
+      "priority": "Medium",
+      "principle": "Conversation History as the Core Asset",
+      "rationale": "Unlike individual AI platform dashboards, Agent Messenger centralizes ALL agent conversation history in one searchable, organized workspace. This is the primary retention driver. The conversation record — across all agents, all platforms — lives here and only here.",
+      "design_implications": [
+        "Powerful search across all agent conversations",
+        "Pinned messages and bookmarks",
+        "Export capability for conversation records",
+        "Cross-agent conversation threading (reference one agent's output when talking to another)"
+      ]
+    },
+    {
+      "id": "DP-10",
+      "priority": "Medium",
+      "principle": "Familiar Patterns, Novel Positioning",
+      "rationale": "The product combines messaging (Slack/Discord patterns) with AI agent interaction (ChatGPT patterns) in a novel way: agents are external members that connect in, not built-in features. Lean on familiar messaging UX but position agents as 'connected team members from other platforms' rather than 'chatbot features.'",
+      "design_implications": [
+        "Sidebar + channel list navigation (Slack pattern)",
+        "Chat message display with streaming (ChatGPT pattern)",
+        "Agent = member metaphor (appears in member list, has profile, has status)",
+        "Connection flow = 'invite to workspace' metaphor",
+        "Agent origin platform = 'where this member works from' metaphor"
+      ]
+    }
+  ]
+}

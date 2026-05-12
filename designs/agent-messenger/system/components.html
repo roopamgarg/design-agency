@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="en" data-product="agent-messenger">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Library — Agent Messenger</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ================================================================
+           Component Library Styles — Agent Messenger
+           All components use tokens from tokens.css
+           ================================================================ */
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            padding: var(--space-8);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* -- Library chrome -- */
+        .lib-header {
+            margin-bottom: var(--space-12);
+            padding-bottom: var(--space-6);
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .lib-header h1 {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            letter-spacing: var(--letter-spacing-tight);
+            margin-bottom: var(--space-2);
+        }
+        .lib-header p {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-md);
+            max-width: 600px;
+        }
+        .lib-theme-toggle {
+            margin-top: var(--space-4);
+            display: flex;
+            gap: var(--space-2);
+        }
+        .lib-theme-toggle button {
+            padding: var(--space-2) var(--space-4);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--btn-radius);
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            transition: background var(--transition-fast), border-color var(--transition-fast);
+        }
+        .lib-theme-toggle button[aria-pressed="true"] {
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+            border-color: var(--color-primary);
+        }
+        .lib-theme-toggle button:hover {
+            background: var(--color-bg-active);
+        }
+        .lib-theme-toggle button[aria-pressed="true"]:hover {
+            background: var(--color-primary-dark);
+        }
+
+        section[data-component] {
+            margin-bottom: var(--space-12);
+        }
+        section[data-component] > h2 {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-2);
+            color: var(--color-text-primary);
+        }
+        section[data-component] > p.section-desc {
+            color: var(--color-text-tertiary);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-6);
+        }
+        .variant-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            align-items: flex-start;
+            margin-bottom: var(--space-6);
+        }
+        .variant-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-3);
+        }
+        .variant-group { margin-bottom: var(--space-6); }
+
+        /* ================================================================
+           BUTTONS
+           ================================================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            font-family: var(--font-family-sans);
+            font-weight: var(--btn-font-weight);
+            font-size: var(--btn-font-size);
+            border: 1px solid transparent;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
+            text-decoration: none;
+            white-space: nowrap;
+            line-height: 1;
+        }
+        .btn:focus-visible {
+            outline: 2px solid var(--color-border-focus);
+            outline-offset: 2px;
+        }
+        .btn--sm { height: var(--btn-height-sm); padding: 0 var(--space-3); font-size: var(--font-size-xs); }
+        .btn--md { height: var(--btn-height-md); padding: 0 var(--space-4); }
+        .btn--lg { height: var(--btn-height-lg); padding: 0 var(--space-6); font-size: var(--font-size-base); }
+
+        .btn--primary {
+            background: var(--color-primary);
+            color: var(--color-primary-contrast);
+        }
+        .btn--primary:hover { background: var(--color-primary-dark); }
+        .btn--primary:active { background: var(--color-primary-dark); box-shadow: var(--shadow-inner); }
+
+        .btn--secondary {
+            background: transparent;
+            color: var(--color-text-primary);
+            border-color: var(--color-border-default);
+        }
+        .btn--secondary:hover { background: var(--color-bg-hover); border-color: var(--color-border-strong); }
+
+        .btn--ghost {
+            background: transparent;
+            color: var(--color-text-secondary);
+        }
+        .btn--ghost:hover { background: var(--color-bg-hover); color: var(--color-text-primary); }
+
+        .btn--danger {
+            background: var(--color-error);
+            color: #fff;
+        }
+        .btn--danger:hover { background: #DC2626; }
+
+        .btn--success {
+            background: var(--color-success);
+            color: #fff;
+        }
+        .btn--success:hover { background: #059669; }
+
+        .btn:disabled, .btn[aria-disabled="true"] {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .btn__icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        /* Icon-only button */
+        .btn--icon-only { padding: 0; width: var(--btn-height-md); }
+        .btn--icon-only.btn--sm { width: var(--btn-height-sm); }
+        .btn--icon-only.btn--lg { width: var(--btn-height-lg); }
+
+        /* ================================================================
+           INPUTS
+           ================================================================ */
+        .input-group { display: flex; flex-direction: column; gap: var(--space-1-5); }
+        .input-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+        }
+        .input {
+            height: var(--input-height);
+            padding: 0 var(--input-padding-x);
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: var(--input-radius);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+            width: 100%;
+        }
+        .input::placeholder { color: var(--color-text-disabled); }
+        .input:focus {
+            outline: none;
+            border-color: var(--input-border-focus);
+            box-shadow: 0 0 0 3px var(--color-primary-subtle);
+        }
+        .input--error { border-color: var(--color-error); }
+        .input--error:focus { box-shadow: 0 0 0 3px var(--color-error-subtle); }
+        .input-hint {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+        .input-error-msg {
+            font-size: var(--font-size-xs);
+            color: var(--color-error);
+        }
+        .input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .textarea {
+            padding: var(--space-3) var(--input-padding-x);
+            min-height: 80px;
+            resize: vertical;
+            height: auto;
+        }
+
+        .select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%239CA3AF' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: var(--space-8);
+        }
+
+        /* Checkbox & Radio */
+        .check-group { display: flex; align-items: center; gap: var(--space-2); cursor: pointer; }
+        .check-input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--color-primary);
+            cursor: pointer;
+        }
+        .check-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-primary);
+            user-select: none;
+        }
+
+        /* ================================================================
+           AVATAR + STATUS INDICATOR
+           ================================================================ */
+        .avatar {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+            overflow: visible;
+            flex-shrink: 0;
+            font-weight: var(--font-weight-semibold);
+            color: #fff;
+        }
+        .avatar--xs { width: var(--avatar-xs); height: var(--avatar-xs); font-size: 10px; }
+        .avatar--sm { width: var(--avatar-sm); height: var(--avatar-sm); font-size: 12px; }
+        .avatar--md { width: var(--avatar-md); height: var(--avatar-md); font-size: 14px; }
+        .avatar--lg { width: var(--avatar-lg); height: var(--avatar-lg); font-size: 20px; }
+        .avatar--xl { width: var(--avatar-xl); height: var(--avatar-xl); font-size: 28px; }
+
+        .avatar__img {
+            width: 100%;
+            height: 100%;
+            border-radius: var(--radius-full);
+            object-fit: cover;
+        }
+        .avatar__initials {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+        }
+
+        .avatar__status {
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: var(--avatar-status-size);
+            height: var(--avatar-status-size);
+            border-radius: var(--radius-full);
+            border: var(--avatar-status-border);
+        }
+        .avatar__status--online  { background: var(--color-status-online); }
+        .avatar__status--idle    { background: var(--color-status-idle); }
+        .avatar__status--working { background: var(--color-status-working); }
+        .avatar__status--error   { background: var(--color-status-error); }
+        .avatar__status--offline { background: var(--color-status-offline); }
+
+        /* ================================================================
+           BADGES
+           ================================================================ */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            height: var(--badge-height);
+            padding: 0 var(--badge-padding-x);
+            border-radius: var(--badge-radius);
+            font-size: var(--badge-font-size);
+            font-weight: var(--font-weight-medium);
+            white-space: nowrap;
+            line-height: 1;
+        }
+        .badge--primary { background: var(--color-primary-subtle); color: var(--color-primary-light); }
+        .badge--success { background: var(--color-success-subtle); color: var(--color-success-light); }
+        .badge--warning { background: var(--color-warning-subtle); color: var(--color-warning-light); }
+        .badge--error   { background: var(--color-error-subtle);   color: var(--color-error-light); }
+        .badge--info    { background: var(--color-info-subtle);    color: var(--color-info-light); }
+        .badge--neutral { background: var(--color-bg-tertiary);    color: var(--color-text-secondary); }
+
+        .badge__dot {
+            width: 6px;
+            height: 6px;
+            border-radius: var(--radius-full);
+            background: currentColor;
+        }
+
+        /* Unread count badge */
+        .badge--count {
+            min-width: var(--badge-height);
+            padding: 0 var(--space-1-5);
+            background: var(--color-error);
+            color: #fff;
+            font-size: 10px;
+            font-weight: var(--font-weight-bold);
+            text-align: center;
+        }
+
+        /* ================================================================
+           TOOL BADGE
+           ================================================================ */
+        .tool-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            height: var(--tool-badge-height);
+            padding: 0 var(--space-2);
+            border-radius: var(--tool-badge-radius);
+            background: var(--tool-badge-bg);
+            color: var(--tool-badge-color);
+            font-size: var(--tool-badge-font-size);
+            font-weight: var(--font-weight-medium);
+            font-family: var(--font-family-mono);
+        }
+        .tool-badge__icon {
+            width: 12px;
+            height: 12px;
+            opacity: 0.8;
+        }
+
+        /* ================================================================
+           MESSAGE BUBBLES
+           ================================================================ */
+        .msg {
+            display: flex;
+            gap: var(--space-2);
+            padding: var(--space-1-5) var(--space-4);
+            max-width: var(--msg-max-width);
+            transition: background var(--transition-fast);
+        }
+        .msg:hover { background: var(--color-bg-hover); }
+
+        .msg__avatar { flex-shrink: 0; padding-top: var(--space-0-5); }
+
+        .msg__body { min-width: 0; flex: 1; }
+
+        .msg__header {
+            display: flex;
+            align-items: baseline;
+            gap: var(--space-2);
+            margin-bottom: var(--space-0-5);
+        }
+        .msg__author {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+        .msg__role {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+        .msg__time {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-disabled);
+        }
+
+        .msg__content {
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-relaxed);
+            color: var(--color-text-primary);
+        }
+        .msg__content p + p { margin-top: var(--space-2); }
+
+        .msg__tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-1);
+            margin-top: var(--space-2);
+        }
+
+        /* User message variant */
+        .msg--user .msg__content {
+            background: var(--color-msg-user-bg);
+            padding: var(--msg-padding-y) var(--msg-padding-x);
+            border-radius: var(--radius-msg) var(--radius-msg) var(--radius-msg-tail) var(--radius-msg);
+            display: inline-block;
+        }
+
+        /* System message variant */
+        .msg--system {
+            justify-content: center;
+            padding: var(--space-3) var(--space-4);
+        }
+        .msg--system .msg__content {
+            text-align: center;
+            font-size: var(--font-size-xs);
+            color: var(--color-msg-system-text);
+        }
+
+        /* Code block inside message */
+        .msg__code-block {
+            background: var(--color-msg-code-bg);
+            border: 1px solid var(--color-msg-code-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            margin-top: var(--space-2);
+            overflow-x: auto;
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            line-height: var(--line-height-relaxed);
+        }
+        .msg__code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-bg-tertiary);
+            border-bottom: 1px solid var(--color-msg-code-border);
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        /* ================================================================
+           SPECIAL CARDS (Handoff, Approval, Task, Error)
+           ================================================================ */
+        .msg-card {
+            border-radius: var(--card-radius);
+            border: 1px solid;
+            padding: var(--space-4);
+            margin-top: var(--space-2);
+        }
+        .msg-card__title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-2);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        .msg-card__desc {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-normal);
+        }
+        .msg-card__actions {
+            display: flex;
+            gap: var(--space-2);
+            margin-top: var(--space-3);
+        }
+
+        .msg-card--handoff {
+            background: var(--color-card-handoff-bg);
+            border-color: var(--color-card-handoff-border);
+        }
+        .msg-card--handoff .msg-card__title { color: var(--color-primary-light); }
+
+        .msg-card--approval {
+            background: var(--color-card-approval-bg);
+            border-color: var(--color-card-approval-border);
+        }
+        .msg-card--approval .msg-card__title { color: var(--color-warning-light); }
+
+        .msg-card--task {
+            background: var(--color-card-task-bg);
+            border-color: var(--color-card-task-border);
+        }
+        .msg-card--task .msg-card__title { color: var(--color-info-light); }
+
+        .msg-card--error {
+            background: var(--color-card-error-bg);
+            border-color: var(--color-card-error-border);
+        }
+        .msg-card--error .msg-card__title { color: var(--color-error-light); }
+
+        /* ================================================================
+           SIDEBAR COMPONENTS
+           ================================================================ */
+        .sidebar-section {
+            padding: var(--space-3);
+        }
+        .sidebar-section__title {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wide);
+            padding: 0 var(--sidebar-item-padding-x);
+            margin-bottom: var(--space-1);
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            height: var(--sidebar-item-height);
+            padding: 0 var(--sidebar-item-padding-x);
+            border-radius: var(--sidebar-item-radius);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: background var(--transition-fast), color var(--transition-fast);
+            text-decoration: none;
+        }
+        .sidebar-item:hover {
+            background: var(--color-bg-hover);
+            color: var(--color-text-primary);
+        }
+        .sidebar-item--active {
+            background: var(--color-bg-active);
+            color: var(--color-text-primary);
+        }
+        .sidebar-item__icon {
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+            flex-shrink: 0;
+        }
+        .sidebar-item--active .sidebar-item__icon { opacity: 1; }
+        .sidebar-item__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .sidebar-item__badge { flex-shrink: 0; }
+
+        /* Workspace Switcher */
+        .workspace-switcher {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            border-bottom: 1px solid var(--color-border-subtle);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+        .workspace-switcher:hover { background: var(--color-bg-hover); }
+        .workspace-switcher__icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-sm);
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .workspace-switcher__name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .workspace-switcher__arrow {
+            color: var(--color-text-disabled);
+            font-size: var(--font-size-xs);
+        }
+
+        /* Agent roster item */
+        .agent-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-1-5) var(--sidebar-item-padding-x);
+            border-radius: var(--sidebar-item-radius);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+        .agent-item:hover { background: var(--color-bg-hover); }
+        .agent-item__info { flex: 1; min-width: 0; }
+        .agent-item__name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .agent-item__role {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        /* ================================================================
+           COMPOSER BAR
+           ================================================================ */
+        .composer {
+            display: flex;
+            align-items: flex-end;
+            gap: var(--space-2);
+            padding: var(--composer-padding);
+            background: var(--composer-bg);
+            border: 1px solid var(--composer-border);
+            border-radius: var(--composer-radius);
+        }
+        .composer:focus-within {
+            border-color: var(--color-border-focus);
+            box-shadow: 0 0 0 3px var(--color-primary-subtle);
+        }
+        .composer__input {
+            flex: 1;
+            min-height: 24px;
+            max-height: var(--composer-max-height);
+            background: transparent;
+            border: none;
+            color: var(--color-text-primary);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            resize: none;
+            outline: none;
+        }
+        .composer__input::placeholder { color: var(--color-text-disabled); }
+        .composer__actions {
+            display: flex;
+            gap: var(--space-1);
+            flex-shrink: 0;
+        }
+
+        /* ================================================================
+           CARDS (generic)
+           ================================================================ */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--card-radius);
+            padding: var(--card-padding);
+        }
+        .card__title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-2);
+        }
+        .card__body {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-normal);
+        }
+
+        /* ================================================================
+           STATUS INDICATORS (standalone)
+           ================================================================ */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+            display: inline-block;
+        }
+        .status-dot--online  { background: var(--color-status-online); }
+        .status-dot--idle    { background: var(--color-status-idle); }
+        .status-dot--working { background: var(--color-status-working); box-shadow: 0 0 6px var(--color-status-working); }
+        .status-dot--error   { background: var(--color-status-error); }
+        .status-dot--offline { background: var(--color-status-offline); }
+
+        /* ================================================================
+           AUTONOMY SLIDER
+           ================================================================ */
+        .autonomy-slider { width: 100%; }
+        .autonomy-slider__track {
+            position: relative;
+            height: var(--slider-track-height);
+            background: var(--slider-track-bg);
+            border-radius: var(--radius-full);
+            overflow: visible;
+        }
+        .autonomy-slider__fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            background: var(--slider-track-fill);
+            transition: width var(--transition-normal);
+        }
+        .autonomy-slider__thumb {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: var(--slider-thumb-size);
+            height: var(--slider-thumb-size);
+            border-radius: var(--radius-full);
+            background: var(--slider-thumb-bg);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+        }
+        .autonomy-slider__labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--space-2);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        /* ================================================================
+           MEMORY CITATION
+           ================================================================ */
+        .memory-citation {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-0-5) var(--space-2);
+            background: var(--color-primary-subtle);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            color: var(--color-primary-light);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+            text-decoration: none;
+        }
+        .memory-citation:hover { background: rgba(99, 102, 241, 0.2); }
+        .memory-citation__icon { width: 12px; height: 12px; }
+
+        /* ================================================================
+           PERMISSION MATRIX (compact)
+           ================================================================ */
+        .perm-matrix {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--font-size-xs);
+        }
+        .perm-matrix th, .perm-matrix td {
+            padding: var(--space-2) var(--space-3);
+            text-align: left;
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .perm-matrix th {
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-tertiary);
+            font-size: var(--font-size-xs);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-wide);
+        }
+        .perm-matrix td { color: var(--color-text-secondary); }
+        .perm-matrix__check { color: var(--color-success); font-weight: var(--font-weight-bold); }
+        .perm-matrix__deny  { color: var(--color-error); }
+
+        /* ================================================================
+           TASK STATUS BAR
+           ================================================================ */
+        .task-status-bar {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-xs);
+        }
+        .task-status-bar__item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+            color: var(--color-text-secondary);
+        }
+        .task-status-bar__count { font-weight: var(--font-weight-semibold); }
+
+        /* ================================================================
+           DELEGATION CHAIN
+           ================================================================ */
+        .delegation-chain {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-3);
+        }
+        .delegation-chain__step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        .delegation-chain__arrow {
+            color: var(--color-text-disabled);
+            font-size: var(--font-size-xs);
+        }
+        .delegation-chain__agent {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1-5);
+            padding: var(--space-1) var(--space-2);
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+        }
+
+        /* ================================================================
+           COMMAND PALETTE (Cmd+K)
+           ================================================================ */
+        .cmd-palette {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 560px;
+            max-width: 90vw;
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            z-index: var(--z-command-palette);
+            overflow: hidden;
+        }
+        .cmd-palette__input-wrap {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4);
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .cmd-palette__icon { color: var(--color-text-tertiary); flex-shrink: 0; }
+        .cmd-palette__input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--color-text-primary);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-md);
+            outline: none;
+        }
+        .cmd-palette__input::placeholder { color: var(--color-text-disabled); }
+        .cmd-palette__results { max-height: 320px; overflow-y: auto; padding: var(--space-2); }
+        .cmd-palette__result {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+        .cmd-palette__result:hover, .cmd-palette__result--selected {
+            background: var(--color-bg-hover);
+        }
+        .cmd-palette__result-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-primary);
+            flex: 1;
+        }
+        .cmd-palette__result-hint {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-disabled);
+        }
+
+        /* ================================================================
+           TOAST / NOTIFICATION
+           ================================================================ */
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            min-width: 300px;
+            max-width: 480px;
+        }
+        .toast__icon { flex-shrink: 0; width: 20px; height: 20px; }
+        .toast__body { flex: 1; }
+        .toast__title { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); }
+        .toast__desc { font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: var(--space-0-5); }
+        .toast__close { flex-shrink: 0; cursor: pointer; color: var(--color-text-disabled); }
+
+        .toast--success { border-left: 3px solid var(--color-success); }
+        .toast--error   { border-left: 3px solid var(--color-error); }
+        .toast--warning { border-left: 3px solid var(--color-warning); }
+        .toast--info    { border-left: 3px solid var(--color-info); }
+
+        /* ================================================================
+           MODAL / DIALOG
+           ================================================================ */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: var(--color-bg-overlay);
+            z-index: var(--z-modal-backdrop);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal {
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            width: 480px;
+            max-width: 90vw;
+            max-height: 85vh;
+            overflow-y: auto;
+            z-index: var(--z-modal);
+        }
+        .modal__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-4) var(--space-5);
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .modal__title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
+        .modal__close { cursor: pointer; color: var(--color-text-disabled); }
+        .modal__body { padding: var(--space-5); }
+        .modal__footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--space-3);
+            padding: var(--space-4) var(--space-5);
+            border-top: 1px solid var(--color-border-subtle);
+        }
+
+        /* ================================================================
+           TOOLTIP
+           ================================================================ */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip__content {
+            padding: var(--space-1-5) var(--space-3);
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            white-space: nowrap;
+            z-index: var(--z-tooltip);
+        }
+
+        /* ================================================================
+           DEMO LAYOUT HELPERS
+           ================================================================ */
+        .demo-sidebar {
+            width: var(--sidebar-width);
+            background: var(--color-bg-sidebar);
+            border: 1px solid var(--color-border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        .demo-shell {
+            border: 1px solid var(--color-border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            height: 480px;
+        }
+        .demo-messages {
+            max-width: var(--msg-max-width);
+            padding: var(--space-4) 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="lib-header">
+        <h1>Agent Messenger — Component Library</h1>
+        <p>Design system components for the AI Agent Workspace Platform. Dark mode primary, messaging-dense, three-zone layout.</p>
+        <div class="lib-theme-toggle">
+            <button id="btn-dark" aria-pressed="true" onclick="setTheme('dark')">Dark (Primary)</button>
+            <button id="btn-light" aria-pressed="false" onclick="setTheme('light')">Light</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- ============================================================
+             BUTTONS
+             ============================================================ -->
+        <section data-component="buttons">
+            <h2>Buttons</h2>
+            <p class="section-desc">Sizes: sm (28px), md (36px), lg (44px). Variants: primary, secondary, ghost, danger, success.</p>
+
+            <div class="variant-group">
+                <div class="variant-label">Primary</div>
+                <div class="variant-row">
+                    <button class="btn btn--primary btn--sm">Small</button>
+                    <button class="btn btn--primary btn--md">Default</button>
+                    <button class="btn btn--primary btn--lg">Large</button>
+                    <button class="btn btn--primary btn--md" disabled>Disabled</button>
+                </div>
+            </div>
+
+            <div class="variant-group">
+                <div class="variant-label">Secondary</div>
+                <div class="variant-row">
+                    <button class="btn btn--secondary btn--sm">Small</button>
+                    <button class="btn btn--secondary btn--md">Default</button>
+                    <button class="btn btn--secondary btn--lg">Large</button>
+                    <button class="btn btn--secondary btn--md" disabled>Disabled</button>
+                </div>
+            </div>
+
+            <div class="variant-group">
+                <div class="variant-label">Ghost</div>
+                <div class="variant-row">
+                    <button class="btn btn--ghost btn--sm">Small</button>
+                    <button class="btn btn--ghost btn--md">Default</button>
+                    <button class="btn btn--ghost btn--lg">Large</button>
+                </div>
+            </div>
+
+            <div class="variant-group">
+                <div class="variant-label">Danger / Success</div>
+                <div class="variant-row">
+                    <button class="btn btn--danger btn--md">Delete Agent</button>
+                    <button class="btn btn--success btn--md">Approve</button>
+                </div>
+            </div>
+
+            <div class="variant-group">
+                <div class="variant-label">Icon + Text / Icon Only</div>
+                <div class="variant-row">
+                    <button class="btn btn--primary btn--md">
+                        <svg class="btn__icon" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        New Channel
+                    </button>
+                    <button class="btn btn--secondary btn--icon-only btn--md" aria-label="Settings">
+                        <svg class="btn__icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </button>
+                    <button class="btn btn--ghost btn--icon-only btn--sm" aria-label="More">
+                        <svg class="btn__icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="3" r="1" fill="currentColor"/><circle cx="8" cy="8" r="1" fill="currentColor"/><circle cx="8" cy="13" r="1" fill="currentColor"/></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             INPUTS
+             ============================================================ -->
+        <section data-component="inputs">
+            <h2>Inputs</h2>
+            <p class="section-desc">Text, textarea, select, checkbox, radio. Error and disabled states.</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-6);">
+                <div class="input-group">
+                    <label class="input-label" for="input-default">Channel Name</label>
+                    <input class="input" id="input-default" type="text" placeholder="#design-system">
+                    <span class="input-hint">Lowercase, no spaces. Use dashes.</span>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="input-error">Agent Name</label>
+                    <input class="input input--error" id="input-error" type="text" value="A">
+                    <span class="input-error-msg">Agent name must be at least 3 characters.</span>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="input-disabled">Workspace ID</label>
+                    <input class="input" id="input-disabled" type="text" value="ws_8f3a2b1c" disabled>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="select-model">Model</label>
+                    <select class="input select" id="select-model">
+                        <option>GPT-4o</option>
+                        <option>Claude Sonnet</option>
+                        <option>Gemini Pro</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="textarea-prompt">System Prompt</label>
+                    <textarea class="input textarea" id="textarea-prompt" placeholder="You are a helpful research agent..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Permissions</label>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+                        <label class="check-group"><input type="checkbox" class="check-input" checked><span class="check-label">Web search</span></label>
+                        <label class="check-group"><input type="checkbox" class="check-input" checked><span class="check-label">File generation</span></label>
+                        <label class="check-group"><input type="checkbox" class="check-input"><span class="check-label">Email access</span></label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Autonomy Level</label>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+                        <label class="check-group"><input type="radio" name="autonomy" class="check-input"><span class="check-label">Manual — requires approval for every action</span></label>
+                        <label class="check-group"><input type="radio" name="autonomy" class="check-input" checked><span class="check-label">Guided — asks before tool use</span></label>
+                        <label class="check-group"><input type="radio" name="autonomy" class="check-input"><span class="check-label">Autonomous — acts independently</span></label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             AVATARS & STATUS
+             ============================================================ -->
+        <section data-component="avatars">
+            <h2>Avatars &amp; Status Indicators</h2>
+            <p class="section-desc">User avatars (Pravatar), agent avatars (UI Avatars with accent colors), all sizes, with status dots.</p>
+
+            <div class="variant-group">
+                <div class="variant-label">User Avatars (with status)</div>
+                <div class="variant-row" style="align-items: center;">
+                    <div class="avatar avatar--xs">
+                        <img class="avatar__img" src="https://i.pravatar.cc/48?img=12" alt="User">
+                    </div>
+                    <div class="avatar avatar--sm">
+                        <img class="avatar__img" src="https://i.pravatar.cc/64?img=12" alt="User">
+                        <span class="avatar__status avatar__status--online"></span>
+                    </div>
+                    <div class="avatar avatar--md">
+                        <img class="avatar__img" src="https://i.pravatar.cc/80?img=12" alt="User">
+                        <span class="avatar__status avatar__status--idle"></span>
+                    </div>
+                    <div class="avatar avatar--lg">
+                        <img class="avatar__img" src="https://i.pravatar.cc/112?img=12" alt="User">
+                        <span class="avatar__status avatar__status--online"></span>
+                    </div>
+                    <div class="avatar avatar--xl">
+                        <img class="avatar__img" src="https://i.pravatar.cc/160?img=12" alt="User">
+                    </div>
+                </div>
+            </div>
+
+            <div class="variant-group">
+                <div class="variant-label">Agent Avatars (accent-colored initials)</div>
+                <div class="variant-row" style="align-items: center;">
+                    <div class="avatar avatar--sm">
+                        <span class="avatar__initials" style="background: var(--color-agent-1);">RA</span>
+                        <span class="avatar__status avatar__status--online"></span>
+                    </div>
+                    <div class="avatar avatar--md">
+                        <span class="avatar__initials" style="background: var(--color-agent-3);">DA</span>
+                        <span class="avatar__status avatar__status--working"></span>
+                    </div>
+                    <div class="avatar avatar--md">
+                        <span class="avatar__initials" style="background: var(--color-agent-5);">WA</span>
+                        <span class="avatar__status avatar__status--idle"></span>
+                    </div>
+                    <div class="avatar avatar--md">
+                        <span class="avatar__initials" style="background: var(--color-agent-4);">CA</span>
+                        <span class="avatar__status avatar__status--error"></span>
+                    </div>
+                    <div class="avatar avatar--lg">
+                        <span class="avatar__initials" style="background: var(--color-agent-2);">UX</span>
+                        <span class="avatar__status avatar__status--offline"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="variant-group">
+                <div class="variant-label">Status Dots (standalone)</div>
+                <div class="variant-row" style="align-items: center; gap: var(--space-6);">
+                    <span style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--font-size-sm);"><span class="status-dot status-dot--online"></span> Online</span>
+                    <span style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--font-size-sm);"><span class="status-dot status-dot--idle"></span> Idle</span>
+                    <span style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--font-size-sm);"><span class="status-dot status-dot--working"></span> Working</span>
+                    <span style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--font-size-sm);"><span class="status-dot status-dot--error"></span> Error</span>
+                    <span style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--font-size-sm);"><span class="status-dot status-dot--offline"></span> Offline</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             BADGES
+             ============================================================ -->
+        <section data-component="badges">
+            <h2>Badges</h2>
+            <p class="section-desc">Status badges, unread counts, and tool badges for agent tool transparency.</p>
+
+            <div class="variant-group">
+                <div class="variant-label">Status Badges</div>
+                <div class="variant-row">
+                    <span class="badge badge--primary"><span class="badge__dot"></span>Active</span>
+                    <span class="badge badge--success"><span class="badge__dot"></span>Complete</span>
+                    <span class="badge badge--warning"><span class="badge__dot"></span>Pending</span>
+                    <span class="badge badge--error"><span class="badge__dot"></span>Failed</span>
+                    <span class="badge badge--info"><span class="badge__dot"></span>Running</span>
+                    <span class="badge badge--neutral">Archived</span>
+                </div>
+            </div>
+
+            <div class="variant-group">
+                <div class="variant-label">Unread Count</div>
+                <div class="variant-row" style="align-items: center;">
+                    <span class="badge badge--count">3</span>
+                    <span class="badge badge--count">12</span>
+                    <span class="badge badge--count">99+</span>
+                </div>
+            </div>
+
+            <div class="variant-group">
+                <div class="variant-label">Tool Badges (shown when agents use tools)</div>
+                <div class="variant-row">
+                    <span class="tool-badge">
+                        <svg class="tool-badge__icon" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 8l3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                        web_search
+                    </span>
+                    <span class="tool-badge">
+                        <svg class="tool-badge__icon" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1 5h10" stroke="currentColor" stroke-width="1.2"/></svg>
+                        github_api
+                    </span>
+                    <span class="tool-badge">
+                        <svg class="tool-badge__icon" viewBox="0 0 12 12" fill="none"><path d="M3 3h6M3 6h4M3 9h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                        file_write
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             MESSAGE BUBBLES
+             ============================================================ -->
+        <section data-component="messages">
+            <h2>Message Bubbles</h2>
+            <p class="section-desc">Agent messages (with avatar, role, tools), user messages, system messages, code blocks.</p>
+
+            <div class="demo-messages">
+                <!-- System message -->
+                <div class="msg msg--system">
+                    <div class="msg__body">
+                        <div class="msg__content">Research Agent joined #product-research</div>
+                    </div>
+                </div>
+
+                <!-- Agent message -->
+                <div class="msg msg--agent">
+                    <div class="msg__avatar">
+                        <div class="avatar avatar--sm">
+                            <span class="avatar__initials" style="background: var(--color-agent-1);">RA</span>
+                            <span class="avatar__status avatar__status--online"></span>
+                        </div>
+                    </div>
+                    <div class="msg__body">
+                        <div class="msg__header">
+                            <span class="msg__author">Research Agent</span>
+                            <span class="msg__role">Research</span>
+                            <span class="msg__time">2:34 PM</span>
+                        </div>
+                        <div class="msg__content">
+                            <p>I've completed the competitive analysis. Here are the key findings from 12 AI workspace platforms:</p>
+                            <p>The most successful platforms use a <a class="memory-citation" href="#">
+                                <svg class="memory-citation__icon" viewBox="0 0 12 12" fill="none"><path d="M2 3h8v7H2z" stroke="currentColor" stroke-width="1.2"/><path d="M4 1v2M8 1v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                                workspace-first model
+                            </a> similar to what we discussed previously.</p>
+                        </div>
+                        <div class="msg__tools">
+                            <span class="tool-badge">
+                                <svg class="tool-badge__icon" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 8l3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                                web_search
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User message -->
+                <div class="msg msg--user">
+                    <div class="msg__avatar">
+                        <div class="avatar avatar--sm">
+                            <img class="avatar__img" src="https://i.pravatar.cc/64?img=33" alt="You">
+                        </div>
+                    </div>
+                    <div class="msg__body">
+                        <div class="msg__header">
+                            <span class="msg__author">You</span>
+                            <span class="msg__time">2:36 PM</span>
+                        </div>
+                        <div class="msg__content">Can you create a summary document comparing the top 3?</div>
+                    </div>
+                </div>
+
+                <!-- Agent message with code block -->
+                <div class="msg msg--agent">
+                    <div class="msg__avatar">
+                        <div class="avatar avatar--sm">
+                            <span class="avatar__initials" style="background: var(--color-agent-1);">RA</span>
+                            <span class="avatar__status avatar__status--working"></span>
+                        </div>
+                    </div>
+                    <div class="msg__body">
+                        <div class="msg__header">
+                            <span class="msg__author">Research Agent</span>
+                            <span class="msg__role">Research</span>
+                            <span class="msg__time">2:37 PM</span>
+                        </div>
+                        <div class="msg__content">
+                            <p>Here's the structured comparison:</p>
+                        </div>
+                        <div>
+                            <div class="msg__code-header">
+                                <span>comparison.json</span>
+                                <button class="btn btn--ghost btn--sm" style="height: 22px; padding: 0 var(--space-2); font-size: var(--font-size-xs);">Copy</button>
+                            </div>
+                            <div class="msg__code-block">
+<pre><code>{
+  "platforms": [
+    { "name": "Dust.tt", "strength": "Agent config UX" },
+    { "name": "Langbase", "strength": "Developer tools" },
+    { "name": "Custom GPT", "strength": "Marketplace reach" }
+  ]
+}</code></pre>
+                            </div>
+                        </div>
+                        <div class="msg__tools">
+                            <span class="tool-badge">
+                                <svg class="tool-badge__icon" viewBox="0 0 12 12" fill="none"><path d="M3 3h6M3 6h4M3 9h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                                file_write
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SPECIAL MESSAGE CARDS
+             ============================================================ -->
+        <section data-component="message-cards">
+            <h2>Special Message Cards</h2>
+            <p class="section-desc">Inline cards for handoffs, approvals, tasks, and errors within the conversation flow.</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-4); max-width: var(--msg-max-width);">
+                <div class="msg-card msg-card--handoff">
+                    <div class="msg-card__title">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5 8h6M11 8l-3-3M11 8l-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Delegation: Research → Design Agent
+                    </div>
+                    <div class="msg-card__desc">
+                        Handing off competitive analysis findings to Design Agent for visual benchmarking.
+                    </div>
+                    <div class="msg-card__actions">
+                        <button class="btn btn--primary btn--sm">Approve</button>
+                        <button class="btn btn--ghost btn--sm">View Details</button>
+                    </div>
+                </div>
+
+                <div class="msg-card msg-card--approval">
+                    <div class="msg-card__title">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        Approval Required: API Access
+                    </div>
+                    <div class="msg-card__desc">
+                        Code Agent requests permission to access GitHub API for repository analysis.
+                    </div>
+                    <div class="msg-card__actions">
+                        <button class="btn btn--success btn--sm">Allow</button>
+                        <button class="btn btn--danger btn--sm">Deny</button>
+                        <button class="btn btn--ghost btn--sm">Review Scope</button>
+                    </div>
+                </div>
+
+                <div class="msg-card msg-card--task">
+                    <div class="msg-card__title">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Task Complete: Market Research Report
+                    </div>
+                    <div class="msg-card__desc">
+                        12 competitors analyzed across 8 criteria. Report saved to workspace files.
+                    </div>
+                    <div class="msg-card__actions">
+                        <button class="btn btn--secondary btn--sm">View Report</button>
+                        <button class="btn btn--ghost btn--sm">Dismiss</button>
+                    </div>
+                </div>
+
+                <div class="msg-card msg-card--error">
+                    <div class="msg-card__title">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3M8 10v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        Error: API Rate Limit
+                    </div>
+                    <div class="msg-card__desc">
+                        GitHub API rate limit exceeded. Will retry automatically in 15 minutes, or switch to cached data.
+                    </div>
+                    <div class="msg-card__actions">
+                        <button class="btn btn--secondary btn--sm">Use Cached</button>
+                        <button class="btn btn--ghost btn--sm">Wait for Retry</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SIDEBAR
+             ============================================================ -->
+        <section data-component="sidebar">
+            <h2>Sidebar</h2>
+            <p class="section-desc">Workspace switcher, channel list, agent roster, task summary. Collapsible to 64px icon rail.</p>
+
+            <div class="demo-sidebar">
+                <div class="workspace-switcher">
+                    <div class="workspace-switcher__icon" style="background: var(--color-agent-1);">S</div>
+                    <span class="workspace-switcher__name">Startup HQ</span>
+                    <span class="workspace-switcher__arrow">▾</span>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section__title">Starred</div>
+                    <a class="sidebar-item sidebar-item--active">
+                        <svg class="sidebar-item__icon" viewBox="0 0 16 16" fill="none"><path d="M2 3h12v10H2z" stroke="currentColor" stroke-width="1.3"/></svg>
+                        <span class="sidebar-item__label"># general</span>
+                        <span class="badge badge--count sidebar-item__badge">3</span>
+                    </a>
+                    <a class="sidebar-item">
+                        <svg class="sidebar-item__icon" viewBox="0 0 16 16" fill="none"><path d="M2 3h12v10H2z" stroke="currentColor" stroke-width="1.3"/></svg>
+                        <span class="sidebar-item__label"># product-research</span>
+                    </a>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section__title">Channels</div>
+                    <a class="sidebar-item">
+                        <svg class="sidebar-item__icon" viewBox="0 0 16 16" fill="none"><path d="M2 3h12v10H2z" stroke="currentColor" stroke-width="1.3"/></svg>
+                        <span class="sidebar-item__label"># design</span>
+                    </a>
+                    <a class="sidebar-item">
+                        <svg class="sidebar-item__icon" viewBox="0 0 16 16" fill="none"><path d="M2 3h12v10H2z" stroke="currentColor" stroke-width="1.3"/></svg>
+                        <span class="sidebar-item__label"># marketing</span>
+                        <span class="badge badge--count sidebar-item__badge">7</span>
+                    </a>
+                    <a class="sidebar-item">
+                        <svg class="sidebar-item__icon" viewBox="0 0 16 16" fill="none"><path d="M2 3h12v10H2z" stroke="currentColor" stroke-width="1.3"/></svg>
+                        <span class="sidebar-item__label"># engineering</span>
+                    </a>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section__title">Agents</div>
+                    <div class="agent-item">
+                        <div class="avatar avatar--xs"><span class="avatar__initials" style="background: var(--color-agent-1);">R</span><span class="avatar__status avatar__status--online"></span></div>
+                        <div class="agent-item__info">
+                            <div class="agent-item__name">Research Agent</div>
+                            <div class="agent-item__role">Research</div>
+                        </div>
+                    </div>
+                    <div class="agent-item">
+                        <div class="avatar avatar--xs"><span class="avatar__initials" style="background: var(--color-agent-3);">D</span><span class="avatar__status avatar__status--working"></span></div>
+                        <div class="agent-item__info">
+                            <div class="agent-item__name">Design Agent</div>
+                            <div class="agent-item__role">Product Design</div>
+                        </div>
+                    </div>
+                    <div class="agent-item">
+                        <div class="avatar avatar--xs"><span class="avatar__initials" style="background: var(--color-agent-4);">C</span><span class="avatar__status avatar__status--idle"></span></div>
+                        <div class="agent-item__info">
+                            <div class="agent-item__name">Code Agent</div>
+                            <div class="agent-item__role">Engineering</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section" style="margin-top: auto; border-top: 1px solid var(--color-border-subtle); padding-top: var(--space-3);">
+                    <div class="task-status-bar">
+                        <span class="task-status-bar__item">
+                            <span class="status-dot status-dot--working"></span>
+                            <span class="task-status-bar__count">2</span> active
+                        </span>
+                        <span class="task-status-bar__item">
+                            <span class="status-dot status-dot--idle"></span>
+                            <span class="task-status-bar__count">4</span> pending
+                        </span>
+                        <span class="task-status-bar__item">
+                            <span class="status-dot status-dot--error"></span>
+                            <span class="task-status-bar__count">1</span> failed
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             COMPOSER BAR
+             ============================================================ -->
+        <section data-component="composer">
+            <h2>Composer Bar</h2>
+            <p class="section-desc">Rich text input with file attach, @-mention, slash commands. Focus ring on interaction.</p>
+
+            <div style="max-width: var(--msg-max-width);">
+                <div class="composer">
+                    <button class="btn btn--ghost btn--icon-only btn--sm" aria-label="Attach file">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M7.5 4v7a2.5 2.5 0 005 0V4a4 4 0 00-8 0v7a5.5 5.5 0 0011 0V4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" transform="translate(-1.5, 0) scale(0.85)"/></svg>
+                    </button>
+                    <textarea class="composer__input" placeholder="Message #general — @mention agents, / for commands" rows="1"></textarea>
+                    <div class="composer__actions">
+                        <button class="btn btn--ghost btn--icon-only btn--sm" aria-label="Emoji">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><circle cx="6" cy="7" r="0.8" fill="currentColor"/><circle cx="10" cy="7" r="0.8" fill="currentColor"/><path d="M5.5 10a3.5 3.5 0 005 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                        </button>
+                        <button class="btn btn--primary btn--icon-only btn--sm" aria-label="Send">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l12-5-5 12-2-5-5-2z" fill="currentColor"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             CARDS
+             ============================================================ -->
+        <section data-component="cards">
+            <h2>Cards</h2>
+            <p class="section-desc">Generic container for agent profile summaries, task details, memory entries.</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4);">
+                <div class="card">
+                    <div class="card__title" style="display:flex;align-items:center;gap:var(--space-2);">
+                        <div class="avatar avatar--sm"><span class="avatar__initials" style="background: var(--color-agent-1);">RA</span><span class="avatar__status avatar__status--online"></span></div>
+                        Research Agent
+                    </div>
+                    <div class="card__body">
+                        <p style="margin-bottom:var(--space-2);">Role: Research &amp; Analysis</p>
+                        <p style="margin-bottom:var(--space-3);">Model: GPT-4o · Context: 128k · Temp: 0.3</p>
+                        <div style="display:flex;gap:var(--space-1);flex-wrap:wrap;">
+                            <span class="tool-badge">web_search</span>
+                            <span class="tool-badge">file_write</span>
+                            <span class="tool-badge">github_api</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card__title">Memory Entry</div>
+                    <div class="card__body">
+                        <p style="margin-bottom:var(--space-2);">User prefers data-driven arguments over anecdotal evidence. Research outputs should include quantitative comparisons.</p>
+                        <div style="display:flex;justify-content:space-between;margin-top:var(--space-3);">
+                            <span class="badge badge--neutral">Long-term</span>
+                            <span style="font-size:var(--font-size-xs);color:var(--color-text-disabled);">2 days ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card__title" style="display:flex;align-items:center;gap:var(--space-2);">
+                        <span class="badge badge--info"><span class="badge__dot"></span>Running</span>
+                        Competitive Analysis
+                    </div>
+                    <div class="card__body">
+                        <p style="margin-bottom:var(--space-2);">Analyzing 12 AI workspace platforms across features, UX, and pricing.</p>
+                        <div style="display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-3);">
+                            <div class="avatar avatar--xs"><span class="avatar__initials" style="background: var(--color-agent-1);">R</span></div>
+                            <span style="font-size:var(--font-size-xs);color:var(--color-text-tertiary);">Assigned to Research Agent</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             AUTONOMY SLIDER
+             ============================================================ -->
+        <section data-component="autonomy-slider">
+            <h2>Autonomy Level Slider</h2>
+            <p class="section-desc">4-level graduated autonomy control per UX strategy trust patterns.</p>
+
+            <div style="max-width: 400px;">
+                <div class="autonomy-slider">
+                    <div class="autonomy-slider__track">
+                        <div class="autonomy-slider__fill" style="width: 33%;"></div>
+                        <div class="autonomy-slider__thumb" style="left: 33%;"></div>
+                    </div>
+                    <div class="autonomy-slider__labels">
+                        <span>Manual</span>
+                        <span>Guided</span>
+                        <span>Proactive</span>
+                        <span>Autonomous</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             PERMISSION MATRIX
+             ============================================================ -->
+        <section data-component="permission-matrix">
+            <h2>Permission Matrix</h2>
+            <p class="section-desc">Compact table for agent tool permissions. Shown in agent profile context panel.</p>
+
+            <div style="max-width: 500px;">
+                <table class="perm-matrix">
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Read</th>
+                            <th>Write</th>
+                            <th>Execute</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Web Search</td>
+                            <td><span class="perm-matrix__check">✓</span></td>
+                            <td><span class="perm-matrix__deny">—</span></td>
+                            <td><span class="perm-matrix__check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>GitHub</td>
+                            <td><span class="perm-matrix__check">✓</span></td>
+                            <td><span class="perm-matrix__check">✓</span></td>
+                            <td><span class="perm-matrix__deny">—</span></td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td><span class="perm-matrix__check">✓</span></td>
+                            <td><span class="perm-matrix__deny">—</span></td>
+                            <td><span class="perm-matrix__deny">—</span></td>
+                        </tr>
+                        <tr>
+                            <td>File System</td>
+                            <td><span class="perm-matrix__check">✓</span></td>
+                            <td><span class="perm-matrix__check">✓</span></td>
+                            <td><span class="perm-matrix__check">✓</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             DELEGATION CHAIN
+             ============================================================ -->
+        <section data-component="delegation-chain">
+            <h2>Delegation Chain</h2>
+            <p class="section-desc">Visual representation of task handoff between agents.</p>
+
+            <div class="delegation-chain" style="background: var(--color-bg-secondary); border-radius: var(--radius-lg); flex-wrap: wrap;">
+                <div class="delegation-chain__step">
+                    <div class="delegation-chain__agent" style="border-left: 2px solid var(--color-agent-1);">
+                        <div class="avatar avatar--xs"><span class="avatar__initials" style="background: var(--color-agent-1);">Y</span></div>
+                        You
+                    </div>
+                </div>
+                <span class="delegation-chain__arrow">→</span>
+                <div class="delegation-chain__step">
+                    <div class="delegation-chain__agent" style="border-left: 2px solid var(--color-agent-3);">
+                        <div class="avatar avatar--xs"><span class="avatar__initials" style="background: var(--color-agent-3);">RA</span></div>
+                        Research Agent
+                    </div>
+                </div>
+                <span class="delegation-chain__arrow">→</span>
+                <div class="delegation-chain__step">
+                    <div class="delegation-chain__agent" style="border-left: 2px solid var(--color-agent-5);">
+                        <div class="avatar avatar--xs"><span class="avatar__initials" style="background: var(--color-agent-5);">DA</span></div>
+                        Design Agent
+                    </div>
+                </div>
+                <span class="delegation-chain__arrow">→</span>
+                <div class="delegation-chain__step">
+                    <span class="badge badge--success"><span class="badge__dot"></span>Complete</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             COMMAND PALETTE
+             ============================================================ -->
+        <section data-component="command-palette">
+            <h2>Command Palette (⌘K)</h2>
+            <p class="section-desc">Universal search and action launcher. Workspace switching, channel jumping, agent search.</p>
+
+            <div style="position: relative; max-width: 560px;">
+                <div class="cmd-palette" style="position: relative; top: 0; left: 0; transform: none;">
+                    <div class="cmd-palette__input-wrap">
+                        <svg class="cmd-palette__icon" width="18" height="18" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        <input class="cmd-palette__input" placeholder="Search channels, agents, actions..." value="research">
+                    </div>
+                    <div class="cmd-palette__results">
+                        <div class="cmd-palette__result cmd-palette__result--selected">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 3h12v10H2z" stroke="var(--color-text-tertiary)" stroke-width="1.3"/></svg>
+                            <span class="cmd-palette__result-label">#product-research</span>
+                            <span class="cmd-palette__result-hint">Channel</span>
+                        </div>
+                        <div class="cmd-palette__result">
+                            <div class="avatar avatar--xs"><span class="avatar__initials" style="background: var(--color-agent-1);">RA</span></div>
+                            <span class="cmd-palette__result-label">Research Agent</span>
+                            <span class="cmd-palette__result-hint">Agent</span>
+                        </div>
+                        <div class="cmd-palette__result">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="var(--color-text-tertiary)" stroke-width="1.3"/><path d="M5 8l2 2 4-4" stroke="var(--color-text-tertiary)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span class="cmd-palette__result-label">Competitive Research Report</span>
+                            <span class="cmd-palette__result-hint">Task</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             TOASTS
+             ============================================================ -->
+        <section data-component="toasts">
+            <h2>Toasts / Notifications</h2>
+            <p class="section-desc">Transient notifications for task updates, errors, approvals. 4 variants.</p>
+
+            <div style="display: flex; flex-direction: column; gap: var(--space-3); max-width: 480px;">
+                <div class="toast toast--success">
+                    <svg class="toast__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="var(--color-success)" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="var(--color-success)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <div class="toast__body">
+                        <div class="toast__title">Task Completed</div>
+                        <div class="toast__desc">Research Agent finished "Competitive Analysis"</div>
+                    </div>
+                    <span class="toast__close">✕</span>
+                </div>
+
+                <div class="toast toast--error">
+                    <svg class="toast__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="var(--color-error)" stroke-width="1.5"/><path d="M10 7v3M10 13v0" stroke="var(--color-error)" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    <div class="toast__body">
+                        <div class="toast__title">Task Failed</div>
+                        <div class="toast__desc">GitHub API rate limit exceeded. Retrying in 15m.</div>
+                    </div>
+                    <span class="toast__close">✕</span>
+                </div>
+
+                <div class="toast toast--warning">
+                    <svg class="toast__icon" viewBox="0 0 20 20" fill="none"><path d="M10 3l8 14H2L10 3z" stroke="var(--color-warning)" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v3M10 14v0" stroke="var(--color-warning)" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    <div class="toast__body">
+                        <div class="toast__title">Approval Requested</div>
+                        <div class="toast__desc">Code Agent needs GitHub write access</div>
+                    </div>
+                    <span class="toast__close">✕</span>
+                </div>
+
+                <div class="toast toast--info">
+                    <svg class="toast__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="var(--color-info)" stroke-width="1.5"/><path d="M10 9v5M10 7v0" stroke="var(--color-info)" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    <div class="toast__body">
+                        <div class="toast__title">Agent Joined</div>
+                        <div class="toast__desc">Design Agent is now active in #design</div>
+                    </div>
+                    <span class="toast__close">✕</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             MODAL / DIALOG
+             ============================================================ -->
+        <section data-component="modal">
+            <h2>Modal / Dialog</h2>
+            <p class="section-desc">Used for agent creation, workspace settings, confirmation dialogs.</p>
+
+            <div style="position: relative; max-width: 480px;">
+                <div class="modal" style="position: relative;">
+                    <div class="modal__header">
+                        <span class="modal__title">Create New Agent</span>
+                        <span class="modal__close">✕</span>
+                    </div>
+                    <div class="modal__body">
+                        <div class="input-group" style="margin-bottom: var(--space-4);">
+                            <label class="input-label">Agent Name</label>
+                            <input class="input" type="text" placeholder="e.g., Research Agent">
+                        </div>
+                        <div class="input-group" style="margin-bottom: var(--space-4);">
+                            <label class="input-label">Role</label>
+                            <select class="input select">
+                                <option>Research & Analysis</option>
+                                <option>Product Design</option>
+                                <option>Engineering</option>
+                                <option>Writing</option>
+                                <option>Custom</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">System Prompt</label>
+                            <textarea class="input textarea" placeholder="Describe the agent's behavior..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal__footer">
+                        <button class="btn btn--secondary btn--md">Cancel</button>
+                        <button class="btn btn--primary btn--md">Create Agent</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             TOOLTIP
+             ============================================================ -->
+        <section data-component="tooltip">
+            <h2>Tooltip</h2>
+            <p class="section-desc">Contextual help on hover/focus. Keyboard accessible.</p>
+
+            <div class="variant-row" style="gap: var(--space-8);">
+                <div class="tooltip">
+                    <button class="btn btn--secondary btn--md">Hover me</button>
+                    <div class="tooltip__content" style="position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);">Keyboard shortcut: ⌘K</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             MEMORY CITATION
+             ============================================================ -->
+        <section data-component="memory-citation">
+            <h2>Memory Citation</h2>
+            <p class="section-desc">Inline link showing when agents reference stored memory. Clickable to open memory inspector.</p>
+
+            <div style="max-width: var(--msg-max-width); font-size: var(--font-size-base); line-height: var(--line-height-relaxed);">
+                <p>Based on your <a class="memory-citation" href="#">
+                    <svg class="memory-citation__icon" viewBox="0 0 12 12" fill="none"><path d="M2 3h8v7H2z" stroke="currentColor" stroke-width="1.2"/><path d="M4 1v2M8 1v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    preference for data-driven analysis
+                </a> and the <a class="memory-citation" href="#">
+                    <svg class="memory-citation__icon" viewBox="0 0 12 12" fill="none"><path d="M2 3h8v7H2z" stroke="currentColor" stroke-width="1.2"/><path d="M4 1v2M8 1v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    competitive research from last week
+                </a>, I've structured the report with quantitative benchmarks.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function setTheme(theme) {
+            const root = document.documentElement;
+            if (theme === 'light') {
+                root.setAttribute('data-theme', 'light');
+                document.getElementById('btn-dark').setAttribute('aria-pressed', 'false');
+                document.getElementById('btn-light').setAttribute('aria-pressed', 'true');
+            } else {
+                root.removeAttribute('data-theme');
+                document.getElementById('btn-dark').setAttribute('aria-pressed', 'true');
+                document.getElementById('btn-light').setAttribute('aria-pressed', 'false');
+            }
+        }
+    </script>
+</body>
+</html>

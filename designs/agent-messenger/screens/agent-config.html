@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Configuration — Agent Messenger</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-normal);
+        color: var(--color-text-primary);
+        background: var(--color-bg-primary);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .messenger-shell {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) 1fr var(--context-panel-width);
+        min-height: 100vh;
+      }
+
+      /* ===== Compact sidebar ===== */
+      .sidebar {
+        background: var(--color-bg-sidebar);
+        border-right: 1px solid var(--color-border-default);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .sidebar__header {
+        padding: var(--space-4);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        border-bottom: 1px solid var(--color-border-default);
+        min-height: var(--header-height);
+      }
+
+      .sidebar__ws-avatar {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-md);
+        background: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-primary-contrast);
+        font-weight: var(--font-weight-bold);
+        font-size: var(--font-size-sm);
+      }
+
+      .sidebar__ws-name {
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-base);
+      }
+
+      .sidebar__section { padding: var(--space-2) var(--space-3); }
+
+      .sidebar__section-title {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+        padding: var(--space-1) var(--space-2);
+        margin-bottom: var(--space-1);
+      }
+
+      .sidebar__agent {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-1-5) var(--space-2);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        min-height: 36px;
+      }
+
+      .sidebar__agent:hover { background: var(--color-bg-hover); }
+      .sidebar__agent--active { background: var(--color-bg-active); }
+
+      .sidebar__agent-avi {
+        width: 24px;
+        height: 24px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .sidebar__agent-name {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        flex: 1;
+      }
+
+      .sidebar__agent--active .sidebar__agent-name {
+        color: var(--color-text-primary);
+        font-weight: var(--font-weight-medium);
+      }
+
+      .sidebar__agent-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-full);
+      }
+
+      .sidebar__footer {
+        margin-top: auto;
+        padding: var(--space-3) var(--space-4);
+        border-top: 1px solid var(--color-border-default);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .sidebar__user-avi {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .sidebar__user-name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+      }
+
+      /* ===== MAIN: Agent Config ===== */
+      .config-area {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .config-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-6);
+        min-height: var(--header-height);
+        border-bottom: 1px solid var(--color-border-default);
+      }
+
+      .config-header__left {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .config-header__back {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+      }
+
+      .config-header__back:hover { background: var(--color-bg-hover); }
+      .config-header__back svg { width: 18px; height: 18px; }
+
+      .config-header__title {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .config-header__actions {
+        display: flex;
+        gap: var(--space-2);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        padding: 0 var(--space-4);
+        height: var(--btn-height-md);
+        border-radius: var(--btn-radius);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        font-family: var(--font-family-sans);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        min-height: var(--touch-target-min);
+        border: none;
+      }
+
+      .btn--ghost {
+        background: none;
+        color: var(--color-text-secondary);
+        border: 1px solid var(--color-border-default);
+      }
+
+      .btn--ghost:hover { background: var(--color-bg-hover); }
+
+      .btn--primary {
+        background: var(--color-primary);
+        color: var(--color-primary-contrast);
+      }
+
+      .btn--primary:hover { background: var(--color-primary-dark); }
+
+      .btn--danger {
+        background: none;
+        color: var(--color-error);
+        border: 1px solid var(--color-error-subtle);
+      }
+
+      .btn--danger:hover { background: var(--color-error-subtle); }
+
+      /* Config body */
+      .config-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-6);
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .config-body__inner {
+        max-width: 720px;
+      }
+
+      /* Agent identity section */
+      .agent-identity {
+        display: flex;
+        align-items: center;
+        gap: var(--space-5);
+        margin-bottom: var(--space-8);
+        padding-bottom: var(--space-6);
+        border-bottom: 1px solid var(--color-border-default);
+      }
+
+      .agent-identity__avatar-wrap {
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .agent-identity__avatar {
+        width: var(--avatar-xl);
+        height: var(--avatar-xl);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        border: 3px solid var(--color-agent-2);
+      }
+
+      .agent-identity__edit-avatar {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 28px;
+        height: 28px;
+        background: var(--color-bg-elevated);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--color-text-secondary);
+      }
+
+      .agent-identity__edit-avatar svg { width: 14px; height: 14px; }
+
+      .agent-identity__info { flex: 1; }
+
+      .agent-identity__name {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--space-1);
+      }
+
+      .agent-identity__role {
+        font-size: var(--font-size-base);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-2);
+      }
+
+      .agent-identity__status {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-size: var(--font-size-sm);
+      }
+
+      .agent-identity__status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-full);
+      }
+
+      .agent-identity__status-text {
+        color: var(--color-text-secondary);
+      }
+
+      /* Config sections */
+      .config-section {
+        margin-bottom: var(--space-8);
+      }
+
+      .config-section__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--space-4);
+      }
+
+      .config-section__title {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .config-section__desc {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-tertiary);
+        margin-top: var(--space-1);
+      }
+
+      /* Form fields */
+      .form-field {
+        margin-bottom: var(--space-4);
+      }
+
+      .form-field__label {
+        display: block;
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-1-5);
+      }
+
+      .form-field__input {
+        width: 100%;
+        height: var(--input-height);
+        padding: 0 var(--space-3);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--input-radius);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-base);
+        font-family: var(--font-family-sans);
+      }
+
+      .form-field__input:focus {
+        outline: none;
+        border-color: var(--color-border-focus);
+        box-shadow: 0 0 0 3px var(--color-primary-subtle);
+      }
+
+      .form-field__textarea {
+        width: 100%;
+        padding: var(--space-3);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--input-radius);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-sm);
+        font-family: var(--font-family-mono);
+        line-height: var(--line-height-relaxed);
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      .form-field__textarea:focus {
+        outline: none;
+        border-color: var(--color-border-focus);
+        box-shadow: 0 0 0 3px var(--color-primary-subtle);
+      }
+
+      .form-field__select {
+        width: 100%;
+        height: var(--input-height);
+        padding: 0 var(--space-3);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--input-radius);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-base);
+        font-family: var(--font-family-sans);
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+      }
+
+      .form-field__select:focus {
+        outline: none;
+        border-color: var(--color-border-focus);
+      }
+
+      .form-field__hint {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        margin-top: var(--space-1);
+      }
+
+      /* Model config row */
+      .model-config {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-4);
+      }
+
+      /* Slider */
+      .slider-field {
+        margin-bottom: var(--space-4);
+      }
+
+      .slider-field__header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--space-2);
+      }
+
+      .slider-field__label {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-secondary);
+      }
+
+      .slider-field__value {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-primary);
+      }
+
+      .slider-field__input {
+        width: 100%;
+        height: 6px;
+        appearance: none;
+        background: var(--slider-track-bg);
+        border-radius: var(--radius-full);
+        cursor: pointer;
+      }
+
+      .slider-field__input::-webkit-slider-thumb {
+        appearance: none;
+        width: var(--slider-thumb-size);
+        height: var(--slider-thumb-size);
+        border-radius: var(--radius-full);
+        background: var(--slider-thumb);
+        border: 2px solid var(--color-primary);
+        cursor: grab;
+      }
+
+      .slider-field__labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: var(--space-1);
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      /* Tools list */
+      .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-2);
+      }
+
+      .tool-toggle {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-3);
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .tool-toggle:hover { background: var(--color-bg-tertiary); }
+
+      .tool-toggle__icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-bg-tertiary);
+        color: var(--color-text-secondary);
+        flex-shrink: 0;
+      }
+
+      .tool-toggle__icon svg { width: 18px; height: 18px; }
+
+      .tool-toggle__info { flex: 1; }
+
+      .tool-toggle__name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+      }
+
+      .tool-toggle__desc {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .tool-toggle__switch {
+        width: 40px;
+        height: 22px;
+        background: var(--color-bg-tertiary);
+        border-radius: var(--radius-full);
+        position: relative;
+        border: 1px solid var(--color-border-default);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        flex-shrink: 0;
+      }
+
+      .tool-toggle__switch::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: var(--radius-full);
+        background: var(--color-text-tertiary);
+        transition: transform var(--transition-fast), background var(--transition-fast);
+      }
+
+      .tool-toggle__switch--on {
+        background: var(--color-primary-subtle);
+        border-color: var(--color-primary);
+      }
+
+      .tool-toggle__switch--on::after {
+        transform: translateX(18px);
+        background: var(--color-primary);
+      }
+
+      /* Permissions matrix */
+      .perm-matrix {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .perm-matrix th {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+        padding: var(--space-2) var(--space-3);
+        text-align: left;
+        border-bottom: 1px solid var(--color-border-default);
+      }
+
+      .perm-matrix th:not(:first-child) { text-align: center; }
+
+      .perm-matrix td {
+        padding: var(--space-2-5) var(--space-3);
+        border-bottom: 1px solid var(--color-border-subtle);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+      }
+
+      .perm-matrix td:not(:first-child) { text-align: center; }
+
+      .perm-matrix__check {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--color-primary);
+        cursor: pointer;
+      }
+
+      /* ===== CONTEXT PANEL: Agent Profile Preview ===== */
+      .profile-panel {
+        background: var(--color-bg-secondary);
+        border-left: 1px solid var(--color-border-default);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .profile-panel__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-4);
+        min-height: var(--header-height);
+        border-bottom: 1px solid var(--color-border-default);
+      }
+
+      .profile-panel__title {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .profile-panel__body { padding: var(--space-4); }
+
+      .profile-preview {
+        text-align: center;
+        margin-bottom: var(--space-5);
+      }
+
+      .profile-preview__avatar {
+        width: var(--avatar-lg);
+        height: var(--avatar-lg);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        border: 3px solid var(--color-agent-2);
+        margin-bottom: var(--space-3);
+      }
+
+      .profile-preview__name {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--space-0-5);
+      }
+
+      .profile-preview__role {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-3);
+      }
+
+      .profile-preview__stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-2);
+        margin-bottom: var(--space-4);
+      }
+
+      .profile-stat {
+        background: var(--color-bg-tertiary);
+        border-radius: var(--radius-md);
+        padding: var(--space-2);
+      }
+
+      .profile-stat__value {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-text-primary);
+      }
+
+      .profile-stat__label {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .profile-detail {
+        padding: var(--space-3) 0;
+        border-top: 1px solid var(--color-border-default);
+      }
+
+      .profile-detail__label {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+        margin-bottom: var(--space-2);
+      }
+
+      .profile-detail__value {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+      }
+
+      .profile-detail__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-1);
+      }
+
+      .profile-detail__tag {
+        font-size: var(--font-size-2xs);
+        padding: var(--space-0-5) var(--space-2);
+        background: var(--tool-badge-bg);
+        border: 1px solid var(--tool-badge-border);
+        border-radius: var(--radius-sm);
+        color: var(--tool-badge-text);
+      }
+
+      /* ===== RESPONSIVE ===== */
+      .mobile-menu-btn {
+        display: none;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+      }
+
+      .mobile-menu-btn svg { width: 20px; height: 20px; }
+
+      @media (max-width: 1024px) {
+        .messenger-shell { grid-template-columns: 1fr; }
+        .sidebar { display: none; }
+        .profile-panel { display: none; }
+        .mobile-menu-btn { display: flex; }
+      }
+
+      @media (max-width: 768px) {
+        .config-body { padding: var(--space-4); }
+        .config-header { padding: 0 var(--space-4); }
+        .model-config { grid-template-columns: 1fr; }
+        .tools-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+</head>
+<body>
+  <div data-product="agent-messenger" data-screen="agent-config">
+    <div class="messenger-shell">
+
+      <!-- ===== SIDEBAR ===== -->
+      <nav class="sidebar" aria-label="Workspace navigation">
+        <div class="sidebar__header">
+          <div class="sidebar__ws-avatar">S</div>
+          <span class="sidebar__ws-name">StoryCraft</span>
+        </div>
+        <div class="sidebar__section">
+          <div class="sidebar__section-title">Agents</div>
+          <div class="sidebar__agent">
+            <img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=1" alt="UX Architect">
+            <span class="sidebar__agent-name">UX Architect</span>
+            <span class="sidebar__agent-dot" style="background: var(--color-status-online)"></span>
+          </div>
+          <div class="sidebar__agent sidebar__agent--active">
+            <img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=5" alt="Code Assistant">
+            <span class="sidebar__agent-name">Code Assistant</span>
+            <span class="sidebar__agent-dot" style="background: var(--color-status-working)"></span>
+          </div>
+          <div class="sidebar__agent">
+            <img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=8" alt="Research Bot">
+            <span class="sidebar__agent-name">Research Bot</span>
+            <span class="sidebar__agent-dot" style="background: var(--color-status-online)"></span>
+          </div>
+          <div class="sidebar__agent">
+            <img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=12" alt="Content Writer">
+            <span class="sidebar__agent-name">Content Writer</span>
+            <span class="sidebar__agent-dot" style="background: var(--color-status-idle)"></span>
+          </div>
+          <div class="sidebar__agent">
+            <img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=15" alt="Data Analyst">
+            <span class="sidebar__agent-name">Data Analyst</span>
+            <span class="sidebar__agent-dot" style="background: var(--color-status-offline)"></span>
+          </div>
+        </div>
+        <div class="sidebar__footer">
+          <img class="sidebar__user-avi" src="https://i.pravatar.cc/64?img=33" alt="User">
+          <span class="sidebar__user-name">Alex Chen</span>
+        </div>
+      </nav>
+
+      <!-- ===== MAIN: CONFIG ===== -->
+      <main class="config-area">
+        <header class="config-header">
+          <div class="config-header__left">
+            <button class="mobile-menu-btn" aria-label="Open navigation menu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            </button>
+            <button class="config-header__back" aria-label="Go back">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <h1 class="config-header__title">Agent Configuration</h1>
+          </div>
+          <div class="config-header__actions">
+            <button class="btn btn--ghost">Reset</button>
+            <button class="btn btn--primary">Save Changes</button>
+          </div>
+        </header>
+
+        <div class="config-body">
+          <div class="config-body__inner">
+
+            <!-- Identity -->
+            <div class="agent-identity">
+              <div class="agent-identity__avatar-wrap">
+                <img class="agent-identity__avatar" src="https://i.pravatar.cc/160?img=5" alt="Code Assistant avatar">
+                <button class="agent-identity__edit-avatar" aria-label="Change avatar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                </button>
+              </div>
+              <div class="agent-identity__info">
+                <h2 class="agent-identity__name">Code Assistant</h2>
+                <p class="agent-identity__role">Engineering — Full-stack development, code review, and DevOps</p>
+                <div class="agent-identity__status">
+                  <span class="agent-identity__status-dot" style="background: var(--color-status-working)"></span>
+                  <span class="agent-identity__status-text">Working — Refactoring auth module</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Basic Info -->
+            <section class="config-section">
+              <div class="config-section__header">
+                <div>
+                  <h3 class="config-section__title">Basic Information</h3>
+                  <p class="config-section__desc">Agent identity and role configuration</p>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field__label" for="agent-name">Name</label>
+                <input class="form-field__input" type="text" id="agent-name" value="Code Assistant">
+              </div>
+              <div class="form-field">
+                <label class="form-field__label" for="agent-role">Role</label>
+                <input class="form-field__input" type="text" id="agent-role" value="Engineering">
+              </div>
+              <div class="form-field">
+                <label class="form-field__label" for="agent-prompt">System Prompt</label>
+                <textarea class="form-field__textarea" id="agent-prompt" rows="6">You are a senior full-stack engineer. You write clean, well-tested TypeScript code. You follow best practices for security, performance, and maintainability. When asked to implement something, you plan first, then execute methodically. You use Git conventions and write meaningful commit messages.</textarea>
+                <p class="form-field__hint">This prompt defines the agent's personality and capabilities.</p>
+              </div>
+            </section>
+
+            <!-- Model Config -->
+            <section class="config-section">
+              <div class="config-section__header">
+                <div>
+                  <h3 class="config-section__title">Model Configuration</h3>
+                  <p class="config-section__desc">LLM model and inference parameters</p>
+                </div>
+              </div>
+              <div class="model-config">
+                <div class="form-field">
+                  <label class="form-field__label" for="model-select">Model</label>
+                  <select class="form-field__select" id="model-select">
+                    <option selected>Claude 3.5 Sonnet</option>
+                    <option>Claude 3 Opus</option>
+                    <option>GPT-4o</option>
+                    <option>GPT-4 Turbo</option>
+                    <option>Gemini 2.5 Pro</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="form-field__label" for="context-window">Context Window</label>
+                  <select class="form-field__select" id="context-window">
+                    <option>32K tokens</option>
+                    <option selected>128K tokens</option>
+                    <option>200K tokens</option>
+                  </select>
+                </div>
+              </div>
+              <div class="slider-field">
+                <div class="slider-field__header">
+                  <span class="slider-field__label">Temperature</span>
+                  <span class="slider-field__value">0.3</span>
+                </div>
+                <input class="slider-field__input" type="range" min="0" max="100" value="30" aria-label="Temperature slider">
+                <div class="slider-field__labels">
+                  <span>Precise (0.0)</span>
+                  <span>Creative (1.0)</span>
+                </div>
+              </div>
+              <div class="slider-field">
+                <div class="slider-field__header">
+                  <span class="slider-field__label">Autonomy Level</span>
+                  <span class="slider-field__value">Semi-autonomous</span>
+                </div>
+                <input class="slider-field__input" type="range" min="0" max="100" value="60" aria-label="Autonomy level slider">
+                <div class="slider-field__labels">
+                  <span>Ask First</span>
+                  <span>Fully Autonomous</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Tools -->
+            <section class="config-section">
+              <div class="config-section__header">
+                <div>
+                  <h3 class="config-section__title">Tools</h3>
+                  <p class="config-section__desc">Enable or disable tools this agent can use</p>
+                </div>
+              </div>
+              <div class="tools-grid">
+                <div class="tool-toggle">
+                  <div class="tool-toggle__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+                  </div>
+                  <div class="tool-toggle__info">
+                    <div class="tool-toggle__name">GitHub</div>
+                    <div class="tool-toggle__desc">Repos, PRs, issues</div>
+                  </div>
+                  <div class="tool-toggle__switch tool-toggle__switch--on" role="switch" aria-checked="true" aria-label="Toggle GitHub"></div>
+                </div>
+                <div class="tool-toggle">
+                  <div class="tool-toggle__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+                  </div>
+                  <div class="tool-toggle__info">
+                    <div class="tool-toggle__name">Terminal</div>
+                    <div class="tool-toggle__desc">Shell commands</div>
+                  </div>
+                  <div class="tool-toggle__switch tool-toggle__switch--on" role="switch" aria-checked="true" aria-label="Toggle Terminal"></div>
+                </div>
+                <div class="tool-toggle">
+                  <div class="tool-toggle__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  </div>
+                  <div class="tool-toggle__info">
+                    <div class="tool-toggle__name">Web Search</div>
+                    <div class="tool-toggle__desc">Internet access</div>
+                  </div>
+                  <div class="tool-toggle__switch tool-toggle__switch--on" role="switch" aria-checked="true" aria-label="Toggle Web Search"></div>
+                </div>
+                <div class="tool-toggle">
+                  <div class="tool-toggle__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m3 15 2 2 4-4"/></svg>
+                  </div>
+                  <div class="tool-toggle__info">
+                    <div class="tool-toggle__name">File System</div>
+                    <div class="tool-toggle__desc">Read/write files</div>
+                  </div>
+                  <div class="tool-toggle__switch tool-toggle__switch--on" role="switch" aria-checked="true" aria-label="Toggle File System"></div>
+                </div>
+                <div class="tool-toggle">
+                  <div class="tool-toggle__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                  </div>
+                  <div class="tool-toggle__info">
+                    <div class="tool-toggle__name">Database</div>
+                    <div class="tool-toggle__desc">Query databases</div>
+                  </div>
+                  <div class="tool-toggle__switch" role="switch" aria-checked="false" aria-label="Toggle Database"></div>
+                </div>
+                <div class="tool-toggle">
+                  <div class="tool-toggle__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                  </div>
+                  <div class="tool-toggle__info">
+                    <div class="tool-toggle__name">Email</div>
+                    <div class="tool-toggle__desc">Send/read email</div>
+                  </div>
+                  <div class="tool-toggle__switch" role="switch" aria-checked="false" aria-label="Toggle Email"></div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Permissions -->
+            <section class="config-section">
+              <div class="config-section__header">
+                <div>
+                  <h3 class="config-section__title">Permissions</h3>
+                  <p class="config-section__desc">Control what data this agent can access</p>
+                </div>
+              </div>
+              <table class="perm-matrix" aria-label="Permission matrix">
+                <thead>
+                  <tr>
+                    <th>Resource</th>
+                    <th>Read</th>
+                    <th>Write</th>
+                    <th>Execute</th>
+                    <th>Delete</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Project Files</td>
+                    <td><input class="perm-matrix__check" type="checkbox" checked aria-label="Read project files"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" checked aria-label="Write project files"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" checked aria-label="Execute project files"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" aria-label="Delete project files"></td>
+                  </tr>
+                  <tr>
+                    <td>Workspace Memory</td>
+                    <td><input class="perm-matrix__check" type="checkbox" checked aria-label="Read workspace memory"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" checked aria-label="Write workspace memory"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" aria-label="Execute workspace memory"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" aria-label="Delete workspace memory"></td>
+                  </tr>
+                  <tr>
+                    <td>External APIs</td>
+                    <td><input class="perm-matrix__check" type="checkbox" checked aria-label="Read external APIs"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" checked aria-label="Write external APIs"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" checked aria-label="Execute external APIs"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" aria-label="Delete external APIs"></td>
+                  </tr>
+                  <tr>
+                    <td>User Data</td>
+                    <td><input class="perm-matrix__check" type="checkbox" checked aria-label="Read user data"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" aria-label="Write user data"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" aria-label="Execute user data"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" aria-label="Delete user data"></td>
+                  </tr>
+                  <tr>
+                    <td>System Settings</td>
+                    <td><input class="perm-matrix__check" type="checkbox" checked aria-label="Read system settings"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" aria-label="Write system settings"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" aria-label="Execute system settings"></td>
+                    <td><input class="perm-matrix__check" type="checkbox" aria-label="Delete system settings"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <!-- Danger zone -->
+            <section class="config-section">
+              <div class="config-section__header">
+                <div>
+                  <h3 class="config-section__title" style="color: var(--color-error)">Danger Zone</h3>
+                </div>
+              </div>
+              <div style="display: flex; gap: var(--space-3);">
+                <button class="btn btn--danger">Reset Agent Memory</button>
+                <button class="btn btn--danger">Delete Agent</button>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </main>
+
+      <!-- ===== PROFILE PREVIEW PANEL ===== -->
+      <aside class="profile-panel" aria-label="Agent profile preview">
+        <div class="profile-panel__header">
+          <h2 class="profile-panel__title">Profile Preview</h2>
+        </div>
+        <div class="profile-panel__body">
+          <div class="profile-preview">
+            <img class="profile-preview__avatar" src="https://i.pravatar.cc/112?img=5" alt="Code Assistant">
+            <h3 class="profile-preview__name">Code Assistant</h3>
+            <p class="profile-preview__role">Engineering</p>
+            <div class="profile-preview__stats">
+              <div class="profile-stat">
+                <div class="profile-stat__value">147</div>
+                <div class="profile-stat__label">Messages</div>
+              </div>
+              <div class="profile-stat">
+                <div class="profile-stat__value">32</div>
+                <div class="profile-stat__label">Tasks Done</div>
+              </div>
+              <div class="profile-stat">
+                <div class="profile-stat__value">4d</div>
+                <div class="profile-stat__label">Active</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-detail">
+            <div class="profile-detail__label">Model</div>
+            <div class="profile-detail__value">Claude 3.5 Sonnet · 128K context</div>
+          </div>
+
+          <div class="profile-detail">
+            <div class="profile-detail__label">Active Tools</div>
+            <div class="profile-detail__tags">
+              <span class="profile-detail__tag">github</span>
+              <span class="profile-detail__tag">terminal</span>
+              <span class="profile-detail__tag">web_search</span>
+              <span class="profile-detail__tag">file_system</span>
+            </div>
+          </div>
+
+          <div class="profile-detail">
+            <div class="profile-detail__label">Autonomy</div>
+            <div class="profile-detail__value">Semi-autonomous — asks before destructive actions</div>
+          </div>
+
+          <div class="profile-detail">
+            <div class="profile-detail__label">Memory</div>
+            <div class="profile-detail__value">
+              Short-term: 12 entries<br>
+              Workspace: 48 entries<br>
+              Long-term: 156 entries
+            </div>
+          </div>
+
+          <div class="profile-detail">
+            <div class="profile-detail__label">Last Active</div>
+            <div class="profile-detail__value">2 minutes ago — Refactoring auth module</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>

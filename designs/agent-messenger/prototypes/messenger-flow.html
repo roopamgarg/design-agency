@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Messenger — Interactive Prototype</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-normal);
+        color: var(--color-text-primary);
+        background: var(--color-bg-primary);
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+        height: 100vh;
+      }
+
+      [data-screen] { display: none; position: absolute; inset: 0; overflow: hidden; }
+      [data-screen].active { display: block; animation: screenFadeIn 250ms ease-out; }
+
+      @keyframes screenFadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(24px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+
+      @keyframes slideInUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+      }
+
+      @keyframes streamDot {
+        0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+        40% { opacity: 1; transform: scale(1); }
+      }
+
+      @keyframes typing {
+        from { width: 0; }
+        to { width: 100%; }
+      }
+
+      /* ===== SHARED SHELL ===== */
+      .messenger-shell {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) 1fr var(--context-panel-width);
+        height: 100vh;
+      }
+
+      .messenger-shell--two-col {
+        grid-template-columns: var(--sidebar-width) 1fr;
+      }
+
+      /* ===== SIDEBAR ===== */
+      .sidebar {
+        background: var(--color-bg-sidebar);
+        border-right: 1px solid var(--color-border-default);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .sidebar__header {
+        padding: var(--space-4);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        border-bottom: 1px solid var(--color-border-default);
+        min-height: var(--header-height);
+        cursor: pointer;
+      }
+
+      .sidebar__header:hover { background: var(--color-bg-hover); }
+
+      .sidebar__ws-avatar {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-md);
+        background: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: var(--font-weight-bold);
+        font-size: var(--font-size-sm);
+        flex-shrink: 0;
+      }
+
+      .sidebar__ws-name {
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-base);
+        flex: 1;
+      }
+
+      .sidebar__ws-chevron {
+        width: 16px;
+        height: 16px;
+        color: var(--color-text-tertiary);
+      }
+
+      .sidebar__section { padding: var(--space-2) var(--space-3); }
+
+      .sidebar__section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-1) var(--space-2);
+        margin-bottom: var(--space-1);
+      }
+
+      .sidebar__section-title {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+      }
+
+      .sidebar__section-action {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-tertiary);
+        cursor: pointer;
+        border: none;
+        background: none;
+        border-radius: var(--radius-sm);
+        transition: background var(--transition-fast);
+      }
+
+      .sidebar__section-action:hover {
+        background: var(--color-bg-hover);
+        color: var(--color-text-secondary);
+      }
+
+      .sidebar__channel {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-1-5) var(--space-2);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-sm);
+        transition: background var(--transition-fast);
+        min-height: 36px;
+      }
+
+      .sidebar__channel:hover { background: var(--color-bg-hover); }
+      .sidebar__channel--active {
+        background: var(--color-bg-active);
+        color: var(--color-text-primary);
+      }
+
+      .sidebar__channel-hash {
+        color: var(--color-text-tertiary);
+        width: 18px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .sidebar__channel-badge {
+        margin-left: auto;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        background: var(--color-primary);
+        color: #fff;
+        font-size: 10px;
+        font-weight: var(--font-weight-semibold);
+        border-radius: var(--badge-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sidebar__agent {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-1-5) var(--space-2);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        min-height: 36px;
+      }
+
+      .sidebar__agent:hover { background: var(--color-bg-hover); }
+
+      .sidebar__agent-avi {
+        width: 24px;
+        height: 24px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .sidebar__agent-name {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        flex: 1;
+      }
+
+      .sidebar__agent-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-full);
+        flex-shrink: 0;
+      }
+
+      .sidebar__footer {
+        margin-top: auto;
+        padding: var(--space-3) var(--space-4);
+        border-top: 1px solid var(--color-border-default);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .sidebar__user-avi {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .sidebar__user-name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+      }
+
+      /* ===== MAIN HEADER ===== */
+      .main-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-5);
+        min-height: var(--header-height);
+        border-bottom: 1px solid var(--color-border-default);
+        background: var(--color-bg-primary);
+      }
+
+      .main-header__title {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .main-header__actions {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .icon-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        transition: background var(--transition-fast);
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+      }
+
+      .icon-btn:hover { background: var(--color-bg-hover); color: var(--color-text-primary); }
+      .icon-btn svg { width: 18px; height: 18px; }
+
+      /* ===== LOGIN SCREEN ===== */
+      .login-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        height: 100vh;
+      }
+
+      .login-hero {
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        padding: var(--space-10);
+        overflow: hidden;
+      }
+
+      .login-hero__bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .login-hero__overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(15, 17, 23, 0.85), rgba(99, 102, 241, 0.4));
+      }
+
+      .login-hero__content {
+        position: relative;
+        z-index: 1;
+        max-width: 480px;
+      }
+
+      .login-hero__logo {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        margin-bottom: var(--space-8);
+      }
+
+      .login-hero__logo-icon {
+        width: 44px;
+        height: 44px;
+        background: var(--color-primary);
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .login-hero__logo-icon svg { width: 24px; height: 24px; color: #fff; }
+
+      .login-hero__logo-text {
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-bold);
+        color: #FFFFFF;
+      }
+
+      .login-hero__headline {
+        font-size: var(--font-size-3xl);
+        font-weight: var(--font-weight-bold);
+        color: #FFFFFF;
+        line-height: var(--line-height-tight);
+        margin-bottom: var(--space-4);
+      }
+
+      .login-hero__sub {
+        font-size: var(--font-size-md);
+        color: rgba(255, 255, 255, 0.7);
+        line-height: var(--line-height-relaxed);
+        margin-bottom: var(--space-8);
+      }
+
+      .login-hero__agents {
+        display: flex;
+        gap: var(--space-3);
+      }
+
+      .login-hero__agent-card {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius-lg);
+        padding: var(--space-2) var(--space-3);
+      }
+
+      .login-hero__agent-card img {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .login-hero__agent-card span {
+        font-size: var(--font-size-xs);
+        color: #FFFFFF;
+        font-weight: var(--font-weight-medium);
+      }
+
+      .login-form-panel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-10);
+        background: var(--color-bg-secondary);
+      }
+
+      .login-form {
+        width: 100%;
+        max-width: 380px;
+      }
+
+      .login-form__title {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--space-2);
+      }
+
+      .login-form__subtitle {
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-8);
+      }
+
+      .login-form__oauth {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        margin-bottom: var(--space-6);
+      }
+
+      .oauth-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-3);
+        height: var(--btn-height-lg);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-md);
+        background: var(--color-bg-tertiary);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-medium);
+        cursor: pointer;
+        transition: background var(--transition-fast), border-color var(--transition-fast);
+        min-height: var(--touch-target-min);
+      }
+
+      .oauth-btn:hover { background: var(--color-bg-elevated); border-color: var(--color-border-strong); }
+      .oauth-btn svg { width: 20px; height: 20px; }
+
+      .login-form__divider {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+        margin-bottom: var(--space-6);
+        color: var(--color-text-tertiary);
+        font-size: var(--font-size-xs);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+      }
+
+      .login-form__divider::before,
+      .login-form__divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--color-border-default);
+      }
+
+      .form-field { margin-bottom: var(--space-4); }
+
+      .form-field__label {
+        display: block;
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-1-5);
+      }
+
+      .form-field__input {
+        width: 100%;
+        height: var(--input-height);
+        padding: 0 var(--space-3);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--input-radius);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-base);
+        font-family: var(--font-family-sans);
+        transition: border-color var(--transition-fast);
+      }
+
+      .form-field__input::placeholder { color: var(--color-text-tertiary); }
+      .form-field__input:focus { outline: none; border-color: var(--color-border-focus); box-shadow: 0 0 0 3px var(--color-primary-subtle); }
+
+      .btn-primary {
+        width: 100%;
+        height: var(--btn-height-lg);
+        background: var(--color-primary);
+        color: var(--color-primary-contrast);
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-semibold);
+        font-family: var(--font-family-sans);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        min-height: var(--touch-target-min);
+      }
+
+      .btn-primary:hover { background: var(--color-primary-dark); }
+
+      .login-form__footer {
+        text-align: center;
+        margin-top: var(--space-6);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+      }
+
+      .login-form__footer a {
+        color: var(--color-text-link);
+        text-decoration: none;
+        font-weight: var(--font-weight-medium);
+        cursor: pointer;
+      }
+
+      .login-form__footer a:hover { text-decoration: underline; }
+
+      /* ===== WORKSPACE SETUP ===== */
+      .setup-layout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: var(--color-bg-primary);
+      }
+
+      .setup-card {
+        width: 100%;
+        max-width: 480px;
+        padding: var(--space-10);
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-xl);
+      }
+
+      .setup-card__step {
+        font-size: var(--font-size-xs);
+        color: var(--color-primary-light);
+        font-weight: var(--font-weight-semibold);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+        margin-bottom: var(--space-2);
+      }
+
+      .setup-card__title {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--space-2);
+      }
+
+      .setup-card__desc {
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-8);
+        line-height: var(--line-height-relaxed);
+      }
+
+      .setup-card__agents {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-3);
+        margin-bottom: var(--space-8);
+      }
+
+      .agent-option {
+        padding: var(--space-4);
+        background: var(--color-bg-tertiary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: border-color var(--transition-fast), background var(--transition-fast);
+        text-align: center;
+      }
+
+      .agent-option:hover { border-color: var(--color-border-strong); }
+      .agent-option--selected { border-color: var(--color-primary); background: var(--color-primary-subtle); }
+
+      .agent-option__avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        margin: 0 auto var(--space-2);
+      }
+
+      .agent-option__name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        margin-bottom: var(--space-0-5);
+      }
+
+      .agent-option__role {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      /* ===== DASHBOARD ===== */
+      .dashboard-main {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .dashboard-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-6);
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .dashboard__welcome-title {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--space-2);
+      }
+
+      .dashboard__welcome-sub {
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-8);
+      }
+
+      .dashboard__stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-4);
+        margin-bottom: var(--space-8);
+      }
+
+      .stat-card {
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-xl);
+        padding: var(--space-5);
+      }
+
+      .stat-card__label {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        margin-bottom: var(--space-2);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+      }
+
+      .stat-card__value {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+      }
+
+      .stat-card__change {
+        font-size: var(--font-size-xs);
+        margin-top: var(--space-1);
+      }
+
+      .stat-card__change--up { color: var(--color-success); }
+
+      .dashboard__section { margin-bottom: var(--space-8); }
+
+      .dashboard__section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--space-4);
+      }
+
+      .dashboard__section-title {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-3);
+      }
+
+      .quick-action {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-6) var(--space-4);
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-xl);
+        cursor: pointer;
+        transition: background var(--transition-fast), border-color var(--transition-fast);
+      }
+
+      .quick-action:hover { background: var(--color-bg-tertiary); border-color: var(--color-border-strong); }
+
+      .quick-action__icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .quick-action__icon svg { width: 24px; height: 24px; }
+
+      .quick-action__icon--agents { background: var(--color-agent-1-subtle); color: var(--color-agent-1); }
+      .quick-action__icon--channel { background: var(--color-agent-3-subtle); color: var(--color-agent-3); }
+      .quick-action__icon--task { background: var(--color-agent-7-subtle); color: var(--color-agent-7); }
+
+      .quick-action__label {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+      }
+
+      .quick-action__desc {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        text-align: center;
+      }
+
+      /* ===== CONTEXT PANEL ===== */
+      .context-panel {
+        background: var(--color-bg-secondary);
+        border-left: 1px solid var(--color-border-default);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .context-panel__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-4);
+        min-height: var(--header-height);
+        border-bottom: 1px solid var(--color-border-default);
+      }
+
+      .context-panel__title {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .context-panel__body { padding: var(--space-4); }
+
+      .agent-card-sm {
+        background: var(--color-bg-tertiary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-lg);
+        padding: var(--space-3);
+        margin-bottom: var(--space-2);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .agent-card-sm:hover { background: var(--color-bg-elevated); }
+
+      .agent-card-sm__row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .agent-card-sm__avi {
+        width: var(--avatar-md);
+        height: var(--avatar-md);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .agent-card-sm__name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .agent-card-sm__role {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .agent-card-sm__status {
+        margin-top: var(--space-2);
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+      }
+
+      .agent-card-sm__dot {
+        width: 6px;
+        height: 6px;
+        border-radius: var(--radius-full);
+        animation: pulse 2s infinite;
+      }
+
+      /* ===== CHAT SCREEN ===== */
+      .chat-area {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .chat-header {
+        display: flex;
+        align-items: center;
+        padding: 0 var(--space-5);
+        min-height: var(--header-height);
+        border-bottom: 1px solid var(--color-border-default);
+        gap: var(--space-3);
+      }
+
+      .chat-header__hash {
+        font-size: var(--font-size-lg);
+        color: var(--color-text-tertiary);
+      }
+
+      .chat-header__name {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .chat-header__actions { margin-left: auto; display: flex; gap: var(--space-1); }
+
+      .messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-4) var(--space-5);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .message {
+        display: flex;
+        gap: var(--space-3);
+        max-width: var(--msg-max-width);
+      }
+
+      .message--user { align-self: flex-end; flex-direction: row-reverse; }
+
+      .message__avatar {
+        width: var(--avatar-md);
+        height: var(--avatar-md);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .message__body { flex: 1; min-width: 0; }
+
+      .message__meta {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-bottom: var(--space-1);
+      }
+
+      .message--user .message__meta { flex-direction: row-reverse; }
+
+      .message__author {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .message__badge {
+        font-size: var(--font-size-2xs);
+        padding: 1px 6px;
+        border-radius: var(--badge-radius);
+        font-weight: var(--font-weight-medium);
+      }
+
+      .message__time {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .message__bubble {
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--radius-msg);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-relaxed);
+      }
+
+      .message--agent .message__bubble {
+        background: var(--color-msg-agent-bg);
+        border: 1px solid var(--color-border-default);
+        border-top-left-radius: var(--radius-msg-tail);
+      }
+
+      .message--user .message__bubble {
+        background: var(--color-msg-user-bg);
+        border-top-right-radius: var(--radius-msg-tail);
+      }
+
+      .message__bubble p { margin-bottom: var(--space-2); }
+      .message__bubble p:last-child { margin-bottom: 0; }
+
+      .message__bubble code {
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-xs);
+        background: var(--color-msg-code-bg);
+        padding: 2px 6px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--color-msg-code-border);
+      }
+
+      .message__bubble ul {
+        padding-left: var(--space-5);
+        margin: var(--space-2) 0;
+      }
+
+      .message__bubble li { margin-bottom: var(--space-1); font-size: var(--font-size-sm); }
+
+      .streaming-indicator {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: var(--space-1) 0;
+      }
+
+      .streaming-indicator__dot {
+        width: 4px;
+        height: 4px;
+        border-radius: var(--radius-full);
+        background: var(--color-text-tertiary);
+        animation: streamDot 1.4s infinite ease-in-out;
+      }
+
+      .streaming-indicator__dot:nth-child(2) { animation-delay: 0.2s; }
+      .streaming-indicator__dot:nth-child(3) { animation-delay: 0.4s; }
+
+      .task-card-inline {
+        margin: var(--space-3) 0;
+        padding: var(--space-3);
+        background: var(--color-card-task-bg);
+        border: 1px solid var(--color-card-task-border);
+        border-radius: var(--radius-lg);
+      }
+
+      .task-card-inline__label {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-accent);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+        margin-bottom: var(--space-1);
+      }
+
+      .task-card-inline__title {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        margin-bottom: var(--space-1);
+      }
+
+      .task-card-inline__meta {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      .composer {
+        padding: var(--space-3) var(--space-5);
+        border-top: 1px solid var(--color-border-default);
+      }
+
+      .composer__wrap {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-xl);
+        padding: var(--space-2) var(--space-3);
+        transition: border-color var(--transition-fast);
+      }
+
+      .composer__wrap:focus-within { border-color: var(--color-border-focus); box-shadow: 0 0 0 3px var(--color-primary-subtle); }
+
+      .composer__input {
+        flex: 1;
+        border: none;
+        background: none;
+        color: var(--color-text-primary);
+        font-size: var(--font-size-base);
+        font-family: var(--font-family-sans);
+        padding: var(--space-1-5) 0;
+      }
+
+      .composer__input::placeholder { color: var(--color-text-tertiary); }
+      .composer__input:focus { outline: none; }
+
+      .composer__send {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: var(--color-primary);
+        color: #fff;
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        transition: background var(--transition-fast);
+      }
+
+      .composer__send:hover { background: var(--color-primary-dark); }
+      .composer__send svg { width: 16px; height: 16px; }
+
+      /* ===== AGENT CONFIG SCREEN ===== */
+      .config-main {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .config-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-6);
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .config-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-6);
+      }
+
+      .config-section {
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-xl);
+        padding: var(--space-5);
+      }
+
+      .config-section__title {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-semibold);
+        margin-bottom: var(--space-4);
+      }
+
+      .config-field { margin-bottom: var(--space-4); }
+      .config-field:last-child { margin-bottom: 0; }
+
+      .config-field__label {
+        display: block;
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-1-5);
+      }
+
+      .config-field__input {
+        width: 100%;
+        height: var(--input-height);
+        padding: 0 var(--space-3);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--input-radius);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-base);
+        font-family: var(--font-family-sans);
+      }
+
+      .config-field__input:focus { outline: none; border-color: var(--color-border-focus); }
+
+      .config-field__textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: var(--space-3);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--input-radius);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-sm);
+        font-family: var(--font-family-mono);
+        line-height: var(--line-height-relaxed);
+        resize: vertical;
+      }
+
+      .config-field__textarea:focus { outline: none; border-color: var(--color-border-focus); }
+
+      .slider-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      .slider-row__track {
+        flex: 1;
+        height: 6px;
+        background: var(--slider-track-bg);
+        border-radius: var(--radius-full);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .slider-row__fill {
+        position: absolute;
+        height: 100%;
+        background: var(--color-primary);
+        border-radius: var(--radius-full);
+      }
+
+      .slider-row__value {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-primary);
+        min-width: 32px;
+        text-align: right;
+      }
+
+      .tools-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-2);
+      }
+
+      .tool-toggle {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-3);
+        background: var(--color-bg-tertiary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-sm);
+        cursor: pointer;
+        transition: border-color var(--transition-fast);
+      }
+
+      .tool-toggle--active { border-color: var(--color-primary); background: var(--color-primary-subtle); }
+
+      .tool-toggle__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-full);
+        background: var(--color-text-tertiary);
+      }
+
+      .tool-toggle--active .tool-toggle__dot { background: var(--color-primary); }
+
+      /* ===== DELEGATION SCREEN ===== */
+      .delegation-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-6);
+      }
+
+      .delegation-chain {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+        max-width: 640px;
+        margin: 0 auto;
+      }
+
+      .delegation-node {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+        padding: var(--space-4);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--color-border-default);
+        position: relative;
+      }
+
+      .delegation-node--active { border-color: var(--color-primary); background: var(--color-primary-subtle); }
+      .delegation-node--handoff { border-color: var(--color-card-handoff-border); background: var(--color-card-handoff-bg); }
+      .delegation-node--approval { border-color: var(--color-card-approval-border); background: var(--color-card-approval-bg); }
+
+      .delegation-node__avi {
+        width: var(--avatar-lg);
+        height: var(--avatar-lg);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .delegation-node__info { flex: 1; }
+
+      .delegation-node__name {
+        font-weight: var(--font-weight-semibold);
+        margin-bottom: var(--space-0-5);
+      }
+
+      .delegation-node__task {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-1);
+      }
+
+      .delegation-node__status {
+        font-size: var(--font-size-xs);
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+      }
+
+      .delegation-node__status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: var(--radius-full);
+      }
+
+      .delegation-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-1) 0;
+      }
+
+      .delegation-arrow svg {
+        width: 24px;
+        height: 24px;
+        color: var(--color-text-tertiary);
+      }
+
+      .delegation-arrow__label {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+        margin-left: var(--space-2);
+      }
+
+      /* ===== WORKSPACE SWITCH OVERLAY ===== */
+      .ws-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: var(--z-modal-backdrop);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-bg-overlay);
+        backdrop-filter: blur(4px);
+      }
+
+      .ws-overlay.visible { display: flex; animation: screenFadeIn 200ms ease-out; }
+
+      .ws-overlay__card {
+        width: 100%;
+        max-width: 400px;
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-xl);
+        padding: var(--space-6);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .ws-overlay__title {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--space-4);
+      }
+
+      .ws-list { display: flex; flex-direction: column; gap: var(--space-2); }
+
+      .ws-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        border: 1px solid transparent;
+      }
+
+      .ws-item:hover { background: var(--color-bg-hover); }
+      .ws-item--active { background: var(--color-bg-active); border-color: var(--color-border-strong); }
+
+      .ws-item__avatar {
+        width: var(--avatar-md);
+        height: var(--avatar-md);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: var(--font-weight-bold);
+        color: #fff;
+        flex-shrink: 0;
+      }
+
+      .ws-item__info { flex: 1; }
+
+      .ws-item__name {
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .ws-item__members {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .ws-overlay__footer {
+        margin-top: var(--space-4);
+        padding-top: var(--space-4);
+        border-top: 1px solid var(--color-border-default);
+      }
+
+      .ws-overlay__create {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-link);
+        cursor: pointer;
+        font-weight: var(--font-weight-medium);
+        padding: var(--space-2);
+        border-radius: var(--radius-md);
+        transition: background var(--transition-fast);
+      }
+
+      .ws-overlay__create:hover { background: var(--color-bg-hover); }
+      .ws-overlay__create svg { width: 16px; height: 16px; }
+
+      /* ===== PROTOTYPE NAV ===== */
+      .prototype-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: var(--space-3);
+        background: var(--color-bg-tertiary);
+        border-top: 1px solid var(--color-border-default);
+        display: flex;
+        gap: var(--space-2);
+        justify-content: center;
+        z-index: 9999;
+        flex-wrap: wrap;
+      }
+
+      .prototype-nav__btn {
+        padding: var(--space-1-5) var(--space-3);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--color-border-default);
+        background: var(--color-bg-secondary);
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-xs);
+        font-family: var(--font-family-sans);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        white-space: nowrap;
+      }
+
+      .prototype-nav__btn:hover { background: var(--color-bg-elevated); color: var(--color-text-primary); }
+      .prototype-nav__btn--active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+    </style>
+</head>
+<body>
+  <div data-product="agent-messenger">
+
+    <!-- ===== SCREEN 1: LOGIN ===== -->
+    <section data-screen="login" class="active">
+      <div class="login-layout">
+        <section class="login-hero" aria-hidden="true">
+          <img class="login-hero__bg" src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=1600&fit=crop" alt="">
+          <div class="login-hero__overlay"></div>
+          <div class="login-hero__content">
+            <div class="login-hero__logo">
+              <div class="login-hero__logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <span class="login-hero__logo-text">Agent Messenger</span>
+            </div>
+            <h1 class="login-hero__headline">Your personal AI<br>operating system</h1>
+            <p class="login-hero__sub">A workspace where humans and AI agents collaborate with persistent identity and autonomous workflows.</p>
+            <div class="login-hero__agents">
+              <div class="login-hero__agent-card">
+                <img src="https://i.pravatar.cc/64?img=1" alt="UX Architect">
+                <span>UX Architect</span>
+              </div>
+              <div class="login-hero__agent-card">
+                <img src="https://i.pravatar.cc/64?img=5" alt="Code Assistant">
+                <span>Code Assistant</span>
+              </div>
+              <div class="login-hero__agent-card">
+                <img src="https://i.pravatar.cc/64?img=8" alt="Research Bot">
+                <span>Research Bot</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="login-form-panel">
+          <form class="login-form" aria-label="Sign in" onsubmit="event.preventDefault(); showScreen('workspace-setup');">
+            <h2 class="login-form__title">Welcome back</h2>
+            <p class="login-form__subtitle">Sign in to your workspace</p>
+
+            <div class="login-form__oauth">
+              <button type="button" class="oauth-btn" onclick="showScreen('workspace-setup')">
+                <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Continue with Google
+              </button>
+              <button type="button" class="oauth-btn" onclick="showScreen('workspace-setup')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                Continue with GitHub
+              </button>
+            </div>
+
+            <div class="login-form__divider">or continue with email</div>
+
+            <div class="form-field">
+              <label class="form-field__label" for="email">Email address</label>
+              <input class="form-field__input" type="email" id="email" placeholder="you@company.com">
+            </div>
+            <div class="form-field">
+              <label class="form-field__label" for="password">Password</label>
+              <input class="form-field__input" type="password" id="password" placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top: var(--space-4);">Sign in</button>
+
+            <p class="login-form__footer">
+              Don't have an account? <a onclick="showScreen('workspace-setup')">Create workspace</a>
+            </p>
+          </form>
+        </section>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN 2: WORKSPACE SETUP ===== -->
+    <section data-screen="workspace-setup">
+      <div class="setup-layout">
+        <div class="setup-card">
+          <div class="setup-card__step">Step 1 of 2</div>
+          <h2 class="setup-card__title">Create your workspace</h2>
+          <p class="setup-card__desc">Set up your AI workspace and choose your first agents. You can always add more later.</p>
+
+          <div class="form-field">
+            <label class="form-field__label">Workspace name</label>
+            <input class="form-field__input" type="text" value="StoryCraft" placeholder="My Workspace">
+          </div>
+
+          <label class="form-field__label" style="margin-bottom: var(--space-3);">Choose starter agents</label>
+          <div class="setup-card__agents">
+            <div class="agent-option agent-option--selected" onclick="this.classList.toggle('agent-option--selected')">
+              <img class="agent-option__avatar" src="https://i.pravatar.cc/96?img=5" alt="Code Assistant">
+              <div class="agent-option__name">Code Assistant</div>
+              <div class="agent-option__role">Engineering</div>
+            </div>
+            <div class="agent-option agent-option--selected" onclick="this.classList.toggle('agent-option--selected')">
+              <img class="agent-option__avatar" src="https://i.pravatar.cc/96?img=1" alt="UX Architect">
+              <div class="agent-option__name">UX Architect</div>
+              <div class="agent-option__role">Product Design</div>
+            </div>
+            <div class="agent-option" onclick="this.classList.toggle('agent-option--selected')">
+              <img class="agent-option__avatar" src="https://i.pravatar.cc/96?img=8" alt="Research Bot">
+              <div class="agent-option__name">Research Bot</div>
+              <div class="agent-option__role">Analysis</div>
+            </div>
+            <div class="agent-option" onclick="this.classList.toggle('agent-option--selected')">
+              <img class="agent-option__avatar" src="https://i.pravatar.cc/96?img=12" alt="Content Writer">
+              <div class="agent-option__name">Content Writer</div>
+              <div class="agent-option__role">Marketing</div>
+            </div>
+          </div>
+
+          <button class="btn-primary" onclick="showScreen('dashboard')">Create Workspace</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN 3: DASHBOARD ===== -->
+    <section data-screen="dashboard">
+      <div class="messenger-shell">
+        <nav class="sidebar" aria-label="Workspace navigation">
+          <div class="sidebar__header" onclick="toggleWsOverlay()">
+            <div class="sidebar__ws-avatar">S</div>
+            <span class="sidebar__ws-name">StoryCraft</span>
+            <svg class="sidebar__ws-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="sidebar__section">
+            <div class="sidebar__section-header">
+              <span class="sidebar__section-title">Channels</span>
+              <button class="sidebar__section-action" aria-label="Add channel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <div class="sidebar__channel sidebar__channel--active"><span class="sidebar__channel-hash">#</span> general <span class="sidebar__channel-badge">3</span></div>
+            <div class="sidebar__channel" onclick="showScreen('chat')"><span class="sidebar__channel-hash">#</span> engineering</div>
+            <div class="sidebar__channel"><span class="sidebar__channel-hash">#</span> design</div>
+            <div class="sidebar__channel"><span class="sidebar__channel-hash">#</span> research</div>
+          </div>
+          <div class="sidebar__section">
+            <div class="sidebar__section-header">
+              <span class="sidebar__section-title">Agents</span>
+              <button class="sidebar__section-action" aria-label="Add agent" onclick="showScreen('agent-config')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <div class="sidebar__agent" onclick="showScreen('chat')">
+              <img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=5" alt="Code Assistant">
+              <span class="sidebar__agent-name">Code Assistant</span>
+              <span class="sidebar__agent-dot" style="background: var(--color-status-working)"></span>
+            </div>
+            <div class="sidebar__agent" onclick="showScreen('agent-config')">
+              <img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=1" alt="UX Architect">
+              <span class="sidebar__agent-name">UX Architect</span>
+              <span class="sidebar__agent-dot" style="background: var(--color-status-online)"></span>
+            </div>
+            <div class="sidebar__agent">
+              <img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=8" alt="Research Bot">
+              <span class="sidebar__agent-name">Research Bot</span>
+              <span class="sidebar__agent-dot" style="background: var(--color-status-online)"></span>
+            </div>
+          </div>
+          <div class="sidebar__footer">
+            <img class="sidebar__user-avi" src="https://i.pravatar.cc/64?img=33" alt="User">
+            <span class="sidebar__user-name">Alex Chen</span>
+          </div>
+        </nav>
+
+        <main class="dashboard-main">
+          <header class="main-header">
+            <h1 class="main-header__title">Dashboard</h1>
+            <div class="main-header__actions">
+              <button class="icon-btn" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+              <button class="icon-btn" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button>
+            </div>
+          </header>
+          <div class="dashboard-body">
+            <h2 class="dashboard__welcome-title">Good morning, Alex</h2>
+            <p class="dashboard__welcome-sub">Your agents have been busy. Here's what's happening in StoryCraft.</p>
+
+            <div class="dashboard__stats">
+              <div class="stat-card">
+                <div class="stat-card__label">Active Agents</div>
+                <div class="stat-card__value">4</div>
+                <div class="stat-card__change stat-card__change--up">+1 new</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card__label">Messages Today</div>
+                <div class="stat-card__value">147</div>
+                <div class="stat-card__change stat-card__change--up">+23%</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card__label">Tasks Running</div>
+                <div class="stat-card__value">8</div>
+                <div class="stat-card__change" style="color: var(--color-warning);">2 blocked</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card__label">Completed</div>
+                <div class="stat-card__value">32</div>
+                <div class="stat-card__change stat-card__change--up">12 this week</div>
+              </div>
+            </div>
+
+            <div class="dashboard__section">
+              <div class="dashboard__section-header">
+                <h3 class="dashboard__section-title">Quick Actions</h3>
+              </div>
+              <div class="quick-actions">
+                <div class="quick-action" onclick="showScreen('agent-config')">
+                  <div class="quick-action__icon quick-action__icon--agents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                  <span class="quick-action__label">Create Agent</span>
+                  <span class="quick-action__desc">Add a new AI agent</span>
+                </div>
+                <div class="quick-action" onclick="showScreen('chat')">
+                  <div class="quick-action__icon quick-action__icon--channel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                  <span class="quick-action__label">Message Agent</span>
+                  <span class="quick-action__desc">Start a conversation</span>
+                </div>
+                <div class="quick-action" onclick="showScreen('delegation')">
+                  <div class="quick-action__icon quick-action__icon--task"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+                  <span class="quick-action__label">Delegate Task</span>
+                  <span class="quick-action__desc">Assign work to agents</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <aside class="context-panel" aria-label="Agent overview">
+          <div class="context-panel__header">
+            <h2 class="context-panel__title">Agent Overview</h2>
+          </div>
+          <div class="context-panel__body">
+            <div class="agent-card-sm" onclick="showScreen('agent-config')">
+              <div class="agent-card-sm__row">
+                <img class="agent-card-sm__avi" src="https://i.pravatar.cc/80?img=1" alt="UX Architect">
+                <div>
+                  <div class="agent-card-sm__name">UX Architect</div>
+                  <div class="agent-card-sm__role">Product Design</div>
+                </div>
+              </div>
+              <div class="agent-card-sm__status">
+                <span class="agent-card-sm__dot" style="background: var(--color-status-online)"></span>
+                Online — 3 tasks completed
+              </div>
+            </div>
+            <div class="agent-card-sm" onclick="showScreen('chat')">
+              <div class="agent-card-sm__row">
+                <img class="agent-card-sm__avi" src="https://i.pravatar.cc/80?img=5" alt="Code Assistant">
+                <div>
+                  <div class="agent-card-sm__name">Code Assistant</div>
+                  <div class="agent-card-sm__role">Engineering</div>
+                </div>
+              </div>
+              <div class="agent-card-sm__status">
+                <span class="agent-card-sm__dot" style="background: var(--color-status-working)"></span>
+                Working — Refactoring API
+              </div>
+            </div>
+            <div class="agent-card-sm">
+              <div class="agent-card-sm__row">
+                <img class="agent-card-sm__avi" src="https://i.pravatar.cc/80?img=8" alt="Research Bot">
+                <div>
+                  <div class="agent-card-sm__name">Research Bot</div>
+                  <div class="agent-card-sm__role">Analysis</div>
+                </div>
+              </div>
+              <div class="agent-card-sm__status">
+                <span class="agent-card-sm__dot" style="background: var(--color-status-online)"></span>
+                Online — Last active 1h ago
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN 4: AGENT CONFIG ===== -->
+    <section data-screen="agent-config">
+      <div class="messenger-shell messenger-shell--two-col">
+        <nav class="sidebar" aria-label="Workspace navigation">
+          <div class="sidebar__header" onclick="toggleWsOverlay()">
+            <div class="sidebar__ws-avatar">S</div>
+            <span class="sidebar__ws-name">StoryCraft</span>
+            <svg class="sidebar__ws-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="sidebar__section">
+            <div class="sidebar__section-header"><span class="sidebar__section-title">Channels</span></div>
+            <div class="sidebar__channel" onclick="showScreen('chat')"><span class="sidebar__channel-hash">#</span> engineering</div>
+            <div class="sidebar__channel"><span class="sidebar__channel-hash">#</span> general</div>
+          </div>
+          <div class="sidebar__section">
+            <div class="sidebar__section-header"><span class="sidebar__section-title">Agents</span></div>
+            <div class="sidebar__agent"><img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=5" alt="Code Assistant"><span class="sidebar__agent-name">Code Assistant</span><span class="sidebar__agent-dot" style="background: var(--color-status-working)"></span></div>
+            <div class="sidebar__agent"><img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=1" alt="UX Architect"><span class="sidebar__agent-name">UX Architect</span><span class="sidebar__agent-dot" style="background: var(--color-status-online)"></span></div>
+          </div>
+          <div class="sidebar__footer">
+            <img class="sidebar__user-avi" src="https://i.pravatar.cc/64?img=33" alt="User">
+            <span class="sidebar__user-name">Alex Chen</span>
+          </div>
+        </nav>
+
+        <main class="config-main">
+          <header class="main-header">
+            <h1 class="main-header__title">Create New Agent</h1>
+            <div class="main-header__actions">
+              <button class="icon-btn" onclick="showScreen('dashboard')" aria-label="Back to dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+          </header>
+          <div class="config-body">
+            <div class="config-grid">
+              <div class="config-section">
+                <h3 class="config-section__title">Identity</h3>
+                <div class="config-field">
+                  <label class="config-field__label">Agent Name</label>
+                  <input class="config-field__input" type="text" value="Data Analyst" placeholder="e.g. Research Bot">
+                </div>
+                <div class="config-field">
+                  <label class="config-field__label">Role</label>
+                  <input class="config-field__input" type="text" value="Analytics & Insights" placeholder="e.g. Engineering">
+                </div>
+                <div class="config-field">
+                  <label class="config-field__label">System Prompt</label>
+                  <textarea class="config-field__textarea">You are a data analyst agent. Analyze datasets, create visualizations, identify trends, and provide actionable insights. Use statistical methods when appropriate.</textarea>
+                </div>
+              </div>
+
+              <div class="config-section">
+                <h3 class="config-section__title">Capabilities</h3>
+                <div class="config-field">
+                  <label class="config-field__label">Model</label>
+                  <input class="config-field__input" type="text" value="claude-4-sonnet" readonly style="cursor: default;">
+                </div>
+                <div class="config-field">
+                  <label class="config-field__label">Temperature</label>
+                  <div class="slider-row">
+                    <div class="slider-row__track"><div class="slider-row__fill" style="width: 30%"></div></div>
+                    <span class="slider-row__value">0.3</span>
+                  </div>
+                </div>
+                <div class="config-field">
+                  <label class="config-field__label">Autonomy Level</label>
+                  <div class="slider-row">
+                    <div class="slider-row__track"><div class="slider-row__fill" style="width: 60%"></div></div>
+                    <span class="slider-row__value">0.6</span>
+                  </div>
+                </div>
+                <div class="config-field">
+                  <label class="config-field__label">Tools</label>
+                  <div class="tools-grid">
+                    <div class="tool-toggle tool-toggle--active"><span class="tool-toggle__dot"></span> SQL Query</div>
+                    <div class="tool-toggle tool-toggle--active"><span class="tool-toggle__dot"></span> Python</div>
+                    <div class="tool-toggle tool-toggle--active"><span class="tool-toggle__dot"></span> Charts</div>
+                    <div class="tool-toggle"><span class="tool-toggle__dot"></span> Web Search</div>
+                    <div class="tool-toggle tool-toggle--active"><span class="tool-toggle__dot"></span> File I/O</div>
+                    <div class="tool-toggle"><span class="tool-toggle__dot"></span> GitHub</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: var(--space-6); display: flex; gap: var(--space-3); justify-content: flex-end;">
+              <button class="btn-primary" style="width: auto; padding: 0 var(--space-6);" onclick="showScreen('dashboard')">Save Agent</button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN 5: CHAT VIEW ===== -->
+    <section data-screen="chat">
+      <div class="messenger-shell messenger-shell--two-col">
+        <nav class="sidebar" aria-label="Workspace navigation">
+          <div class="sidebar__header" onclick="toggleWsOverlay()">
+            <div class="sidebar__ws-avatar">S</div>
+            <span class="sidebar__ws-name">StoryCraft</span>
+            <svg class="sidebar__ws-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="sidebar__section">
+            <div class="sidebar__section-header"><span class="sidebar__section-title">Channels</span></div>
+            <div class="sidebar__channel sidebar__channel--active"><span class="sidebar__channel-hash">#</span> engineering</div>
+            <div class="sidebar__channel" onclick="showScreen('dashboard')"><span class="sidebar__channel-hash">#</span> general <span class="sidebar__channel-badge">3</span></div>
+            <div class="sidebar__channel"><span class="sidebar__channel-hash">#</span> design</div>
+          </div>
+          <div class="sidebar__section">
+            <div class="sidebar__section-header"><span class="sidebar__section-title">Agents</span></div>
+            <div class="sidebar__agent"><img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=5" alt="Code Assistant"><span class="sidebar__agent-name">Code Assistant</span><span class="sidebar__agent-dot" style="background: var(--color-status-working)"></span></div>
+            <div class="sidebar__agent"><img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=1" alt="UX Architect"><span class="sidebar__agent-name">UX Architect</span><span class="sidebar__agent-dot" style="background: var(--color-status-online)"></span></div>
+            <div class="sidebar__agent"><img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=8" alt="Research Bot"><span class="sidebar__agent-name">Research Bot</span><span class="sidebar__agent-dot" style="background: var(--color-status-online)"></span></div>
+          </div>
+          <div class="sidebar__footer">
+            <img class="sidebar__user-avi" src="https://i.pravatar.cc/64?img=33" alt="User">
+            <span class="sidebar__user-name">Alex Chen</span>
+          </div>
+        </nav>
+
+        <main class="chat-area">
+          <header class="chat-header">
+            <span class="chat-header__hash">#</span>
+            <h1 class="chat-header__name">engineering</h1>
+            <div class="chat-header__actions">
+              <button class="icon-btn" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+              <button class="icon-btn" onclick="showScreen('delegation')" aria-label="View delegation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
+            </div>
+          </header>
+
+          <div class="messages" role="log" aria-label="Chat messages">
+            <div class="message message--user">
+              <img class="message__avatar" src="https://i.pravatar.cc/80?img=33" alt="Alex Chen">
+              <div class="message__body">
+                <div class="message__meta">
+                  <span class="message__author">Alex Chen</span>
+                  <span class="message__time">9:15 AM</span>
+                </div>
+                <div class="message__bubble">
+                  <p>Hey @Code Assistant, can you refactor the authentication module to use JWT tokens? The session-based approach is creating scaling issues.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="message message--agent">
+              <img class="message__avatar" src="https://i.pravatar.cc/80?img=5" alt="Code Assistant">
+              <div class="message__body">
+                <div class="message__meta">
+                  <span class="message__author">Code Assistant</span>
+                  <span class="message__badge" style="background: var(--color-agent-2-subtle); color: var(--color-agent-2);">Engineering</span>
+                  <span class="message__time">9:16 AM</span>
+                </div>
+                <div class="message__bubble">
+                  <p>I'll handle the JWT migration. Here's my approach:</p>
+                  <ul>
+                    <li>Replace <code>express-session</code> with <code>jsonwebtoken</code></li>
+                    <li>Add refresh token rotation for security</li>
+                    <li>Migrate existing sessions with a backward-compatible wrapper</li>
+                    <li>Update all middleware to validate JWT headers</li>
+                  </ul>
+                  <p>Estimated completion: <strong>~45 minutes</strong>.</p>
+
+                  <div class="task-card-inline">
+                    <div class="task-card-inline__label">Task Created</div>
+                    <div class="task-card-inline__title">Migrate authentication from sessions to JWT</div>
+                    <div class="task-card-inline__meta">
+                      <span>Running</span>
+                      <span>Assigned to Code Assistant</span>
+                      <span>ETA 45m</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="message message--user">
+              <img class="message__avatar" src="https://i.pravatar.cc/80?img=33" alt="Alex Chen">
+              <div class="message__body">
+                <div class="message__meta">
+                  <span class="message__author">Alex Chen</span>
+                  <span class="message__time">9:20 AM</span>
+                </div>
+                <div class="message__bubble">
+                  <p>Great. Also update the rate limiter middleware — it currently uses session IDs for tracking.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="message message--agent">
+              <img class="message__avatar" src="https://i.pravatar.cc/80?img=5" alt="Code Assistant">
+              <div class="message__body">
+                <div class="message__meta">
+                  <span class="message__author">Code Assistant</span>
+                  <span class="message__badge" style="background: var(--color-agent-2-subtle); color: var(--color-agent-2);">Engineering</span>
+                  <span class="message__time">9:21 AM</span>
+                </div>
+                <div class="message__bubble">
+                  <p>Good catch. I'll update the rate limiter to use the JWT <code>sub</code> claim. I'm also going to delegate the database migration part to Research Bot for the schema analysis</p>
+                  <div class="streaming-indicator" aria-label="Agent is typing">
+                    <span class="streaming-indicator__dot"></span>
+                    <span class="streaming-indicator__dot"></span>
+                    <span class="streaming-indicator__dot"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="composer">
+            <div class="composer__wrap">
+              <input class="composer__input" type="text" placeholder="Message #engineering — @mention an agent to engage" aria-label="Message input">
+              <button class="composer__send" aria-label="Send message">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="m22 2-11 11"/></svg>
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN 6: DELEGATION ===== -->
+    <section data-screen="delegation">
+      <div class="messenger-shell messenger-shell--two-col">
+        <nav class="sidebar" aria-label="Workspace navigation">
+          <div class="sidebar__header" onclick="toggleWsOverlay()">
+            <div class="sidebar__ws-avatar">S</div>
+            <span class="sidebar__ws-name">StoryCraft</span>
+            <svg class="sidebar__ws-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="sidebar__section">
+            <div class="sidebar__section-header"><span class="sidebar__section-title">Channels</span></div>
+            <div class="sidebar__channel" onclick="showScreen('chat')"><span class="sidebar__channel-hash">#</span> engineering</div>
+            <div class="sidebar__channel" onclick="showScreen('dashboard')"><span class="sidebar__channel-hash">#</span> general</div>
+          </div>
+          <div class="sidebar__section">
+            <div class="sidebar__section-header"><span class="sidebar__section-title">Agents</span></div>
+            <div class="sidebar__agent"><img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=5" alt="Code Assistant"><span class="sidebar__agent-name">Code Assistant</span><span class="sidebar__agent-dot" style="background: var(--color-status-working)"></span></div>
+            <div class="sidebar__agent"><img class="sidebar__agent-avi" src="https://i.pravatar.cc/48?img=8" alt="Research Bot"><span class="sidebar__agent-name">Research Bot</span><span class="sidebar__agent-dot" style="background: var(--color-status-working)"></span></div>
+          </div>
+          <div class="sidebar__footer">
+            <img class="sidebar__user-avi" src="https://i.pravatar.cc/64?img=33" alt="User">
+            <span class="sidebar__user-name">Alex Chen</span>
+          </div>
+        </nav>
+
+        <main class="config-main">
+          <header class="main-header">
+            <h1 class="main-header__title">Task Delegation Chain</h1>
+            <div class="main-header__actions">
+              <button class="icon-btn" onclick="showScreen('chat')" aria-label="Back to chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+            </div>
+          </header>
+          <div class="delegation-body">
+            <div class="delegation-chain">
+              <div class="delegation-node">
+                <img class="delegation-node__avi" src="https://i.pravatar.cc/112?img=33" alt="Alex Chen">
+                <div class="delegation-node__info">
+                  <div class="delegation-node__name">Alex Chen (You)</div>
+                  <div class="delegation-node__task">Requested: Migrate auth to JWT</div>
+                  <div class="delegation-node__status">
+                    <span class="delegation-node__status-dot" style="background: var(--color-status-online)"></span>
+                    <span style="color: var(--color-status-online)">Initiated</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="delegation-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+                <span class="delegation-arrow__label">Delegated to</span>
+              </div>
+
+              <div class="delegation-node delegation-node--active">
+                <img class="delegation-node__avi" src="https://i.pravatar.cc/112?img=5" alt="Code Assistant">
+                <div class="delegation-node__info">
+                  <div class="delegation-node__name">Code Assistant</div>
+                  <div class="delegation-node__task">JWT token implementation + middleware updates</div>
+                  <div class="delegation-node__status">
+                    <span class="delegation-node__status-dot" style="background: var(--color-status-working)"></span>
+                    <span style="color: var(--color-status-working)">Working — 65% complete</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="delegation-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+                <span class="delegation-arrow__label">Sub-delegated</span>
+              </div>
+
+              <div class="delegation-node delegation-node--handoff">
+                <img class="delegation-node__avi" src="https://i.pravatar.cc/112?img=8" alt="Research Bot">
+                <div class="delegation-node__info">
+                  <div class="delegation-node__name">Research Bot</div>
+                  <div class="delegation-node__task">Database schema analysis for session migration</div>
+                  <div class="delegation-node__status">
+                    <span class="delegation-node__status-dot" style="background: var(--color-status-working)"></span>
+                    <span style="color: var(--color-status-working)">Analyzing — reviewing 14 tables</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="delegation-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+                <span class="delegation-arrow__label">Awaiting approval</span>
+              </div>
+
+              <div class="delegation-node delegation-node--approval">
+                <img class="delegation-node__avi" src="https://i.pravatar.cc/112?img=33" alt="Alex Chen">
+                <div class="delegation-node__info">
+                  <div class="delegation-node__name">Alex Chen (You)</div>
+                  <div class="delegation-node__task">Review & approve migration plan before execution</div>
+                  <div class="delegation-node__status">
+                    <span class="delegation-node__status-dot" style="background: var(--color-warning)"></span>
+                    <span style="color: var(--color-warning)">Pending your approval</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <!-- ===== WORKSPACE SWITCH OVERLAY ===== -->
+    <div class="ws-overlay" id="wsOverlay" onclick="if(event.target===this) toggleWsOverlay()">
+      <div class="ws-overlay__card">
+        <h3 class="ws-overlay__title">Switch Workspace</h3>
+        <div class="ws-list">
+          <div class="ws-item ws-item--active" onclick="toggleWsOverlay()">
+            <div class="ws-item__avatar" style="background: var(--color-primary);">S</div>
+            <div class="ws-item__info">
+              <div class="ws-item__name">StoryCraft</div>
+              <div class="ws-item__members">5 agents · 3 members</div>
+            </div>
+          </div>
+          <div class="ws-item" onclick="toggleWsOverlay()">
+            <div class="ws-item__avatar" style="background: var(--color-agent-4);">M</div>
+            <div class="ws-item__info">
+              <div class="ws-item__name">Marketing Team</div>
+              <div class="ws-item__members">3 agents · 7 members</div>
+            </div>
+          </div>
+          <div class="ws-item" onclick="toggleWsOverlay()">
+            <div class="ws-item__avatar" style="background: var(--color-agent-6);">P</div>
+            <div class="ws-item__info">
+              <div class="ws-item__name">Personal Projects</div>
+              <div class="ws-item__members">2 agents · 1 member</div>
+            </div>
+          </div>
+        </div>
+        <div class="ws-overlay__footer">
+          <div class="ws-overlay__create" onclick="showScreen('workspace-setup'); toggleWsOverlay();">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Create new workspace
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== PROTOTYPE NAVIGATION ===== -->
+  <nav class="prototype-nav" aria-label="Prototype navigation">
+    <button class="prototype-nav__btn prototype-nav__btn--active" data-nav="login" onclick="showScreen('login')">1. Login</button>
+    <button class="prototype-nav__btn" data-nav="workspace-setup" onclick="showScreen('workspace-setup')">2. Setup</button>
+    <button class="prototype-nav__btn" data-nav="dashboard" onclick="showScreen('dashboard')">3. Dashboard</button>
+    <button class="prototype-nav__btn" data-nav="agent-config" onclick="showScreen('agent-config')">4. Agent Config</button>
+    <button class="prototype-nav__btn" data-nav="chat" onclick="showScreen('chat')">5. Chat</button>
+    <button class="prototype-nav__btn" data-nav="delegation" onclick="showScreen('delegation')">6. Delegation</button>
+  </nav>
+
+  <script>
+    function showScreen(id) {
+      document.querySelectorAll('[data-screen]').forEach(function(s) {
+        s.classList.remove('active');
+      });
+      var target = document.querySelector('[data-screen="' + id + '"]');
+      if (target) target.classList.add('active');
+
+      document.querySelectorAll('.prototype-nav__btn').forEach(function(btn) {
+        btn.classList.remove('prototype-nav__btn--active');
+        if (btn.getAttribute('data-nav') === id) {
+          btn.classList.add('prototype-nav__btn--active');
+        }
+      });
+    }
+
+    function toggleWsOverlay() {
+      var overlay = document.getElementById('wsOverlay');
+      overlay.classList.toggle('visible');
+    }
+  </script>
+</body>
+</html>

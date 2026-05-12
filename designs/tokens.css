@@ -1,105 +1,115 @@
 /* ==========================================================================
-   Dating App — Design Tokens
-   Visual system: Luxury, muted, typography-forward, photography-centric
+   StoryCraft — Design Tokens
+   Visual system: Warm, approachable, audio-first (Headspace × Duolingo)
    Accessibility: WCAG 2.1 AA
    ========================================================================== */
 
 :root {
   /* --------------------------------------------------------------------------
      Colors — Light Mode
-     Palette: Champagne, slate, warm neutrals, subtle rose-gold accent
+     Palette: Warm violet primary, sunset accents, ivory surfaces
+     Direction: Calming enough for vulnerability, engaging enough for daily return
      -------------------------------------------------------------------------- */
 
-  /* Primary — Warm rose-gold accent */
-  --color-primary: #B8860B;
-  --color-primary-light: #D4A855;
-  --color-primary-dark: #8B6508;
-  --color-primary-subtle: rgba(184, 134, 11, 0.08);
+  /* Primary — Warm violet (creative, calming, trustworthy) */
+  --color-primary: #6366F1;
+  --color-primary-light: #A5B4FC;
+  --color-primary-dark: #4338CA;
+  --color-primary-subtle: rgba(99, 102, 241, 0.08);
   --color-primary-contrast: #FFFFFF;
 
-  /* Secondary — Deep slate */
-  --color-secondary: #2C3E50;
-  --color-secondary-light: #415B76;
-  --color-secondary-dark: #1A252F;
+  /* Secondary — Warm teal (growth, progress) */
+  --color-secondary: #14B8A6;
+  --color-secondary-light: #5EEAD4;
+  --color-secondary-dark: #0D9488;
   --color-secondary-contrast: #FFFFFF;
 
-  /* Accent — Champagne highlight */
-  --color-accent: #C9A96E;
-  --color-accent-light: #E2CFA0;
-  --color-accent-dark: #A68540;
-  --color-accent-subtle: rgba(201, 169, 110, 0.1);
+  /* Accent — Sunset orange (energy, motivation, daily engagement) */
+  --color-accent: #F97316;
+  --color-accent-light: #FDBA74;
+  --color-accent-dark: #C2410C;
+  --color-accent-subtle: rgba(249, 115, 22, 0.08);
 
-  /* Semantic — Status colors (muted to match luxury palette) */
-  --color-success: #4A7C59;
-  --color-success-light: #6B9E7A;
-  --color-success-subtle: rgba(74, 124, 89, 0.08);
+  /* Semantic — Status colors */
+  --color-success: #10B981;
+  --color-success-light: #6EE7B7;
+  --color-success-subtle: rgba(16, 185, 129, 0.08);
 
-  --color-warning: #B8860B;
-  --color-warning-light: #D4A855;
-  --color-warning-subtle: rgba(184, 134, 11, 0.08);
+  --color-warning: #F59E0B;
+  --color-warning-light: #FCD34D;
+  --color-warning-subtle: rgba(245, 158, 11, 0.08);
 
-  --color-error: #9B2335;
-  --color-error-light: #C04050;
-  --color-error-subtle: rgba(155, 35, 53, 0.08);
+  --color-error: #EF4444;
+  --color-error-light: #FCA5A5;
+  --color-error-subtle: rgba(239, 68, 68, 0.08);
 
-  --color-info: #4A6FA5;
-  --color-info-light: #6B8FBF;
-  --color-info-subtle: rgba(74, 111, 165, 0.08);
+  --color-info: #0EA5E9;
+  --color-info-light: #7DD3FC;
+  --color-info-subtle: rgba(14, 165, 233, 0.08);
 
-  /* Surfaces */
-  --color-bg-primary: #FAF8F5;
-  --color-bg-secondary: #F5F0EB;
-  --color-bg-tertiary: #EDE6DD;
+  /* Recording — Core interaction color (universal red indicator) */
+  --color-recording: #EF4444;
+  --color-recording-pulse: #FCA5A5;
+  --color-recording-active: #DC2626;
+  --color-recording-glow: rgba(239, 68, 68, 0.4);
+
+  /* Feedback dimension colors (for metric cards & waveform markers) */
+  --color-feedback-voice: #6366F1;
+  --color-feedback-story: #F97316;
+  --color-feedback-filler: #EF4444;
+  --color-feedback-pace: #F59E0B;
+  --color-feedback-emotion: #10B981;
+  --color-feedback-structure: #0EA5E9;
+
+  /* Surfaces — Warm ivory tones */
+  --color-bg-primary: #FFFBF7;
+  --color-bg-secondary: #FEF3E2;
+  --color-bg-tertiary: #FFF7ED;
   --color-bg-elevated: #FFFFFF;
-  --color-bg-overlay: rgba(26, 37, 47, 0.6);
-  --color-bg-scrim: rgba(26, 37, 47, 0.4);
+  --color-bg-overlay: rgba(30, 27, 46, 0.6);
+  --color-bg-scrim: rgba(30, 27, 46, 0.4);
+  --color-bg-recording: #1A1625;
 
-  /* Text */
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #4A4A4A;
-  --color-text-tertiary: #7A7A7A;
-  --color-text-disabled: #B0B0B0;
+  /* Text — Warm purple-tinted neutrals */
+  --color-text-primary: #1E1B2E;
+  --color-text-secondary: #4A4458;
+  --color-text-tertiary: #8B83A0;
+  --color-text-disabled: #B8B2C8;
   --color-text-inverse: #FFFFFF;
-  --color-text-link: #8B6508;
+  --color-text-link: #6366F1;
 
-  /* Borders */
-  --color-border-default: #E5DFD8;
-  --color-border-subtle: #F0EBE5;
-  --color-border-strong: #C9C1B8;
-  --color-border-focus: #B8860B;
+  /* Borders — Lavender-tinted neutrals */
+  --color-border-default: #E8E2F0;
+  --color-border-subtle: #F3EFF8;
+  --color-border-strong: #C4BCD4;
+  --color-border-focus: #6366F1;
 
-  /* Match & Interaction (dating-specific) */
-  --color-match: #C9A96E;
-  --color-match-glow: rgba(201, 169, 110, 0.3);
-  --color-like: #B8860B;
-  --color-pass: #94A3B8;
-  --color-super-like: #4A6FA5;
-  --color-verified: #4A7C59;
-  --color-online: #4A7C59;
-  --color-premium: linear-gradient(135deg, #B8860B, #C9A96E);
+  /* Gamification — Streak, achievements, leaderboard */
+  --color-streak: #F97316;
+  --color-streak-glow: rgba(249, 115, 22, 0.3);
+  --color-achievement-gold: #F59E0B;
+  --color-achievement-silver: #94A3B8;
+  --color-achievement-bronze: #D97706;
+  --color-rank-top: #6366F1;
+  --color-rank-up: #10B981;
+  --color-rank-down: #EF4444;
 
-  /* --------------------------------------------------------------------------
-     Colors — Dark Mode
-     -------------------------------------------------------------------------- */
-  --color-dark-bg-primary: #121212;
-  --color-dark-bg-secondary: #1E1E1E;
-  --color-dark-bg-tertiary: #2A2A2A;
-  --color-dark-bg-elevated: #2A2A2A;
-  --color-dark-text-primary: #F5F0EB;
-  --color-dark-text-secondary: #C9C1B8;
-  --color-dark-text-tertiary: #8A8078;
-  --color-dark-border-default: #3A3530;
-  --color-dark-border-subtle: #2A2520;
-  --color-dark-primary: #D4A855;
-  --color-dark-accent: #E2CFA0;
+  /* Track colors (learning track differentiation) */
+  --color-track-beginner: #6366F1;
+  --color-track-creator: #F97316;
+  --color-track-founder: #0EA5E9;
+  --color-track-interview: #14B8A6;
+  --color-track-social: #EC4899;
+  --color-track-leadership: #8B5CF6;
 
   /* --------------------------------------------------------------------------
      Typography
-     System: Inter for UI, Playfair Display for editorial/emotional moments
+     System: Inter for UI, Merriweather for story/editorial, JetBrains Mono
+     for metrics/timers
      -------------------------------------------------------------------------- */
 
   --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --font-family-display: 'Playfair Display', 'Georgia', serif;
+  --font-family-serif: 'Merriweather', 'Georgia', serif;
   --font-family-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
 
   /* Font Sizes — Modular scale 1.25 (Major Third) */
@@ -111,7 +121,7 @@
   --font-size-xl: 1.5rem;      /* 24px */
   --font-size-2xl: 1.875rem;   /* 30px */
   --font-size-3xl: 2.25rem;    /* 36px */
-  --font-size-4xl: 3rem;       /* 48px */
+  --font-size-4xl: 3rem;       /* 48px — timer display */
   --font-size-5xl: 3.75rem;    /* 60px */
 
   /* Font Weights */
@@ -154,7 +164,7 @@
   --space-20: 5rem;     /* 80px */
   --space-24: 6rem;     /* 96px */
 
-  /* Layout */
+  /* Layout spacing */
   --space-page-x-mobile: var(--space-4);
   --space-page-x-tablet: var(--space-8);
   --space-page-x-desktop: var(--space-12);
@@ -175,22 +185,24 @@
   --radius-full: 9999px;
 
   /* --------------------------------------------------------------------------
-     Shadows — Soft, warm-tinted for luxury feel
+     Shadows — Warm-tinted for approachable feel
      -------------------------------------------------------------------------- */
 
-  --shadow-xs: 0 1px 2px rgba(26, 26, 26, 0.04);
-  --shadow-sm: 0 2px 4px rgba(26, 26, 26, 0.06);
-  --shadow-md: 0 4px 12px rgba(26, 26, 26, 0.08);
-  --shadow-lg: 0 8px 24px rgba(26, 26, 26, 0.1);
-  --shadow-xl: 0 16px 48px rgba(26, 26, 26, 0.12);
-  --shadow-2xl: 0 24px 64px rgba(26, 26, 26, 0.16);
-  --shadow-inner: inset 0 2px 4px rgba(26, 26, 26, 0.04);
-  --shadow-glow-match: 0 0 24px rgba(201, 169, 110, 0.3);
-  --shadow-glow-primary: 0 0 16px rgba(184, 134, 11, 0.25);
+  --shadow-xs: 0 1px 2px rgba(30, 27, 46, 0.04);
+  --shadow-sm: 0 2px 4px rgba(30, 27, 46, 0.06);
+  --shadow-md: 0 4px 12px rgba(30, 27, 46, 0.08);
+  --shadow-lg: 0 8px 24px rgba(30, 27, 46, 0.1);
+  --shadow-xl: 0 16px 48px rgba(30, 27, 46, 0.12);
+  --shadow-2xl: 0 24px 64px rgba(30, 27, 46, 0.16);
+  --shadow-inner: inset 0 2px 4px rgba(30, 27, 46, 0.04);
+  --shadow-glow-primary: 0 0 20px rgba(99, 102, 241, 0.35);
+  --shadow-glow-recording: 0 0 24px rgba(239, 68, 68, 0.4);
+  --shadow-glow-streak: 0 0 16px rgba(249, 115, 22, 0.3);
+  --shadow-glow-success: 0 0 16px rgba(16, 185, 129, 0.3);
 
   /* --------------------------------------------------------------------------
      Transitions & Motion
-     Philosophy: Deliberate, smooth, purposeful (not flashy)
+     Philosophy: Calming, purposeful (not flashy), encouraging
      -------------------------------------------------------------------------- */
 
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -203,6 +215,10 @@
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Recording pulse animation timing */
+  --recording-pulse-duration: 2s;
+  --recording-pulse-easing: cubic-bezier(0.4, 0, 0.6, 1);
 
   /* --------------------------------------------------------------------------
      Z-Index Scale
@@ -272,21 +288,47 @@
   --badge-font-size: var(--font-size-xs);
   --badge-padding-x: var(--space-2);
 
+  /* Bottom Navigation */
+  --bottom-nav-height: 56px;
+  --bottom-nav-icon-size: 24px;
+  --bottom-nav-label-size: var(--font-size-xs);
+
   /* Bottom Sheet */
   --sheet-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
   --sheet-handle-width: 36px;
   --sheet-handle-height: 4px;
   --sheet-handle-radius: var(--radius-full);
 
-  /* Profile Cards (dating-specific) */
-  --profile-card-radius: var(--radius-2xl);
-  --profile-card-aspect: 4 / 5;
-  --profile-card-overlay: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.3) 40%,
-    transparent 70%
-  );
+  /* Recording Button (FAB) */
+  --record-btn-size: 64px;
+  --record-btn-radius: var(--radius-full);
+  --record-btn-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+
+  /* Waveform Visualizer */
+  --waveform-bar-width: 4px;
+  --waveform-bar-gap: 2px;
+  --waveform-bar-radius: var(--radius-full);
+  --waveform-color-idle: var(--color-primary-light);
+  --waveform-color-active: var(--color-recording);
+
+  /* Progress Ring */
+  --progress-ring-size: 64px;
+  --progress-ring-stroke: 6px;
+  --progress-ring-bg: var(--color-border-subtle);
+  --progress-ring-voice: var(--color-feedback-voice);
+  --progress-ring-story: var(--color-feedback-story);
+
+  /* Streak Counter */
+  --streak-icon-size: 24px;
+
+  /* Metric Score Card */
+  --score-card-min-width: 140px;
+
+  /* Timer Display */
+  --timer-font-family: var(--font-family-mono);
+  --timer-font-size: var(--font-size-4xl);
+  --timer-font-weight: var(--font-weight-semibold);
+  --timer-font-variant: tabular-nums;
 
   /* Touch targets (accessibility) */
   --touch-target-min: 44px;
@@ -295,119 +337,167 @@
   --content-width-narrow: 320px;
   --content-width-base: 420px;
   --content-width-wide: 560px;
-
-  /* --------------------------------------------------------------------------
-     Icon Sizes
-     -------------------------------------------------------------------------- */
-  --icon-xs: 0.625rem;    /* 10px */
-  --icon-sm: 0.75rem;     /* 12px */
-  --icon-md: 0.875rem;    /* 14px */
-  --icon-base: 1rem;      /* 16px */
-  --icon-lg: 1.125rem;    /* 18px */
-  --icon-xl: 1.25rem;     /* 20px */
-  --icon-2xl: 1.5rem;     /* 24px */
-  --icon-3xl: 1.75rem;    /* 28px */
-  --icon-4xl: 2rem;       /* 32px */
-  --icon-5xl: 2.25rem;    /* 36px */
-  --icon-6xl: 3rem;       /* 48px */
-  --icon-7xl: 3.5rem;     /* 56px */
-
-  /* --------------------------------------------------------------------------
-     Additional Spacing
-     -------------------------------------------------------------------------- */
-  --space-0-5: 0.125rem;   /* 2px */
-  --space-1-5: 0.375rem;   /* 6px */
-  --space-2-5: 0.625rem;   /* 10px */
-  --space-7: 1.75rem;      /* 28px */
-  --space-9: 2.25rem;      /* 36px */
-
-  /* --------------------------------------------------------------------------
-     Overlay / Translucent Colors
-     -------------------------------------------------------------------------- */
-  --color-overlay-white-10: rgba(255, 255, 255, 0.1);
-  --color-overlay-white-40: rgba(255, 255, 255, 0.4);
-  --color-overlay-white-60: rgba(255, 255, 255, 0.6);
-  --color-overlay-white-80: rgba(255, 255, 255, 0.8);
-  --color-overlay-white-85: rgba(255, 255, 255, 0.85);
-  --color-overlay-white-90: rgba(255, 255, 255, 0.9);
-  --color-overlay-white-95: rgba(255, 255, 255, 0.95);
-  --color-overlay-black-30: rgba(0, 0, 0, 0.3);
-  --color-secondary-subtle: rgba(44, 62, 80, 0.08);
-  --color-verified-border: rgba(74, 124, 89, 0.4);
-
-  /* --------------------------------------------------------------------------
-     Structural Sizes
-     -------------------------------------------------------------------------- */
-  --border-width-thin: 1px;
-  --border-width-default: 1.5px;
-  --border-width-medium: 2px;
-  --border-width-thick: 2.5px;
-  --border-width-heavy: 3px;
-  --outline-width: 2px;
-  --outline-offset: 2px;
-  --online-dot-size: 10px;
-  --online-dot-size-sm: 8px;
-  --shell-min-height: 844px;
-  --blur-sm: 4px;
-  --blur-md: 8px;
-  --blur-lg: 12px;
-
-  /* --------------------------------------------------------------------------
-     Layout Dimensions
-     -------------------------------------------------------------------------- */
-  --hero-max-height: 520px;
-  --match-card-width: 110px;
-  --match-card-height: 130px;
-  --empty-state-min-height: 480px;
-  --app-shell-width: 390px;
-  --app-shell-short: 480px;
-  --app-shell-medium: 600px;
-  --app-shell-tall: 720px;
-  --states-page-max: 1200px;
-  --states-grid-min: 420px;
-  --compat-ring-size: 56px;
-  --hero-dot-width: 28px;
-  --hero-dot-height: 3px;
-  --compose-max-height: 120px;
-  --icebreaker-max-width: 280px;
-  --overlay-card-max-width: 320px;
-  --permission-card-max-width: 320px;
-
-  /* --------------------------------------------------------------------------
-     Component: Focus Ring
-     -------------------------------------------------------------------------- */
-  --focus-ring: var(--outline-width) solid var(--color-border-focus);
-  --focus-ring-primary: var(--outline-width) solid var(--color-primary);
-  --focus-ring-inverse: var(--outline-width) solid var(--color-text-inverse);
 }
 
-/* Dark mode — activated via data-theme="dark" on :root */
+/* ==========================================================================
+   Dark Mode — via data-theme attribute (NEVER prefers-color-scheme)
+   ========================================================================== */
+
 :root[data-theme="dark"] {
-  --color-bg-primary: var(--color-dark-bg-primary);
-  --color-bg-secondary: var(--color-dark-bg-secondary);
-  --color-bg-tertiary: var(--color-dark-bg-tertiary);
-  --color-bg-elevated: var(--color-dark-bg-elevated);
-  --color-text-primary: var(--color-dark-text-primary);
-  --color-text-secondary: var(--color-dark-text-secondary);
-  --color-text-tertiary: var(--color-dark-text-tertiary);
-  --color-border-default: var(--color-dark-border-default);
-  --color-border-subtle: var(--color-dark-border-subtle);
-  --color-primary: var(--color-dark-primary);
-  --color-accent: var(--color-dark-accent);
+  --color-bg-primary: #0F0D1A;
+  --color-bg-secondary: #1A1726;
+  --color-bg-tertiary: #252133;
+  --color-bg-elevated: #2A2540;
   --color-bg-overlay: rgba(0, 0, 0, 0.7);
   --color-bg-scrim: rgba(0, 0, 0, 0.5);
+  --color-bg-recording: #0F0D1A;
+
+  --color-text-primary: #F3EFF8;
+  --color-text-secondary: #C4BCD4;
+  --color-text-tertiary: #8B83A0;
+  --color-text-disabled: #5A5270;
+  --color-text-link: #A5B4FC;
+
+  --color-border-default: #3A3550;
+  --color-border-subtle: #2A2540;
+  --color-border-strong: #5A5270;
+  --color-border-focus: #A5B4FC;
+
+  --color-primary: #A5B4FC;
+  --color-primary-light: #C7D2FE;
+  --color-primary-dark: #6366F1;
+  --color-primary-subtle: rgba(165, 180, 252, 0.12);
+
+  --color-accent: #FDBA74;
+  --color-accent-light: #FED7AA;
+  --color-accent-dark: #F97316;
+
+  --color-success: #6EE7B7;
+  --color-success-light: #A7F3D0;
+  --color-success-subtle: rgba(110, 231, 183, 0.12);
+
+  --color-warning: #FCD34D;
+  --color-warning-light: #FDE68A;
+  --color-warning-subtle: rgba(252, 211, 77, 0.12);
+
+  --color-error: #FCA5A5;
+  --color-error-light: #FECACA;
+  --color-error-subtle: rgba(252, 165, 165, 0.12);
+
+  --color-info: #7DD3FC;
+  --color-info-light: #BAE6FD;
+  --color-info-subtle: rgba(125, 211, 252, 0.12);
 
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
   --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.4);
+  --shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.5);
 
-  --card-bg: var(--color-dark-bg-elevated);
-  --card-border: var(--color-dark-border-default);
-  --input-bg: var(--color-dark-bg-secondary);
-  --input-border: var(--color-dark-border-default);
+  --card-bg: var(--color-bg-elevated);
+  --card-border: var(--color-border-default);
+  --input-bg: var(--color-bg-secondary);
+  --input-border: var(--color-border-default);
 }
+
+/* ==========================================================================
+   Canonical Screen Shell — .app-shell
+   Every screen in this product MUST use this wrapper. On mobile it fills
+   the viewport with bottom tab navigation. On desktop it renders inside a
+   centered phone-frame with device shadow.
+   ========================================================================== */
+
+.app-shell {
+  position: relative;
+  width: 100%;
+  max-width: var(--content-width-base);
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--color-bg-primary);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-shell > .app-shell__header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background: var(--color-bg-primary);
+  padding: var(--space-3) var(--space-page-x-mobile);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.app-shell > .app-shell__content {
+  flex: 1;
+  padding: var(--space-4) var(--space-page-x-mobile);
+  overflow-y: auto;
+}
+
+.app-shell > .app-shell__footer {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-sticky);
+  background: var(--color-bg-elevated);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* Desktop phone-frame treatment (768px+) */
+@media (min-width: 768px) {
+  body:has(.app-shell) {
+    background: var(--color-bg-secondary);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: var(--space-8) 0;
+    min-height: 100vh;
+  }
+
+  .app-shell {
+    min-height: 844px;
+    max-height: 90vh;
+    border-radius: var(--radius-3xl);
+    box-shadow:
+      var(--shadow-2xl),
+      0 0 0 1px var(--color-border-subtle);
+    overflow: hidden;
+  }
+
+  .app-shell > .app-shell__header {
+    border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
+  }
+
+  .app-shell > .app-shell__footer {
+    border-radius: 0 0 var(--radius-3xl) var(--radius-3xl);
+  }
+}
+
+/* ==========================================================================
+   Placeholder Image Guidance
+   ---------------------------------------------------------------------------
+   All image slots MUST use real or high-quality stock placeholder images.
+   Never use solid-color divs as image placeholders.
+
+   Services:
+   - Unsplash:  https://images.unsplash.com/photo-{id}?w={width}&h={height}&fit=crop
+   - Picsum:    https://picsum.photos/{width}/{height}
+   - Pravatar:  https://i.pravatar.cc/{size}?img={n}   (n = 1–70)
+
+   Standard dimensions by slot:
+   - Avatars:   36px, 48px, 64px, 96px  (use Pravatar)
+   - Hero:      390x240                  (use Unsplash lifestyle/people)
+   - Prompt card: 390x200               (use Unsplash abstract/nature)
+   - Card thumb: 160x160                (use Picsum or Unsplash)
+   - Community avatar: 36px, 48px       (use Pravatar)
+   - Background: 390x844 (mobile), 1440x900 (desktop)
+   - Track illustration: 280x180       (use Unsplash thematic)
+   ========================================================================== */
 
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
@@ -417,5 +507,588 @@
     --transition-slow: 0ms;
     --transition-deliberate: 0ms;
     --transition-spring: 0ms;
+    --recording-pulse-duration: 0ms;
+  }
+}
+
+/* ==========================================================================
+   Agent Messenger — Design Tokens
+   Visual system: Dark-primary, messaging-dense, three-zone workspace
+   Accessibility: WCAG 2.2 AA
+   Product scope: [data-product="agent-messenger"]
+   ========================================================================== */
+
+[data-product="agent-messenger"] {
+  /* --------------------------------------------------------------------------
+     Colors — Dark Mode (Primary)
+     Palette: Slate/zinc neutrals, semantic accents, 8-color agent palette
+     Direction: Professional, minimal, high-information-density
+     -------------------------------------------------------------------------- */
+
+  /* Primary — Indigo (focused, professional, tech-forward) */
+  --color-primary: #6366F1;
+  --color-primary-light: #818CF8;
+  --color-primary-dark: #4F46E5;
+  --color-primary-subtle: rgba(99, 102, 241, 0.12);
+  --color-primary-contrast: #FFFFFF;
+
+  /* Semantic — Status colors (per UX strategy) */
+  --color-success: #10B981;
+  --color-success-light: #34D399;
+  --color-success-subtle: rgba(16, 185, 129, 0.12);
+
+  --color-warning: #F59E0B;
+  --color-warning-light: #FBBF24;
+  --color-warning-subtle: rgba(245, 158, 11, 0.12);
+
+  --color-error: #EF4444;
+  --color-error-light: #F87171;
+  --color-error-subtle: rgba(239, 68, 68, 0.12);
+
+  --color-info: #3B82F6;
+  --color-info-light: #60A5FA;
+  --color-info-subtle: rgba(59, 130, 246, 0.12);
+
+  /* Agent Accent Palette — 8 curated colors for visual differentiation */
+  --color-agent-1: #6366F1; /* Indigo */
+  --color-agent-2: #8B5CF6; /* Violet */
+  --color-agent-3: #06B6D4; /* Cyan */
+  --color-agent-4: #F97316; /* Orange */
+  --color-agent-5: #EC4899; /* Pink */
+  --color-agent-6: #10B981; /* Emerald */
+  --color-agent-7: #F59E0B; /* Amber */
+  --color-agent-8: #E11D48; /* Rose */
+
+  /* Surfaces — Dark slate */
+  --color-bg-primary: #0C111D;
+  --color-bg-secondary: #111827;
+  --color-bg-tertiary: #1F2937;
+  --color-bg-elevated: #1E293B;
+  --color-bg-overlay: rgba(0, 0, 0, 0.6);
+  --color-bg-scrim: rgba(0, 0, 0, 0.4);
+  --color-bg-hover: rgba(255, 255, 255, 0.04);
+  --color-bg-active: rgba(255, 255, 255, 0.08);
+  --color-bg-sidebar: #0F172A;
+  --color-bg-composer: #1E293B;
+
+  /* Text — Cool neutrals */
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #D1D5DB;
+  --color-text-tertiary: #9CA3AF;
+  --color-text-disabled: #6B7280;
+  --color-text-inverse: #111827;
+  --color-text-link: #818CF8;
+
+  /* Borders — Subtle slate */
+  --color-border-default: #374151;
+  --color-border-subtle: #1F2937;
+  --color-border-strong: #4B5563;
+  --color-border-focus: #6366F1;
+
+  /* Message-specific colors */
+  --color-msg-user-bg: #1E3A5F;
+  --color-msg-user-text: #F9FAFB;
+  --color-msg-agent-bg: #1F2937;
+  --color-msg-agent-text: #F9FAFB;
+  --color-msg-system-bg: transparent;
+  --color-msg-system-text: #9CA3AF;
+  --color-msg-code-bg: #0D1117;
+  --color-msg-code-border: #30363D;
+
+  /* Task & delegation card colors */
+  --color-card-handoff-bg: rgba(99, 102, 241, 0.08);
+  --color-card-handoff-border: #6366F1;
+  --color-card-approval-bg: rgba(245, 158, 11, 0.08);
+  --color-card-approval-border: #F59E0B;
+  --color-card-task-bg: rgba(59, 130, 246, 0.08);
+  --color-card-task-border: #3B82F6;
+  --color-card-error-bg: rgba(239, 68, 68, 0.08);
+  --color-card-error-border: #EF4444;
+
+  /* Status indicator colors */
+  --color-status-online: #10B981;
+  --color-status-idle: #F59E0B;
+  --color-status-working: #3B82F6;
+  --color-status-error: #EF4444;
+  --color-status-offline: #6B7280;
+
+  /* --------------------------------------------------------------------------
+     Typography
+     System: Inter for UI, JetBrains Mono for code
+     Optimized for high-density messaging
+     -------------------------------------------------------------------------- */
+
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  --font-size-xs: 0.6875rem;  /* 11px — timestamps, metadata */
+  --font-size-sm: 0.8125rem;  /* 13px — captions, sidebar labels */
+  --font-size-base: 0.875rem; /* 14px — message text (compact density) */
+  --font-size-md: 1rem;       /* 16px — channel headers */
+  --font-size-lg: 1.125rem;   /* 18px — section titles */
+  --font-size-xl: 1.25rem;    /* 20px — workspace name */
+  --font-size-2xl: 1.5rem;    /* 24px — page titles */
+  --font-size-3xl: 1.875rem;  /* 30px — hero text */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.35;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.01em;
+
+  /* --------------------------------------------------------------------------
+     Spacing — 4px base, compact messaging density
+     -------------------------------------------------------------------------- */
+
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0-5: 0.125rem; /* 2px */
+  --space-1: 0.25rem;    /* 4px */
+  --space-1-5: 0.375rem; /* 6px */
+  --space-2: 0.5rem;     /* 8px */
+  --space-3: 0.75rem;    /* 12px */
+  --space-4: 1rem;       /* 16px */
+  --space-5: 1.25rem;    /* 20px */
+  --space-6: 1.5rem;     /* 24px */
+  --space-8: 2rem;       /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+
+  /* Layout dimensions */
+  --sidebar-width: 240px;
+  --sidebar-collapsed-width: 64px;
+  --context-panel-width: 320px;
+  --composer-max-height: 200px;
+  --message-max-width: 720px;
+
+  /* --------------------------------------------------------------------------
+     Border Radius
+     -------------------------------------------------------------------------- */
+
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-full: 9999px;
+
+  /* Message bubble radii */
+  --radius-msg: 12px;
+  --radius-msg-tail: 4px;
+
+  /* --------------------------------------------------------------------------
+     Shadows — Minimal, dark-mode optimized
+     -------------------------------------------------------------------------- */
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --shadow-inner: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-glow-primary: 0 0 16px rgba(99, 102, 241, 0.3);
+  --shadow-glow-success: 0 0 12px rgba(16, 185, 129, 0.3);
+  --shadow-glow-error: 0 0 12px rgba(239, 68, 68, 0.3);
+
+  /* --------------------------------------------------------------------------
+     Transitions & Motion — Minimal, purposeful (per UX strategy)
+     -------------------------------------------------------------------------- */
+
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 250ms ease-out;
+  --transition-slow: 400ms ease-out;
+
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* --------------------------------------------------------------------------
+     Z-Index Scale
+     -------------------------------------------------------------------------- */
+
+  --z-base: 0;
+  --z-above: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-sidebar: 300;
+  --z-drawer: 400;
+  --z-modal-backdrop: 500;
+  --z-modal: 600;
+  --z-popover: 700;
+  --z-tooltip: 800;
+  --z-toast: 900;
+  --z-command-palette: 1000;
+  --z-max: 9999;
+
+  /* --------------------------------------------------------------------------
+     Component-Specific Tokens
+     -------------------------------------------------------------------------- */
+
+  /* Agent Avatar */
+  --avatar-xs: 24px;
+  --avatar-sm: 32px;
+  --avatar-md: 40px;
+  --avatar-lg: 56px;
+  --avatar-xl: 80px;
+  --avatar-status-size: 10px;
+  --avatar-status-border: 2px solid var(--color-bg-primary);
+
+  /* Buttons */
+  --btn-height-sm: 28px;
+  --btn-height-md: 36px;
+  --btn-height-lg: 44px;
+  --btn-radius: var(--radius-md);
+  --btn-font-weight: var(--font-weight-medium);
+  --btn-font-size: var(--font-size-sm);
+
+  /* Inputs */
+  --input-height: 36px;
+  --input-height-lg: 44px;
+  --input-radius: var(--radius-md);
+  --input-border: var(--color-border-default);
+  --input-border-focus: var(--color-border-focus);
+  --input-bg: var(--color-bg-tertiary);
+  --input-padding-x: var(--space-3);
+
+  /* Badges */
+  --badge-height: 20px;
+  --badge-radius: var(--radius-full);
+  --badge-font-size: var(--font-size-xs);
+  --badge-padding-x: var(--space-2);
+
+  /* Sidebar */
+  --sidebar-item-height: 32px;
+  --sidebar-item-radius: var(--radius-md);
+  --sidebar-item-padding-x: var(--space-3);
+  --sidebar-section-gap: var(--space-4);
+
+  /* Message Bubbles */
+  --msg-padding-x: var(--space-3);
+  --msg-padding-y: var(--space-2);
+  --msg-gap: var(--space-1);
+  --msg-avatar-size: var(--avatar-sm);
+  --msg-max-width: var(--message-max-width);
+
+  /* Composer */
+  --composer-padding: var(--space-3);
+  --composer-radius: var(--radius-lg);
+  --composer-bg: var(--color-bg-composer);
+  --composer-border: var(--color-border-default);
+
+  /* Cards */
+  --card-radius: var(--radius-lg);
+  --card-padding: var(--space-4);
+  --card-shadow: var(--shadow-sm);
+  --card-bg: var(--color-bg-elevated);
+  --card-border: var(--color-border-subtle);
+
+  /* Tool Badge */
+  --tool-badge-height: 22px;
+  --tool-badge-radius: var(--radius-sm);
+  --tool-badge-bg: rgba(59, 130, 246, 0.1);
+  --tool-badge-color: var(--color-info-light);
+  --tool-badge-font-size: var(--font-size-xs);
+
+  /* Autonomy Slider */
+  --slider-track-height: 4px;
+  --slider-thumb-size: 16px;
+  --slider-track-bg: var(--color-border-default);
+  --slider-track-fill: var(--color-primary);
+  --slider-thumb-bg: var(--color-primary-light);
+
+  /* Touch targets (accessibility) */
+  --touch-target-min: 44px;
+
+  /* Scrollbar */
+  --scrollbar-width: 6px;
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: var(--color-border-default);
+  --scrollbar-thumb-hover: var(--color-border-strong);
+}
+
+/* --------------------------------------------------------------------------
+   Agent Messenger — Light Mode
+   -------------------------------------------------------------------------- */
+
+[data-product="agent-messenger"][data-theme="light"] {
+  --color-primary: #4F46E5;
+  --color-primary-light: #6366F1;
+  --color-primary-dark: #4338CA;
+  --color-primary-subtle: rgba(79, 70, 229, 0.08);
+
+  --color-success: #059669;
+  --color-success-light: #10B981;
+  --color-success-subtle: rgba(5, 150, 105, 0.08);
+
+  --color-warning: #D97706;
+  --color-warning-light: #F59E0B;
+  --color-warning-subtle: rgba(217, 119, 6, 0.08);
+
+  --color-error: #DC2626;
+  --color-error-light: #EF4444;
+  --color-error-subtle: rgba(220, 38, 38, 0.08);
+
+  --color-info: #2563EB;
+  --color-info-light: #3B82F6;
+  --color-info-subtle: rgba(37, 99, 235, 0.08);
+
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F9FAFB;
+  --color-bg-tertiary: #F3F4F6;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-overlay: rgba(0, 0, 0, 0.4);
+  --color-bg-scrim: rgba(0, 0, 0, 0.2);
+  --color-bg-hover: rgba(0, 0, 0, 0.04);
+  --color-bg-active: rgba(0, 0, 0, 0.08);
+  --color-bg-sidebar: #F9FAFB;
+  --color-bg-composer: #FFFFFF;
+
+  --color-text-primary: #111827;
+  --color-text-secondary: #4B5563;
+  --color-text-tertiary: #9CA3AF;
+  --color-text-disabled: #D1D5DB;
+  --color-text-inverse: #FFFFFF;
+  --color-text-link: #4F46E5;
+
+  --color-border-default: #E5E7EB;
+  --color-border-subtle: #F3F4F6;
+  --color-border-strong: #D1D5DB;
+  --color-border-focus: #4F46E5;
+
+  --color-msg-user-bg: #EEF2FF;
+  --color-msg-user-text: #111827;
+  --color-msg-agent-bg: #F9FAFB;
+  --color-msg-agent-text: #111827;
+  --color-msg-system-bg: transparent;
+  --color-msg-system-text: #9CA3AF;
+  --color-msg-code-bg: #F6F8FA;
+  --color-msg-code-border: #E5E7EB;
+
+  --color-card-handoff-bg: rgba(79, 70, 229, 0.06);
+  --color-card-handoff-border: #4F46E5;
+  --color-card-approval-bg: rgba(217, 119, 6, 0.06);
+  --color-card-approval-border: #D97706;
+  --color-card-task-bg: rgba(37, 99, 235, 0.06);
+  --color-card-task-border: #2563EB;
+  --color-card-error-bg: rgba(220, 38, 38, 0.06);
+  --color-card-error-border: #DC2626;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+
+  --input-bg: var(--color-bg-primary);
+  --card-bg: var(--color-bg-elevated);
+  --scrollbar-thumb: #D1D5DB;
+  --scrollbar-thumb-hover: #9CA3AF;
+}
+
+/* ==========================================================================
+   Agent Messenger — Canonical Screen Shell (.messenger-shell)
+
+   Three-zone adaptive layout per UX strategy:
+   - Zone 1 (sidebar): 240px, collapsible to 64px icon rail
+   - Zone 2 (main): flexible, fills remaining space
+   - Zone 3 (context panel): 320px, hidden by default
+
+   Every Agent Messenger screen MUST use this wrapper.
+   ========================================================================== */
+
+.messenger-shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows: 1fr;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--color-bg-primary);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+.messenger-shell[data-context-open] {
+  grid-template-columns: var(--sidebar-width) 1fr var(--context-panel-width);
+}
+
+.messenger-shell[data-sidebar-collapsed] {
+  grid-template-columns: var(--sidebar-collapsed-width) 1fr;
+}
+
+.messenger-shell[data-sidebar-collapsed][data-context-open] {
+  grid-template-columns: var(--sidebar-collapsed-width) 1fr var(--context-panel-width);
+}
+
+/* Zone 1 — Sidebar */
+.messenger-shell__sidebar {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-sidebar);
+  border-right: 1px solid var(--color-border-subtle);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: var(--z-sidebar);
+}
+
+/* Zone 2 — Main */
+.messenger-shell__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.messenger-shell__main-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-primary);
+  min-height: 52px;
+  flex-shrink: 0;
+}
+
+.messenger-shell__main-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.messenger-shell__main-footer {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-primary);
+  flex-shrink: 0;
+}
+
+/* Zone 3 — Context Panel */
+.messenger-shell__context {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-secondary);
+  border-left: 1px solid var(--color-border-subtle);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbars */
+.messenger-shell ::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+.messenger-shell ::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+.messenger-shell ::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--radius-full);
+}
+
+.messenger-shell ::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Responsive: Tablet (< 1024px) — context panel overlays */
+@media (max-width: 1023px) {
+  .messenger-shell {
+    grid-template-columns: var(--sidebar-collapsed-width) 1fr;
+  }
+
+  .messenger-shell[data-context-open] {
+    grid-template-columns: var(--sidebar-collapsed-width) 1fr;
+  }
+
+  .messenger-shell__context {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: var(--context-panel-width);
+    z-index: var(--z-drawer);
+    box-shadow: var(--shadow-xl);
+  }
+}
+
+/* Responsive: Mobile (< 768px) — sidebar hidden, bottom sheet for context */
+@media (max-width: 767px) {
+  .messenger-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .messenger-shell__sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+    z-index: var(--z-drawer);
+    transform: translateX(-100%);
+    transition: transform var(--transition-normal);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .messenger-shell[data-sidebar-open] .messenger-shell__sidebar {
+    transform: translateX(0);
+  }
+
+  .messenger-shell__context {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: 70vh;
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+    z-index: var(--z-drawer);
+    box-shadow: var(--shadow-xl);
+  }
+}
+
+/* ==========================================================================
+   Agent Messenger — Placeholder Image Guidance
+   ---------------------------------------------------------------------------
+   Services:
+   - Pravatar:  https://i.pravatar.cc/{size}?img={n}  (n = 1–70, for user avatars)
+   - UI Avatars: https://ui-avatars.com/api/?name={Name}&background={hex}&color=fff&size={px}
+                 (for agent avatars — use agent name + accent color)
+   - Unsplash:  https://images.unsplash.com/photo-{id}?w={width}&h={height}&fit=crop
+   - Picsum:    https://picsum.photos/{width}/{height}
+
+   Standard dimensions by slot:
+   - User avatars:     24px, 32px, 40px                (use Pravatar)
+   - Agent avatars:    32px, 40px, 56px, 80px           (use UI Avatars with agent accent)
+   - Workspace icon:   32px, 48px                       (use UI Avatars with workspace initial)
+   - Hero/empty state: 320x200                          (use Unsplash abstract/tech)
+   - File thumbnail:   120x80                           (use Picsum)
+   - Card illustration: 280x160                         (use Unsplash)
+   ========================================================================== */
+
+/* Agent Messenger — Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-product="agent-messenger"] {
+    --transition-fast: 0ms;
+    --transition-normal: 0ms;
+    --transition-slow: 0ms;
+  }
+
+  .messenger-shell__sidebar {
+    transition: none;
   }
 }

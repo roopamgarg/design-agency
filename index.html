@@ -629,6 +629,35 @@
   <script>
     const PROJECTS = [
       {
+        slug: "agent-messenger",
+        name: "Agent Messenger",
+        description: "AI agent workspace platform — multi-agent messaging, task delegation, workspace management, and real-time collaboration.",
+        totalScreens: 9,
+        categories: ["Auth", "Workspace", "Management", "States"],
+        colors: ["#6366F1", "#8B5CF6", "#06B6D4", "#F97316", "#EC4899"],
+        href: "designs/agent-messenger/index.html",
+        screenBase: "designs/agent-messenger/screens/",
+        screens: [
+          { group: "Authentication", items: [
+            { num: 1,  file: "login.html",               name: "Login" },
+            { num: 2,  file: "signup.html",               name: "Sign Up" },
+          ]},
+          { group: "Core Workspace", items: [
+            { num: 3,  file: "workspace-dashboard.html",  name: "Workspace Dashboard" },
+            { num: 4,  file: "chat-view.html",            name: "Chat View" },
+            { num: 5,  file: "agent-config.html",         name: "Agent Config" },
+          ]},
+          { group: "Management", items: [
+            { num: 6,  file: "task-management.html",      name: "Task Management" },
+            { num: 7,  file: "agent-delegation.html",     name: "Agent Delegation" },
+            { num: 8,  file: "workspace-settings.html",   name: "Workspace Settings" },
+          ]},
+          { group: "States", items: [
+            { num: 9,  file: "states.html",               name: "UI States" },
+          ]},
+        ]
+      },
+      {
         slug: "storycraft",
         name: "StoryCraft",
         description: "Voice coaching app — practice storytelling daily with AI-powered feedback, progress tracking, and community challenges.",

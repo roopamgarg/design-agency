@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en" data-product="agent-messenger">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Reference — Agent Messenger</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            padding: var(--space-8);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .ref-header {
+            margin-bottom: var(--space-12);
+            padding-bottom: var(--space-6);
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .ref-header h1 {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            letter-spacing: -0.01em;
+            margin-bottom: var(--space-2);
+        }
+        .ref-header p {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-md);
+        }
+        .ref-theme-toggle {
+            margin-top: var(--space-4);
+            display: flex;
+            gap: var(--space-2);
+        }
+        .ref-theme-toggle button {
+            padding: var(--space-2) var(--space-4);
+            border: 1px solid var(--color-border-default);
+            border-radius: 6px;
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            transition: background 150ms ease-out, border-color 150ms ease-out;
+        }
+        .ref-theme-toggle button[aria-pressed="true"] {
+            background: var(--color-primary);
+            color: #fff;
+            border-color: var(--color-primary);
+        }
+
+        section {
+            margin-bottom: var(--space-12);
+        }
+        section > h2 {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-6);
+            color: var(--color-text-primary);
+        }
+        .subsection-title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-3);
+            margin-top: var(--space-6);
+        }
+
+        /* Color swatches */
+        .swatch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: var(--space-3);
+        }
+        .swatch {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--color-border-subtle);
+        }
+        .swatch__color {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .swatch__info {
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-bg-secondary);
+        }
+        .swatch__name {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-mono);
+        }
+        .swatch__value {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            font-family: var(--font-family-mono);
+            margin-top: 2px;
+        }
+
+        /* Agent colors */
+        .agent-swatches {
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+        }
+        .agent-swatch {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .agent-swatch-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            font-family: var(--font-family-mono);
+            text-align: center;
+            margin-top: var(--space-1);
+        }
+        .agent-swatch-wrap { text-align: center; }
+
+        /* Typography samples */
+        .type-sample {
+            display: flex;
+            align-items: baseline;
+            gap: var(--space-6);
+            padding: var(--space-3) 0;
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .type-sample__label {
+            width: 140px;
+            flex-shrink: 0;
+            font-size: var(--font-size-xs);
+            font-family: var(--font-family-mono);
+            color: var(--color-text-tertiary);
+        }
+        .type-sample__preview {
+            flex: 1;
+        }
+        .type-sample__meta {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-disabled);
+            font-family: var(--font-family-mono);
+            flex-shrink: 0;
+        }
+
+        /* Spacing blocks */
+        .spacing-grid {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+        .spacing-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+        .spacing-bar {
+            height: 24px;
+            background: var(--color-primary-subtle);
+            border: 1px solid var(--color-primary);
+            border-radius: 4px;
+            transition: width 250ms ease-out;
+        }
+        .spacing-label {
+            width: 80px;
+            flex-shrink: 0;
+            font-size: var(--font-size-xs);
+            font-family: var(--font-family-mono);
+            color: var(--color-text-tertiary);
+        }
+        .spacing-value {
+            font-size: var(--font-size-xs);
+            font-family: var(--font-family-mono);
+            color: var(--color-text-disabled);
+            flex-shrink: 0;
+            width: 60px;
+        }
+
+        /* Radius samples */
+        .radius-grid {
+            display: flex;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+        .radius-sample {
+            text-align: center;
+        }
+        .radius-box {
+            width: 64px;
+            height: 64px;
+            background: var(--color-primary-subtle);
+            border: 2px solid var(--color-primary);
+            margin: 0 auto var(--space-2);
+        }
+        .radius-label {
+            font-size: var(--font-size-xs);
+            font-family: var(--font-family-mono);
+            color: var(--color-text-tertiary);
+        }
+        .radius-value {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-disabled);
+            font-family: var(--font-family-mono);
+        }
+
+        /* Shadow samples */
+        .shadow-grid {
+            display: flex;
+            gap: var(--space-6);
+            flex-wrap: wrap;
+        }
+        .shadow-sample {
+            text-align: center;
+        }
+        .shadow-box {
+            width: 96px;
+            height: 64px;
+            background: var(--color-bg-elevated);
+            border-radius: 8px;
+            margin: 0 auto var(--space-2);
+        }
+        .shadow-label {
+            font-size: var(--font-size-xs);
+            font-family: var(--font-family-mono);
+            color: var(--color-text-tertiary);
+        }
+
+        /* Z-index table */
+        .z-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--font-size-sm);
+        }
+        .z-table th, .z-table td {
+            padding: var(--space-2) var(--space-3);
+            text-align: left;
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .z-table th {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .z-table td:first-child {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-primary-light);
+        }
+        .z-table td:last-child {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+
+        /* Transition demo */
+        .transition-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-3) 0;
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .transition-label {
+            width: 140px;
+            flex-shrink: 0;
+            font-size: var(--font-size-xs);
+            font-family: var(--font-family-mono);
+            color: var(--color-text-tertiary);
+        }
+        .transition-demo {
+            width: 48px;
+            height: 48px;
+            background: var(--color-primary);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .transition-demo:hover {
+            background: var(--color-primary-light);
+            transform: scale(1.1);
+        }
+        .transition-demo--fast  { transition: all var(--transition-fast); }
+        .transition-demo--normal { transition: all var(--transition-normal); }
+        .transition-demo--slow  { transition: all var(--transition-slow); }
+        .transition-value {
+            font-size: var(--font-size-xs);
+            font-family: var(--font-family-mono);
+            color: var(--color-text-disabled);
+        }
+    </style>
+</head>
+<body>
+    <header class="ref-header">
+        <h1>Agent Messenger — Token Reference</h1>
+        <p>Visual reference for all design tokens. Toggle themes to verify token behavior in both modes.</p>
+        <div class="ref-theme-toggle">
+            <button id="btn-dark" aria-pressed="true" onclick="setTheme('dark')">Dark (Primary)</button>
+            <button id="btn-light" aria-pressed="false" onclick="setTheme('light')">Light</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- COLORS -->
+        <section>
+            <h2>Colors</h2>
+
+            <div class="subsection-title">Primary</div>
+            <div class="swatch-grid">
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-primary);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-primary</div><div class="swatch__value">#6366F1</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-primary-light);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-primary-light</div><div class="swatch__value">#818CF8</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-primary-dark);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-primary-dark</div><div class="swatch__value">#4F46E5</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-primary-subtle);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-primary-subtle</div><div class="swatch__value">rgba(99,102,241,0.12)</div></div>
+                </div>
+            </div>
+
+            <div class="subsection-title">Semantic</div>
+            <div class="swatch-grid">
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-success);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-success</div><div class="swatch__value">#10B981</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-warning);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-warning</div><div class="swatch__value">#F59E0B</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-error);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-error</div><div class="swatch__value">#EF4444</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-info);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-info</div><div class="swatch__value">#3B82F6</div></div>
+                </div>
+            </div>
+
+            <div class="subsection-title">Agent Accent Palette</div>
+            <div class="agent-swatches">
+                <div class="agent-swatch-wrap"><div class="agent-swatch" style="background: var(--color-agent-1);">1</div><div class="agent-swatch-label">Indigo</div></div>
+                <div class="agent-swatch-wrap"><div class="agent-swatch" style="background: var(--color-agent-2);">2</div><div class="agent-swatch-label">Violet</div></div>
+                <div class="agent-swatch-wrap"><div class="agent-swatch" style="background: var(--color-agent-3);">3</div><div class="agent-swatch-label">Cyan</div></div>
+                <div class="agent-swatch-wrap"><div class="agent-swatch" style="background: var(--color-agent-4);">4</div><div class="agent-swatch-label">Orange</div></div>
+                <div class="agent-swatch-wrap"><div class="agent-swatch" style="background: var(--color-agent-5);">5</div><div class="agent-swatch-label">Pink</div></div>
+                <div class="agent-swatch-wrap"><div class="agent-swatch" style="background: var(--color-agent-6);">6</div><div class="agent-swatch-label">Emerald</div></div>
+                <div class="agent-swatch-wrap"><div class="agent-swatch" style="background: var(--color-agent-7);">7</div><div class="agent-swatch-label">Amber</div></div>
+                <div class="agent-swatch-wrap"><div class="agent-swatch" style="background: var(--color-agent-8);">8</div><div class="agent-swatch-label">Rose</div></div>
+            </div>
+
+            <div class="subsection-title">Surfaces</div>
+            <div class="swatch-grid">
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-primary);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-bg-primary</div><div class="swatch__value">App background</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-secondary);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-bg-secondary</div><div class="swatch__value">Panels</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-tertiary);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-bg-tertiary</div><div class="swatch__value">Inputs, cards</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-elevated);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-bg-elevated</div><div class="swatch__value">Elevated surfaces</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-sidebar);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-bg-sidebar</div><div class="swatch__value">Sidebar</div></div>
+                </div>
+            </div>
+
+            <div class="subsection-title">Text</div>
+            <div class="swatch-grid">
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-tertiary);"><span style="color: var(--color-text-primary); font-weight: 600;">Aa</span></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-text-primary</div><div class="swatch__value">Headings, body</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-tertiary);"><span style="color: var(--color-text-secondary); font-weight: 500;">Aa</span></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-text-secondary</div><div class="swatch__value">Labels, descriptions</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-tertiary);"><span style="color: var(--color-text-tertiary);">Aa</span></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-text-tertiary</div><div class="swatch__value">Hints, captions</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-tertiary);"><span style="color: var(--color-text-disabled);">Aa</span></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-text-disabled</div><div class="swatch__value">Disabled, placeholders</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-tertiary);"><span style="color: var(--color-text-link); text-decoration: underline;">Link</span></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-text-link</div><div class="swatch__value">Links, actions</div></div>
+                </div>
+            </div>
+
+            <div class="subsection-title">Borders</div>
+            <div class="swatch-grid">
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-primary); border: 2px solid var(--color-border-subtle);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-border-subtle</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-primary); border: 2px solid var(--color-border-default);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-border-default</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-primary); border: 2px solid var(--color-border-strong);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-border-strong</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-bg-primary); border: 2px solid var(--color-border-focus);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-border-focus</div></div>
+                </div>
+            </div>
+
+            <div class="subsection-title">Status Indicators</div>
+            <div class="swatch-grid">
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-status-online);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-status-online</div><div class="swatch__value">Active</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-status-idle);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-status-idle</div><div class="swatch__value">Idle</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-status-working);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-status-working</div><div class="swatch__value">Processing</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-status-error);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-status-error</div><div class="swatch__value">Failed</div></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch__color" style="background: var(--color-status-offline);"></div>
+                    <div class="swatch__info"><div class="swatch__name">--color-status-offline</div><div class="swatch__value">Offline</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TYPOGRAPHY -->
+        <section>
+            <h2>Typography</h2>
+
+            <div class="subsection-title">Font Families</div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-family-sans</span>
+                <span class="type-sample__preview" style="font-family: var(--font-family-sans);">Inter — The quick brown fox jumps over the lazy dog</span>
+                <span class="type-sample__meta">UI text</span>
+            </div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-family-mono</span>
+                <span class="type-sample__preview" style="font-family: var(--font-family-mono);">JetBrains Mono — const agent = new Agent()</span>
+                <span class="type-sample__meta">Code blocks</span>
+            </div>
+
+            <div class="subsection-title">Type Scale</div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-size-3xl</span>
+                <span class="type-sample__preview" style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); line-height: var(--line-height-tight);">Agent Messenger</span>
+                <span class="type-sample__meta">30px</span>
+            </div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-size-2xl</span>
+                <span class="type-sample__preview" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); line-height: var(--line-height-tight);">Page Titles</span>
+                <span class="type-sample__meta">24px</span>
+            </div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-size-xl</span>
+                <span class="type-sample__preview" style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">Workspace Name</span>
+                <span class="type-sample__meta">20px</span>
+            </div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-size-lg</span>
+                <span class="type-sample__preview" style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">Section Titles</span>
+                <span class="type-sample__meta">18px</span>
+            </div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-size-md</span>
+                <span class="type-sample__preview" style="font-size: var(--font-size-md); font-weight: var(--font-weight-medium);">Channel Headers</span>
+                <span class="type-sample__meta">16px</span>
+            </div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-size-base</span>
+                <span class="type-sample__preview" style="font-size: var(--font-size-base);">Message text in compact messaging density, optimized for Slack-like readability at 14px.</span>
+                <span class="type-sample__meta">14px</span>
+            </div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-size-sm</span>
+                <span class="type-sample__preview" style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Sidebar labels, button text, captions</span>
+                <span class="type-sample__meta">13px</span>
+            </div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-size-xs</span>
+                <span class="type-sample__preview" style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">Timestamps, metadata, tool badges, hints</span>
+                <span class="type-sample__meta">11px</span>
+            </div>
+
+            <div class="subsection-title">Font Weights</div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-weight-regular</span>
+                <span class="type-sample__preview" style="font-weight: var(--font-weight-regular);">Regular body text for messages and descriptions</span>
+                <span class="type-sample__meta">400</span>
+            </div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-weight-medium</span>
+                <span class="type-sample__preview" style="font-weight: var(--font-weight-medium);">Labels, buttons, sidebar items</span>
+                <span class="type-sample__meta">500</span>
+            </div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-weight-semibold</span>
+                <span class="type-sample__preview" style="font-weight: var(--font-weight-semibold);">Section titles, author names, card headers</span>
+                <span class="type-sample__meta">600</span>
+            </div>
+            <div class="type-sample">
+                <span class="type-sample__label">--font-weight-bold</span>
+                <span class="type-sample__preview" style="font-weight: var(--font-weight-bold);">Page titles, workspace name, hero text</span>
+                <span class="type-sample__meta">700</span>
+            </div>
+        </section>
+
+        <!-- SPACING -->
+        <section>
+            <h2>Spacing</h2>
+            <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-6);">4px base unit. Compact density optimized for messaging interfaces.</p>
+
+            <div class="spacing-grid">
+                <div class="spacing-row"><span class="spacing-label">--space-0-5</span><div class="spacing-bar" style="width: 2px;"></div><span class="spacing-value">2px</span></div>
+                <div class="spacing-row"><span class="spacing-label">--space-1</span><div class="spacing-bar" style="width: 4px;"></div><span class="spacing-value">4px</span></div>
+                <div class="spacing-row"><span class="spacing-label">--space-1-5</span><div class="spacing-bar" style="width: 6px;"></div><span class="spacing-value">6px</span></div>
+                <div class="spacing-row"><span class="spacing-label">--space-2</span><div class="spacing-bar" style="width: 8px;"></div><span class="spacing-value">8px</span></div>
+                <div class="spacing-row"><span class="spacing-label">--space-3</span><div class="spacing-bar" style="width: 12px;"></div><span class="spacing-value">12px</span></div>
+                <div class="spacing-row"><span class="spacing-label">--space-4</span><div class="spacing-bar" style="width: 16px;"></div><span class="spacing-value">16px</span></div>
+                <div class="spacing-row"><span class="spacing-label">--space-5</span><div class="spacing-bar" style="width: 20px;"></div><span class="spacing-value">20px</span></div>
+                <div class="spacing-row"><span class="spacing-label">--space-6</span><div class="spacing-bar" style="width: 24px;"></div><span class="spacing-value">24px</span></div>
+                <div class="spacing-row"><span class="spacing-label">--space-8</span><div class="spacing-bar" style="width: 32px;"></div><span class="spacing-value">32px</span></div>
+                <div class="spacing-row"><span class="spacing-label">--space-10</span><div class="spacing-bar" style="width: 40px;"></div><span class="spacing-value">40px</span></div>
+                <div class="spacing-row"><span class="spacing-label">--space-12</span><div class="spacing-bar" style="width: 48px;"></div><span class="spacing-value">48px</span></div>
+                <div class="spacing-row"><span class="spacing-label">--space-16</span><div class="spacing-bar" style="width: 64px;"></div><span class="spacing-value">64px</span></div>
+            </div>
+        </section>
+
+        <!-- BORDER RADIUS -->
+        <section>
+            <h2>Border Radius</h2>
+            <div class="radius-grid">
+                <div class="radius-sample"><div class="radius-box" style="border-radius: var(--radius-none);"></div><div class="radius-label">--radius-none</div><div class="radius-value">0</div></div>
+                <div class="radius-sample"><div class="radius-box" style="border-radius: var(--radius-sm);"></div><div class="radius-label">--radius-sm</div><div class="radius-value">4px</div></div>
+                <div class="radius-sample"><div class="radius-box" style="border-radius: var(--radius-md);"></div><div class="radius-label">--radius-md</div><div class="radius-value">6px</div></div>
+                <div class="radius-sample"><div class="radius-box" style="border-radius: var(--radius-lg);"></div><div class="radius-label">--radius-lg</div><div class="radius-value">8px</div></div>
+                <div class="radius-sample"><div class="radius-box" style="border-radius: var(--radius-xl);"></div><div class="radius-label">--radius-xl</div><div class="radius-value">12px</div></div>
+                <div class="radius-sample"><div class="radius-box" style="border-radius: var(--radius-2xl);"></div><div class="radius-label">--radius-2xl</div><div class="radius-value">16px</div></div>
+                <div class="radius-sample"><div class="radius-box" style="border-radius: var(--radius-full);"></div><div class="radius-label">--radius-full</div><div class="radius-value">9999px</div></div>
+            </div>
+        </section>
+
+        <!-- SHADOWS -->
+        <section>
+            <h2>Shadows</h2>
+            <div class="shadow-grid">
+                <div class="shadow-sample"><div class="shadow-box" style="box-shadow: var(--shadow-xs);"></div><div class="shadow-label">--shadow-xs</div></div>
+                <div class="shadow-sample"><div class="shadow-box" style="box-shadow: var(--shadow-sm);"></div><div class="shadow-label">--shadow-sm</div></div>
+                <div class="shadow-sample"><div class="shadow-box" style="box-shadow: var(--shadow-md);"></div><div class="shadow-label">--shadow-md</div></div>
+                <div class="shadow-sample"><div class="shadow-box" style="box-shadow: var(--shadow-lg);"></div><div class="shadow-label">--shadow-lg</div></div>
+                <div class="shadow-sample"><div class="shadow-box" style="box-shadow: var(--shadow-xl);"></div><div class="shadow-label">--shadow-xl</div></div>
+                <div class="shadow-sample"><div class="shadow-box" style="box-shadow: var(--shadow-glow-primary);"></div><div class="shadow-label">--shadow-glow-primary</div></div>
+            </div>
+        </section>
+
+        <!-- TRANSITIONS -->
+        <section>
+            <h2>Transitions</h2>
+            <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-6);">Hover the boxes to preview timing. Minimal motion — status transitions use 150ms ease-out per UX strategy.</p>
+
+            <div class="transition-row">
+                <span class="transition-label">--transition-fast</span>
+                <div class="transition-demo transition-demo--fast"></div>
+                <span class="transition-value">150ms ease-out</span>
+            </div>
+            <div class="transition-row">
+                <span class="transition-label">--transition-normal</span>
+                <div class="transition-demo transition-demo--normal"></div>
+                <span class="transition-value">250ms ease-out</span>
+            </div>
+            <div class="transition-row">
+                <span class="transition-label">--transition-slow</span>
+                <div class="transition-demo transition-demo--slow"></div>
+                <span class="transition-value">400ms ease-out</span>
+            </div>
+        </section>
+
+        <!-- Z-INDEX -->
+        <section>
+            <h2>Z-Index Scale</h2>
+            <table class="z-table">
+                <thead>
+                    <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>--z-base</td><td>0</td><td style="color: var(--color-text-secondary);">Default stacking</td></tr>
+                    <tr><td>--z-above</td><td>1</td><td style="color: var(--color-text-secondary);">Slightly elevated</td></tr>
+                    <tr><td>--z-dropdown</td><td>100</td><td style="color: var(--color-text-secondary);">Dropdown menus</td></tr>
+                    <tr><td>--z-sticky</td><td>200</td><td style="color: var(--color-text-secondary);">Sticky headers</td></tr>
+                    <tr><td>--z-sidebar</td><td>300</td><td style="color: var(--color-text-secondary);">Sidebar (mobile overlay)</td></tr>
+                    <tr><td>--z-drawer</td><td>400</td><td style="color: var(--color-text-secondary);">Drawers, context panels</td></tr>
+                    <tr><td>--z-modal-backdrop</td><td>500</td><td style="color: var(--color-text-secondary);">Modal overlay</td></tr>
+                    <tr><td>--z-modal</td><td>600</td><td style="color: var(--color-text-secondary);">Modal dialogs</td></tr>
+                    <tr><td>--z-popover</td><td>700</td><td style="color: var(--color-text-secondary);">Popovers</td></tr>
+                    <tr><td>--z-tooltip</td><td>800</td><td style="color: var(--color-text-secondary);">Tooltips</td></tr>
+                    <tr><td>--z-toast</td><td>900</td><td style="color: var(--color-text-secondary);">Toast notifications</td></tr>
+                    <tr><td>--z-command-palette</td><td>1000</td><td style="color: var(--color-text-secondary);">⌘K palette (topmost)</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- LAYOUT DIMENSIONS -->
+        <section>
+            <h2>Layout Dimensions</h2>
+            <table class="z-table">
+                <thead>
+                    <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>--sidebar-width</td><td>240px</td><td style="color: var(--color-text-secondary);">Zone 1 sidebar (expanded)</td></tr>
+                    <tr><td>--sidebar-collapsed-width</td><td>64px</td><td style="color: var(--color-text-secondary);">Zone 1 sidebar (icon rail)</td></tr>
+                    <tr><td>--context-panel-width</td><td>320px</td><td style="color: var(--color-text-secondary);">Zone 3 context panel</td></tr>
+                    <tr><td>--composer-max-height</td><td>200px</td><td style="color: var(--color-text-secondary);">Composer input max height</td></tr>
+                    <tr><td>--message-max-width</td><td>720px</td><td style="color: var(--color-text-secondary);">Message content max width</td></tr>
+                    <tr><td>--touch-target-min</td><td>44px</td><td style="color: var(--color-text-secondary);">WCAG minimum touch target</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        function setTheme(theme) {
+            const root = document.documentElement;
+            if (theme === 'light') {
+                root.setAttribute('data-theme', 'light');
+                document.getElementById('btn-dark').setAttribute('aria-pressed', 'false');
+                document.getElementById('btn-light').setAttribute('aria-pressed', 'true');
+            } else {
+                root.removeAttribute('data-theme');
+                document.getElementById('btn-dark').setAttribute('aria-pressed', 'true');
+                document.getElementById('btn-light').setAttribute('aria-pressed', 'false');
+            }
+        }
+    </script>
+</body>
+</html>

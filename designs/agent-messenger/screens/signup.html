@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Workspace — Agent Messenger</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-normal);
+        color: var(--color-text-primary);
+        background: var(--color-bg-primary);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      [data-screen="signup"] {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 100vh;
+        width: 100%;
+      }
+
+      .signup-hero {
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        padding: var(--space-10);
+        overflow: hidden;
+      }
+
+      .signup-hero__bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .signup-hero__overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(15, 17, 23, 0.85), rgba(99, 102, 241, 0.4));
+      }
+
+      .signup-hero__content {
+        position: relative;
+        z-index: 1;
+        max-width: 480px;
+      }
+
+      .signup-hero__logo {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        margin-bottom: var(--space-8);
+      }
+
+      .signup-hero__logo-icon {
+        width: 44px;
+        height: 44px;
+        background: var(--color-primary);
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .signup-hero__logo-icon svg {
+        width: 24px;
+        height: 24px;
+        color: var(--color-primary-contrast);
+      }
+
+      .signup-hero__logo-text {
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-primary-contrast);
+        letter-spacing: var(--letter-spacing-tight);
+      }
+
+      .signup-hero__headline {
+        font-size: var(--font-size-3xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-primary-contrast);
+        line-height: var(--line-height-tight);
+        margin-bottom: var(--space-4);
+        letter-spacing: var(--letter-spacing-tight);
+      }
+
+      .signup-hero__sub {
+        font-size: var(--font-size-md);
+        color: rgba(255, 255, 255, 0.7);
+        line-height: var(--line-height-relaxed);
+        margin-bottom: var(--space-8);
+      }
+
+      .signup-hero__features {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+      }
+
+      .signup-hero__feature {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        font-size: var(--font-size-base);
+        color: var(--color-primary-contrast);
+      }
+
+      .signup-hero__feature-icon {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .signup-hero__feature-icon svg {
+        width: 14px;
+        height: 14px;
+        color: var(--color-primary-contrast);
+      }
+
+      .signup-form-panel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-10);
+        background: var(--color-bg-secondary);
+      }
+
+      .signup-form {
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .signup-form__header {
+        margin-bottom: var(--space-8);
+      }
+
+      .signup-form__title {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-text-primary);
+        margin-bottom: var(--space-2);
+      }
+
+      .signup-form__subtitle {
+        font-size: var(--font-size-base);
+        color: var(--color-text-secondary);
+      }
+
+      .signup-form__field {
+        margin-bottom: var(--space-4);
+      }
+
+      .signup-form__label {
+        display: block;
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-1-5);
+      }
+
+      .signup-form__input {
+        width: 100%;
+        height: var(--input-height);
+        padding: 0 var(--space-4);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--input-radius);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-base);
+        font-family: var(--font-family-sans);
+        transition: border-color var(--transition-fast);
+      }
+
+      .signup-form__input::placeholder {
+        color: var(--color-text-tertiary);
+      }
+
+      .signup-form__input:focus {
+        outline: none;
+        border-color: var(--color-border-focus);
+        box-shadow: 0 0 0 3px var(--color-primary-subtle);
+      }
+
+      .signup-form__hint {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        margin-top: var(--space-1);
+      }
+
+      .signup-form__submit {
+        width: 100%;
+        height: var(--btn-height-lg);
+        margin-top: var(--space-6);
+        background: var(--color-primary);
+        color: var(--color-primary-contrast);
+        border: none;
+        border-radius: var(--btn-radius);
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-semibold);
+        font-family: var(--font-family-sans);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        min-height: var(--touch-target-min);
+      }
+
+      .signup-form__submit:hover {
+        background: var(--color-primary-dark);
+      }
+
+      .signup-form__submit:focus-visible {
+        outline: 2px solid var(--color-border-focus);
+        outline-offset: 2px;
+      }
+
+      .signup-form__footer {
+        text-align: center;
+        margin-top: var(--space-6);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+      }
+
+      .signup-form__footer a {
+        color: var(--color-text-link);
+        text-decoration: none;
+        font-weight: var(--font-weight-medium);
+      }
+
+      .signup-form__footer a:hover {
+        text-decoration: underline;
+      }
+
+      .signup-form__terms {
+        text-align: center;
+        margin-top: var(--space-6);
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        line-height: var(--line-height-relaxed);
+      }
+
+      .signup-form__terms a {
+        color: var(--color-text-link);
+        text-decoration: none;
+      }
+
+      .signup-form__terms a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        [data-screen="signup"] {
+          grid-template-columns: 1fr;
+        }
+        .signup-hero {
+          display: none;
+        }
+        .signup-form-panel {
+          min-height: 100vh;
+          padding: var(--space-6);
+        }
+      }
+
+      @media (max-width: 390px) {
+        .signup-form-panel {
+          padding: var(--space-4);
+        }
+      }
+    </style>
+</head>
+<body>
+  <div data-product="agent-messenger" data-screen="signup">
+    <section class="signup-hero" aria-hidden="true">
+      <img class="signup-hero__bg" src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=1600&fit=crop" alt="">
+      <div class="signup-hero__overlay"></div>
+      <div class="signup-hero__content">
+        <div class="signup-hero__logo">
+          <div class="signup-hero__logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <span class="signup-hero__logo-text">Agent Messenger</span>
+        </div>
+        <h1 class="signup-hero__headline">Build your AI team</h1>
+        <p class="signup-hero__sub">Create a workspace where humans and AI agents collaborate seamlessly. Set up in under 60 seconds.</p>
+        <ul class="signup-hero__features">
+          <li class="signup-hero__feature">
+            <span class="signup-hero__feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            Unlimited AI agents with persistent memory
+          </li>
+          <li class="signup-hero__feature">
+            <span class="signup-hero__feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            Structured channels and task delegation
+          </li>
+          <li class="signup-hero__feature">
+            <span class="signup-hero__feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            Real-time collaboration and approvals
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="signup-form-panel">
+      <form class="signup-form" aria-label="Create a workspace on Agent Messenger">
+        <div class="signup-form__header">
+          <h2 class="signup-form__title">Create your workspace</h2>
+          <p class="signup-form__subtitle">Get started with Agent Messenger</p>
+        </div>
+
+        <div class="signup-form__field">
+          <label class="signup-form__label" for="workspace-name">Workspace name</label>
+          <input class="signup-form__input" type="text" id="workspace-name" placeholder="e.g. StoryCraft" autocomplete="organization" required>
+        </div>
+
+        <div class="signup-form__field">
+          <label class="signup-form__label" for="full-name">Your name</label>
+          <input class="signup-form__input" type="text" id="full-name" placeholder="Your full name" autocomplete="name" required>
+        </div>
+
+        <div class="signup-form__field">
+          <label class="signup-form__label" for="email">Email address</label>
+          <input class="signup-form__input" type="email" id="email" placeholder="you@company.com" autocomplete="email" required>
+        </div>
+
+        <div class="signup-form__field">
+          <label class="signup-form__label" for="password">Password</label>
+          <input class="signup-form__input" type="password" id="password" placeholder="Create a password" autocomplete="new-password" required>
+          <p class="signup-form__hint">At least 8 characters</p>
+        </div>
+
+        <button type="submit" class="signup-form__submit">Create workspace</button>
+
+        <p class="signup-form__footer">
+          Already have an account? <a href="login.html">Sign in</a>
+        </p>
+
+        <p class="signup-form__terms">
+          By creating a workspace, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+        </p>
+      </form>
+    </section>
+  </div>
+</body>
+</html>

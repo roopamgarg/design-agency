@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workspace Dashboard — Agent Messenger</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-normal);
+        color: var(--color-text-primary);
+        background: var(--color-bg-primary);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .messenger-shell {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) 1fr var(--context-panel-width);
+        min-height: 100vh;
+      }
+
+      /* ===== SIDEBAR (Zone 1) ===== */
+      .sidebar {
+        background: var(--color-bg-sidebar);
+        border-right: 1px solid var(--color-border-default);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .sidebar__header {
+        padding: var(--space-4);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--color-border-default);
+        min-height: var(--header-height);
+      }
+
+      .workspace-switcher {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        cursor: pointer;
+        padding: var(--space-1) var(--space-2);
+        border-radius: var(--radius-md);
+        transition: background var(--transition-fast);
+      }
+
+      .workspace-switcher:hover { background: var(--color-bg-hover); }
+
+      .workspace-switcher__avatar {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-md);
+        background: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-primary-contrast);
+        font-weight: var(--font-weight-bold);
+        font-size: var(--font-size-sm);
+      }
+
+      .workspace-switcher__name {
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-base);
+        color: var(--color-text-primary);
+      }
+
+      .workspace-switcher__chevron {
+        color: var(--color-text-tertiary);
+        width: 16px;
+        height: 16px;
+      }
+
+      .sidebar__search {
+        padding: var(--space-3) var(--space-4);
+      }
+
+      .sidebar__search-input {
+        width: 100%;
+        height: var(--input-height);
+        padding: 0 var(--space-3) 0 var(--space-8);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--input-radius);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-sm);
+        font-family: var(--font-family-sans);
+        position: relative;
+      }
+
+      .sidebar__search-input::placeholder { color: var(--color-text-tertiary); }
+      .sidebar__search-input:focus {
+        outline: none;
+        border-color: var(--color-border-focus);
+      }
+
+      .sidebar__search-wrap {
+        position: relative;
+      }
+
+      .sidebar__search-icon {
+        position: absolute;
+        left: var(--space-2-5);
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        color: var(--color-text-tertiary);
+        pointer-events: none;
+      }
+
+      .sidebar__section {
+        padding: var(--space-2) var(--space-3);
+      }
+
+      .sidebar__section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-1) var(--space-1);
+        margin-bottom: var(--space-1);
+      }
+
+      .sidebar__section-title {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+      }
+
+      .sidebar__section-action {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-tertiary);
+        cursor: pointer;
+        border: none;
+        background: none;
+        border-radius: var(--radius-sm);
+        transition: background var(--transition-fast);
+      }
+
+      .sidebar__section-action:hover {
+        background: var(--color-bg-hover);
+        color: var(--color-text-secondary);
+      }
+
+      .sidebar__item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-1-5) var(--space-2);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        text-decoration: none;
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-sm);
+        min-height: var(--touch-target-min);
+      }
+
+      .sidebar__item:hover { background: var(--color-bg-hover); }
+      .sidebar__item--active {
+        background: var(--color-bg-active);
+        color: var(--color-text-primary);
+      }
+
+      .sidebar__item-icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        color: var(--color-text-tertiary);
+      }
+
+      .sidebar__item--active .sidebar__item-icon {
+        color: var(--color-primary-light);
+      }
+
+      .sidebar__item-label { flex: 1; }
+
+      .sidebar__item-badge {
+        min-width: var(--badge-height);
+        height: var(--badge-height);
+        padding: 0 var(--space-1-5);
+        background: var(--color-primary);
+        color: var(--color-primary-contrast);
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        border-radius: var(--badge-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sidebar__agent-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-1-5) var(--space-2);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        min-height: var(--touch-target-min);
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        font-family: var(--font-family-sans);
+        color: inherit;
+      }
+
+      .sidebar__agent-item:hover { background: var(--color-bg-hover); }
+
+      .sidebar__agent-avatar-wrap {
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .sidebar__agent-avatar {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .sidebar__agent-status {
+        position: absolute;
+        bottom: -1px;
+        right: -1px;
+        width: 10px;
+        height: 10px;
+        border-radius: var(--radius-full);
+        border: 2px solid var(--color-bg-sidebar);
+      }
+
+      .sidebar__agent-status--online { background: var(--color-status-online); }
+      .sidebar__agent-status--idle { background: var(--color-status-idle); }
+      .sidebar__agent-status--working { background: var(--color-status-working); }
+      .sidebar__agent-status--offline { background: var(--color-status-offline); }
+
+      .sidebar__agent-info { flex: 1; min-width: 0; }
+
+      .sidebar__agent-name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar__agent-role {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .sidebar__footer {
+        margin-top: auto;
+        padding: var(--space-3) var(--space-4);
+        border-top: 1px solid var(--color-border-default);
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      .sidebar__user-avatar {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .sidebar__user-info { flex: 1; min-width: 0; }
+
+      .sidebar__user-name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+      }
+
+      .sidebar__user-status {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      /* ===== MAIN CONTENT (Zone 2) ===== */
+      .main-content {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .main-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-6);
+        min-height: var(--header-height);
+        border-bottom: 1px solid var(--color-border-default);
+        background: var(--color-bg-primary);
+      }
+
+      .main-header__left {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      .main-header__title {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-primary);
+      }
+
+      .main-header__channel-badge {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+        background: var(--color-bg-tertiary);
+        padding: var(--space-0-5) var(--space-2);
+        border-radius: var(--badge-radius);
+      }
+
+      .main-header__actions {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .main-header__action-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        transition: background var(--transition-fast);
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+      }
+
+      .main-header__action-btn:hover {
+        background: var(--color-bg-hover);
+        color: var(--color-text-primary);
+      }
+
+      .main-header__action-btn svg { width: 18px; height: 18px; }
+
+      /* Dashboard Grid */
+      .dashboard {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-6);
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .dashboard__welcome {
+        margin-bottom: var(--space-8);
+      }
+
+      .dashboard__welcome-title {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-text-primary);
+        margin-bottom: var(--space-2);
+      }
+
+      .dashboard__welcome-sub {
+        font-size: var(--font-size-base);
+        color: var(--color-text-secondary);
+      }
+
+      .dashboard__stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-4);
+        margin-bottom: var(--space-8);
+      }
+
+      .stat-card {
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-xl);
+        padding: var(--space-5);
+      }
+
+      .stat-card__label {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        margin-bottom: var(--space-2);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+      }
+
+      .stat-card__value {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-text-primary);
+        margin-bottom: var(--space-1);
+      }
+
+      .stat-card__change {
+        font-size: var(--font-size-xs);
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+      }
+
+      .stat-card__change--up { color: var(--color-success); }
+      .stat-card__change--down { color: var(--color-error); }
+
+      .dashboard__section {
+        margin-bottom: var(--space-8);
+      }
+
+      .dashboard__section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--space-4);
+      }
+
+      .dashboard__section-title {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-primary);
+      }
+
+      .dashboard__section-link {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-link);
+        text-decoration: none;
+        font-weight: var(--font-weight-medium);
+      }
+
+      .dashboard__section-link:hover { text-decoration: underline; }
+
+      /* Recent activity */
+      .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+
+      .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-lg);
+        transition: background var(--transition-fast);
+      }
+
+      .activity-item:hover { background: var(--color-bg-tertiary); }
+
+      .activity-item__avatar {
+        width: var(--avatar-md);
+        height: var(--avatar-md);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .activity-item__content { flex: 1; min-width: 0; }
+
+      .activity-item__header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-bottom: var(--space-1);
+      }
+
+      .activity-item__name {
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-primary);
+      }
+
+      .activity-item__channel {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .activity-item__time {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+        margin-left: auto;
+      }
+
+      .activity-item__text {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* Quick actions */
+      .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-3);
+      }
+
+      .quick-action {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-6) var(--space-4);
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-xl);
+        cursor: pointer;
+        transition: background var(--transition-fast), border-color var(--transition-fast);
+        text-decoration: none;
+      }
+
+      .quick-action:hover {
+        background: var(--color-bg-tertiary);
+        border-color: var(--color-border-strong);
+      }
+
+      .quick-action__icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .quick-action__icon svg { width: 24px; height: 24px; }
+
+      .quick-action__icon--agents {
+        background: var(--color-agent-1-subtle);
+        color: var(--color-agent-1);
+      }
+
+      .quick-action__icon--channel {
+        background: var(--color-agent-3-subtle);
+        color: var(--color-agent-3);
+      }
+
+      .quick-action__icon--task {
+        background: var(--color-agent-7-subtle);
+        color: var(--color-agent-7);
+      }
+
+      .quick-action__label {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+      }
+
+      .quick-action__desc {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        text-align: center;
+      }
+
+      /* ===== CONTEXT PANEL (Zone 3) ===== */
+      .context-panel {
+        background: var(--color-bg-secondary);
+        border-left: 1px solid var(--color-border-default);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .context-panel__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-4);
+        min-height: var(--header-height);
+        border-bottom: 1px solid var(--color-border-default);
+      }
+
+      .context-panel__title {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-primary);
+      }
+
+      .context-panel__close {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-tertiary);
+        cursor: pointer;
+        border-radius: var(--radius-sm);
+        transition: background var(--transition-fast);
+      }
+
+      .context-panel__close:hover { background: var(--color-bg-hover); }
+      .context-panel__close svg { width: 16px; height: 16px; }
+
+      .context-panel__body {
+        padding: var(--space-4);
+      }
+
+      /* Agent overview cards in context panel */
+      .agent-overview {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+      }
+
+      .agent-card {
+        background: var(--color-bg-tertiary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-lg);
+        padding: var(--space-3);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .agent-card:hover { background: var(--color-bg-elevated); }
+
+      .agent-card__header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2-5);
+        margin-bottom: var(--space-2-5);
+      }
+
+      .agent-card__avatar-wrap { position: relative; flex-shrink: 0; }
+
+      .agent-card__avatar {
+        width: var(--avatar-md);
+        height: var(--avatar-md);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .agent-card__status {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 12px;
+        height: 12px;
+        border-radius: var(--radius-full);
+        border: 2px solid var(--color-bg-tertiary);
+      }
+
+      .agent-card__info { flex: 1; min-width: 0; }
+
+      .agent-card__name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-primary);
+      }
+
+      .agent-card__role {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .agent-card__color-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-full);
+        flex-shrink: 0;
+      }
+
+      .agent-card__tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-1);
+        margin-bottom: var(--space-2);
+      }
+
+      .agent-card__tool {
+        font-size: var(--font-size-2xs);
+        padding: var(--space-0-5) var(--space-1-5);
+        background: var(--tool-badge-bg);
+        border: 1px solid var(--tool-badge-border);
+        border-radius: var(--radius-sm);
+        color: var(--tool-badge-text);
+      }
+
+      .agent-card__activity {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .agent-card__activity-status {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+      }
+
+      .agent-card__activity-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: var(--radius-full);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .agent-card__activity-dot { animation: none; opacity: 1; }
+      }
+
+      /* Tasks summary in context panel */
+      .tasks-summary {
+        margin-top: var(--space-4);
+        padding-top: var(--space-4);
+        border-top: 1px solid var(--color-border-default);
+      }
+
+      .tasks-summary__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--space-3);
+      }
+
+      .tasks-summary__title {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-primary);
+      }
+
+      .tasks-summary__count {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .task-mini {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-2) 0;
+        border-bottom: 1px solid var(--color-border-subtle);
+      }
+
+      .task-mini:last-child { border-bottom: none; }
+
+      .task-mini__status {
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-full);
+        flex-shrink: 0;
+      }
+
+      .task-mini__status--running { background: var(--color-status-working); }
+      .task-mini__status--pending { background: var(--color-status-idle); }
+      .task-mini__status--completed { background: var(--color-status-online); }
+      .task-mini__status--failed { background: var(--color-status-error); }
+
+      .task-mini__text {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-secondary);
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .task-mini__agent-avatar {
+        width: 20px;
+        height: 20px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 1024px) {
+        .messenger-shell {
+          grid-template-columns: var(--sidebar-icon-rail) 1fr;
+        }
+        .context-panel { display: none; }
+        .sidebar__item-label,
+        .sidebar__section-title,
+        .sidebar__agent-info,
+        .sidebar__user-info,
+        .sidebar__search,
+        .workspace-switcher__name,
+        .workspace-switcher__chevron,
+        .sidebar__item-badge,
+        .sidebar__section-action { display: none; }
+        .sidebar__item,
+        .sidebar__agent-item { justify-content: center; padding: var(--space-2); }
+        .sidebar__header { justify-content: center; padding: var(--space-2); }
+        .sidebar__footer { justify-content: center; }
+      }
+
+      .mobile-menu-btn {
+        display: none;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+      }
+
+      .mobile-menu-btn svg { width: 20px; height: 20px; }
+
+      @media (max-width: 768px) {
+        .messenger-shell {
+          grid-template-columns: 1fr;
+        }
+        .sidebar { display: none; }
+        .mobile-menu-btn { display: flex; }
+        .main-header { padding: 0 var(--space-4); }
+        .dashboard { padding: var(--space-4); }
+        .dashboard__stats { grid-template-columns: repeat(2, 1fr); }
+        .quick-actions { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 390px) {
+        .dashboard__stats { grid-template-columns: 1fr; }
+      }
+    </style>
+</head>
+<body>
+  <div data-product="agent-messenger" data-screen="workspace-dashboard">
+    <div class="messenger-shell">
+
+      <!-- ===== SIDEBAR ===== -->
+      <nav class="sidebar" aria-label="Workspace navigation">
+        <div class="sidebar__header">
+          <div class="workspace-switcher" role="button" tabindex="0" aria-label="Switch workspace">
+            <div class="workspace-switcher__avatar">S</div>
+            <span class="workspace-switcher__name">StoryCraft</span>
+            <svg class="workspace-switcher__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <div class="sidebar__search">
+          <div class="sidebar__search-wrap">
+            <svg class="sidebar__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input class="sidebar__search-input" type="search" placeholder="Search (⌘K)" aria-label="Search workspace">
+          </div>
+        </div>
+
+        <div class="sidebar__section">
+          <div class="sidebar__section-header">
+            <span class="sidebar__section-title">Channels</span>
+            <button class="sidebar__section-action" aria-label="Add channel">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </div>
+          <a class="sidebar__item sidebar__item--active" href="#" aria-current="page">
+            <svg class="sidebar__item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+            <span class="sidebar__item-label"># general</span>
+            <span class="sidebar__item-badge">3</span>
+          </a>
+          <a class="sidebar__item" href="#">
+            <svg class="sidebar__item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            <span class="sidebar__item-label"># design</span>
+          </a>
+          <a class="sidebar__item" href="#">
+            <svg class="sidebar__item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18a4 4 0 0 0-8 0"/><circle cx="12" cy="11" r="3"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M8 2v2M16 2v2"/></svg>
+            <span class="sidebar__item-label"># marketing</span>
+            <span class="sidebar__item-badge">1</span>
+          </a>
+          <a class="sidebar__item" href="#">
+            <svg class="sidebar__item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <span class="sidebar__item-label"># engineering</span>
+          </a>
+          <a class="sidebar__item" href="#">
+            <svg class="sidebar__item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span class="sidebar__item-label"># research</span>
+          </a>
+        </div>
+
+        <div class="sidebar__section">
+          <div class="sidebar__section-header">
+            <span class="sidebar__section-title">Agents</span>
+            <button class="sidebar__section-action" aria-label="Add agent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </div>
+          <button class="sidebar__agent-item" type="button">
+            <div class="sidebar__agent-avatar-wrap">
+              <img class="sidebar__agent-avatar" src="https://i.pravatar.cc/64?img=1" alt="UX Architect avatar">
+              <span class="sidebar__agent-status sidebar__agent-status--online"></span>
+            </div>
+            <div class="sidebar__agent-info">
+              <div class="sidebar__agent-name">UX Architect</div>
+              <div class="sidebar__agent-role">Product Design</div>
+            </div>
+          </button>
+          <button class="sidebar__agent-item" type="button">
+            <div class="sidebar__agent-avatar-wrap">
+              <img class="sidebar__agent-avatar" src="https://i.pravatar.cc/64?img=5" alt="Code Assistant avatar">
+              <span class="sidebar__agent-status sidebar__agent-status--working"></span>
+            </div>
+            <div class="sidebar__agent-info">
+              <div class="sidebar__agent-name">Code Assistant</div>
+              <div class="sidebar__agent-role">Engineering</div>
+            </div>
+          </button>
+          <button class="sidebar__agent-item" type="button">
+            <div class="sidebar__agent-avatar-wrap">
+              <img class="sidebar__agent-avatar" src="https://i.pravatar.cc/64?img=8" alt="Research Bot avatar">
+              <span class="sidebar__agent-status sidebar__agent-status--online"></span>
+            </div>
+            <div class="sidebar__agent-info">
+              <div class="sidebar__agent-name">Research Bot</div>
+              <div class="sidebar__agent-role">Analysis</div>
+            </div>
+          </button>
+          <button class="sidebar__agent-item" type="button">
+            <div class="sidebar__agent-avatar-wrap">
+              <img class="sidebar__agent-avatar" src="https://i.pravatar.cc/64?img=12" alt="Content Writer avatar">
+              <span class="sidebar__agent-status sidebar__agent-status--idle"></span>
+            </div>
+            <div class="sidebar__agent-info">
+              <div class="sidebar__agent-name">Content Writer</div>
+              <div class="sidebar__agent-role">Marketing</div>
+            </div>
+          </button>
+          <button class="sidebar__agent-item" type="button">
+            <div class="sidebar__agent-avatar-wrap">
+              <img class="sidebar__agent-avatar" src="https://i.pravatar.cc/64?img=15" alt="Data Analyst avatar">
+              <span class="sidebar__agent-status sidebar__agent-status--offline"></span>
+            </div>
+            <div class="sidebar__agent-info">
+              <div class="sidebar__agent-name">Data Analyst</div>
+              <div class="sidebar__agent-role">Analytics</div>
+            </div>
+          </button>
+        </div>
+
+        <div class="sidebar__footer">
+          <img class="sidebar__user-avatar" src="https://i.pravatar.cc/64?img=33" alt="User avatar">
+          <div class="sidebar__user-info">
+            <div class="sidebar__user-name">Alex Chen</div>
+            <div class="sidebar__user-status">Online</div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- ===== MAIN CONTENT ===== -->
+      <main class="main-content">
+        <header class="main-header">
+          <div class="main-header__left">
+            <button class="mobile-menu-btn" aria-label="Open navigation menu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            </button>
+            <h1 class="main-header__title">Dashboard</h1>
+          </div>
+          <div class="main-header__actions">
+            <button class="main-header__action-btn" aria-label="Notifications">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            </button>
+            <button class="main-header__action-btn" aria-label="Settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="dashboard">
+          <div class="dashboard__welcome">
+            <h2 class="dashboard__welcome-title">Good morning, Alex</h2>
+            <p class="dashboard__welcome-sub">Your agents have been busy. Here's what's happening in StoryCraft.</p>
+          </div>
+
+          <div class="dashboard__stats">
+            <div class="stat-card">
+              <div class="stat-card__label">Active Agents</div>
+              <div class="stat-card__value">4</div>
+              <div class="stat-card__change stat-card__change--up">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+                1 new this week
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card__label">Messages Today</div>
+              <div class="stat-card__value">147</div>
+              <div class="stat-card__change stat-card__change--up">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+                23% from yesterday
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card__label">Tasks Running</div>
+              <div class="stat-card__value">8</div>
+              <div class="stat-card__change stat-card__change--down">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                2 blocked
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card__label">Completed</div>
+              <div class="stat-card__value">32</div>
+              <div class="stat-card__change stat-card__change--up">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+                12 this week
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard__section">
+            <div class="dashboard__section-header">
+              <h3 class="dashboard__section-title">Recent Activity</h3>
+              <a href="#" class="dashboard__section-link">View all</a>
+            </div>
+            <div class="activity-list">
+              <article class="activity-item">
+                <img class="activity-item__avatar" src="https://i.pravatar.cc/80?img=5" alt="Code Assistant">
+                <div class="activity-item__content">
+                  <div class="activity-item__header">
+                    <span class="activity-item__name">Code Assistant</span>
+                    <span class="activity-item__channel">in #engineering</span>
+                    <span class="activity-item__time">2m ago</span>
+                  </div>
+                  <p class="activity-item__text">Completed API endpoint refactoring. 14 files updated, all tests passing.</p>
+                </div>
+              </article>
+              <article class="activity-item">
+                <img class="activity-item__avatar" src="https://i.pravatar.cc/80?img=1" alt="UX Architect">
+                <div class="activity-item__content">
+                  <div class="activity-item__header">
+                    <span class="activity-item__name">UX Architect</span>
+                    <span class="activity-item__channel">in #design</span>
+                    <span class="activity-item__time">15m ago</span>
+                  </div>
+                  <p class="activity-item__text">Generated 3 wireframe variants for the onboarding flow. Awaiting review.</p>
+                </div>
+              </article>
+              <article class="activity-item">
+                <img class="activity-item__avatar" src="https://i.pravatar.cc/80?img=8" alt="Research Bot">
+                <div class="activity-item__content">
+                  <div class="activity-item__header">
+                    <span class="activity-item__name">Research Bot</span>
+                    <span class="activity-item__channel">in #research</span>
+                    <span class="activity-item__time">1h ago</span>
+                  </div>
+                  <p class="activity-item__text">Competitor analysis report ready. Found 4 key differentiators to explore.</p>
+                </div>
+              </article>
+              <article class="activity-item">
+                <img class="activity-item__avatar" src="https://i.pravatar.cc/80?img=12" alt="Content Writer">
+                <div class="activity-item__content">
+                  <div class="activity-item__header">
+                    <span class="activity-item__name">Content Writer</span>
+                    <span class="activity-item__channel">in #marketing</span>
+                    <span class="activity-item__time">2h ago</span>
+                  </div>
+                  <p class="activity-item__text">Draft blog post "Why AI Teams Need Their Own Workspace" — 1,200 words.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="dashboard__section">
+            <div class="dashboard__section-header">
+              <h3 class="dashboard__section-title">Quick Actions</h3>
+            </div>
+            <div class="quick-actions">
+              <a class="quick-action" href="#">
+                <div class="quick-action__icon quick-action__icon--agents">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <span class="quick-action__label">Create Agent</span>
+                <span class="quick-action__desc">Add a new AI agent to your workspace</span>
+              </a>
+              <a class="quick-action" href="#">
+                <div class="quick-action__icon quick-action__icon--channel">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <span class="quick-action__label">New Channel</span>
+                <span class="quick-action__desc">Create a project channel</span>
+              </a>
+              <a class="quick-action" href="#">
+                <div class="quick-action__icon quick-action__icon--task">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                </div>
+                <span class="quick-action__label">Assign Task</span>
+                <span class="quick-action__desc">Delegate work to an agent</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- ===== CONTEXT PANEL ===== -->
+      <aside class="context-panel" aria-label="Agent overview">
+        <div class="context-panel__header">
+          <h2 class="context-panel__title">Agent Overview</h2>
+          <button class="context-panel__close" aria-label="Close panel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="context-panel__body">
+          <div class="agent-overview">
+            <article class="agent-card">
+              <div class="agent-card__header">
+                <div class="agent-card__avatar-wrap">
+                  <img class="agent-card__avatar" src="https://i.pravatar.cc/80?img=1" alt="UX Architect">
+                  <span class="agent-card__status sidebar__agent-status--online"></span>
+                </div>
+                <div class="agent-card__info">
+                  <div class="agent-card__name">UX Architect</div>
+                  <div class="agent-card__role">Product Design</div>
+                </div>
+                <span class="agent-card__color-dot" style="background: var(--color-agent-1)"></span>
+              </div>
+              <div class="agent-card__tools">
+                <span class="agent-card__tool">figma</span>
+                <span class="agent-card__tool">web_search</span>
+                <span class="agent-card__tool">ui_gen</span>
+              </div>
+              <div class="agent-card__activity">
+                <div class="agent-card__activity-status">
+                  <span class="agent-card__activity-dot" style="background: var(--color-status-online)"></span>
+                  Online — 3 tasks completed today
+                </div>
+              </div>
+            </article>
+
+            <article class="agent-card">
+              <div class="agent-card__header">
+                <div class="agent-card__avatar-wrap">
+                  <img class="agent-card__avatar" src="https://i.pravatar.cc/80?img=5" alt="Code Assistant">
+                  <span class="agent-card__status sidebar__agent-status--working"></span>
+                </div>
+                <div class="agent-card__info">
+                  <div class="agent-card__name">Code Assistant</div>
+                  <div class="agent-card__role">Engineering</div>
+                </div>
+                <span class="agent-card__color-dot" style="background: var(--color-agent-2)"></span>
+              </div>
+              <div class="agent-card__tools">
+                <span class="agent-card__tool">github</span>
+                <span class="agent-card__tool">terminal</span>
+                <span class="agent-card__tool">docs</span>
+              </div>
+              <div class="agent-card__activity">
+                <div class="agent-card__activity-status">
+                  <span class="agent-card__activity-dot" style="background: var(--color-status-working)"></span>
+                  Working — Refactoring API endpoints
+                </div>
+              </div>
+            </article>
+
+            <article class="agent-card">
+              <div class="agent-card__header">
+                <div class="agent-card__avatar-wrap">
+                  <img class="agent-card__avatar" src="https://i.pravatar.cc/80?img=8" alt="Research Bot">
+                  <span class="agent-card__status sidebar__agent-status--online"></span>
+                </div>
+                <div class="agent-card__info">
+                  <div class="agent-card__name">Research Bot</div>
+                  <div class="agent-card__role">Analysis</div>
+                </div>
+                <span class="agent-card__color-dot" style="background: var(--color-agent-3)"></span>
+              </div>
+              <div class="agent-card__tools">
+                <span class="agent-card__tool">web_search</span>
+                <span class="agent-card__tool">arxiv</span>
+              </div>
+              <div class="agent-card__activity">
+                <div class="agent-card__activity-status">
+                  <span class="agent-card__activity-dot" style="background: var(--color-status-online)"></span>
+                  Online — Last active 1h ago
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="tasks-summary">
+            <div class="tasks-summary__header">
+              <h3 class="tasks-summary__title">Active Tasks</h3>
+              <span class="tasks-summary__count">8 total</span>
+            </div>
+            <div class="task-mini">
+              <span class="task-mini__status task-mini__status--running"></span>
+              <span class="task-mini__text">Refactor authentication module</span>
+              <img class="task-mini__agent-avatar" src="https://i.pravatar.cc/40?img=5" alt="Code Assistant">
+            </div>
+            <div class="task-mini">
+              <span class="task-mini__status task-mini__status--running"></span>
+              <span class="task-mini__text">Generate onboarding wireframes</span>
+              <img class="task-mini__agent-avatar" src="https://i.pravatar.cc/40?img=1" alt="UX Architect">
+            </div>
+            <div class="task-mini">
+              <span class="task-mini__status task-mini__status--pending"></span>
+              <span class="task-mini__text">Write Q2 strategy blog post</span>
+              <img class="task-mini__agent-avatar" src="https://i.pravatar.cc/40?img=12" alt="Content Writer">
+            </div>
+            <div class="task-mini">
+              <span class="task-mini__status task-mini__status--completed"></span>
+              <span class="task-mini__text">Competitor landscape analysis</span>
+              <img class="task-mini__agent-avatar" src="https://i.pravatar.cc/40?img=8" alt="Research Bot">
+            </div>
+            <div class="task-mini">
+              <span class="task-mini__status task-mini__status--failed"></span>
+              <span class="task-mini__text">Deploy staging environment</span>
+              <img class="task-mini__agent-avatar" src="https://i.pravatar.cc/40?img=5" alt="Code Assistant">
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>

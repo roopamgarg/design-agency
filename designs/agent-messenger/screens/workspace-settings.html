@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workspace Settings — Agent Messenger</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-normal);
+        color: var(--color-text-primary);
+        background: var(--color-bg-primary);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .messenger-shell {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) 1fr;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        background: var(--color-bg-sidebar);
+        border-right: 1px solid var(--color-border-default);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .sidebar__header {
+        padding: var(--space-4);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        border-bottom: 1px solid var(--color-border-default);
+        min-height: var(--header-height);
+      }
+
+      .sidebar__ws-avatar {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-md);
+        background: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-primary-contrast);
+        font-weight: var(--font-weight-bold);
+        font-size: var(--font-size-sm);
+      }
+
+      .sidebar__ws-name {
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-base);
+      }
+
+      .sidebar__section { padding: var(--space-2) var(--space-3); }
+
+      .sidebar__section-title {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+        padding: var(--space-1) var(--space-2);
+        margin-bottom: var(--space-1);
+      }
+
+      .sidebar__nav-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-1-5) var(--space-2);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-sm);
+        transition: background var(--transition-fast);
+        min-height: 36px;
+      }
+
+      .sidebar__nav-item:hover { background: var(--color-bg-hover); }
+      .sidebar__nav-item--active {
+        background: var(--color-bg-active);
+        color: var(--color-text-primary);
+      }
+
+      .sidebar__nav-icon {
+        width: 18px;
+        height: 18px;
+        color: var(--color-text-tertiary);
+        flex-shrink: 0;
+      }
+
+      .sidebar__nav-item--active .sidebar__nav-icon { color: var(--color-primary-light); }
+
+      .sidebar__footer {
+        margin-top: auto;
+        padding: var(--space-3) var(--space-4);
+        border-top: 1px solid var(--color-border-default);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .sidebar__user-avi {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .sidebar__user-name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+      }
+
+      /* ===== MAIN: Settings ===== */
+      .settings-area {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .settings-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: 0 var(--space-6);
+        min-height: var(--header-height);
+        border-bottom: 1px solid var(--color-border-default);
+      }
+
+      .settings-header__back {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+      }
+
+      .settings-header__back:hover { background: var(--color-bg-hover); }
+      .settings-header__back svg { width: 18px; height: 18px; }
+
+      .settings-header__title {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      /* Settings layout: tabs + content */
+      .settings-layout {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        overflow: hidden;
+      }
+
+      .settings-tabs {
+        border-right: 1px solid var(--color-border-default);
+        padding: var(--space-4) var(--space-2);
+        overflow-y: auto;
+      }
+
+      .settings-tab {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-3);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-sm);
+        transition: background var(--transition-fast);
+        margin-bottom: var(--space-1);
+        min-height: var(--touch-target-min);
+      }
+
+      .settings-tab:hover { background: var(--color-bg-hover); }
+
+      .settings-tab--active {
+        background: var(--color-bg-active);
+        color: var(--color-text-primary);
+        font-weight: var(--font-weight-medium);
+      }
+
+      .settings-tab__icon {
+        width: 16px;
+        height: 16px;
+        color: var(--color-text-tertiary);
+        flex-shrink: 0;
+      }
+
+      .settings-tab--active .settings-tab__icon { color: var(--color-primary-light); }
+
+      /* Settings content */
+      .settings-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-6) var(--space-8);
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .settings-content__inner { max-width: 640px; }
+
+      .settings-section {
+        margin-bottom: var(--space-8);
+      }
+
+      .settings-section__title {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+        margin-bottom: var(--space-1);
+      }
+
+      .settings-section__desc {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-tertiary);
+        margin-bottom: var(--space-5);
+      }
+
+      /* Form controls */
+      .form-row {
+        margin-bottom: var(--space-5);
+      }
+
+      .form-row__label {
+        display: block;
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-1-5);
+      }
+
+      .form-row__input {
+        width: 100%;
+        height: var(--input-height);
+        padding: 0 var(--space-3);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--input-radius);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-base);
+        font-family: var(--font-family-sans);
+      }
+
+      .form-row__input:focus {
+        outline: none;
+        border-color: var(--color-border-focus);
+        box-shadow: 0 0 0 3px var(--color-primary-subtle);
+      }
+
+      .form-row__textarea {
+        width: 100%;
+        padding: var(--space-3);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--input-radius);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-sm);
+        font-family: var(--font-family-sans);
+        resize: vertical;
+        min-height: 80px;
+        line-height: var(--line-height-relaxed);
+      }
+
+      .form-row__textarea:focus {
+        outline: none;
+        border-color: var(--color-border-focus);
+        box-shadow: 0 0 0 3px var(--color-primary-subtle);
+      }
+
+      .form-row__hint {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        margin-top: var(--space-1);
+      }
+
+      /* Workspace avatar edit */
+      .ws-avatar-edit {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+        margin-bottom: var(--space-5);
+      }
+
+      .ws-avatar-edit__img {
+        width: 64px;
+        height: 64px;
+        border-radius: var(--radius-lg);
+        object-fit: cover;
+        border: 2px solid var(--color-border-default);
+      }
+
+      .ws-avatar-edit__actions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        padding: 0 var(--space-4);
+        height: var(--btn-height-md);
+        border-radius: var(--btn-radius);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        font-family: var(--font-family-sans);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        min-height: var(--touch-target-min);
+        border: none;
+      }
+
+      .btn--sm { height: var(--btn-height-sm); padding: 0 var(--space-3); font-size: var(--font-size-xs); }
+      .btn--primary { background: var(--color-primary); color: var(--color-primary-contrast); }
+      .btn--primary:hover { background: var(--color-primary-dark); }
+      .btn--ghost { background: none; color: var(--color-text-secondary); border: 1px solid var(--color-border-default); }
+      .btn--ghost:hover { background: var(--color-bg-hover); }
+      .btn--danger { background: none; color: var(--color-error); border: 1px solid var(--color-error-subtle); }
+      .btn--danger:hover { background: var(--color-error-subtle); }
+
+      /* Toggle row */
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-3) 0;
+        border-bottom: 1px solid var(--color-border-subtle);
+      }
+
+      .toggle-row:last-child { border-bottom: none; }
+
+      .toggle-row__info { flex: 1; }
+
+      .toggle-row__label {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+      }
+
+      .toggle-row__desc {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        margin-top: var(--space-0-5);
+      }
+
+      .toggle-switch {
+        width: 40px;
+        height: 22px;
+        background: var(--color-bg-tertiary);
+        border-radius: var(--radius-full);
+        position: relative;
+        border: 1px solid var(--color-border-default);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background var(--transition-fast);
+      }
+
+      .toggle-switch::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: var(--radius-full);
+        background: var(--color-text-tertiary);
+        transition: transform var(--transition-fast), background var(--transition-fast);
+      }
+
+      .toggle-switch--on {
+        background: var(--color-primary-subtle);
+        border-color: var(--color-primary);
+      }
+
+      .toggle-switch--on::after {
+        transform: translateX(18px);
+        background: var(--color-primary);
+      }
+
+      /* Notification select */
+      .notification-levels {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+
+      .notification-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-2-5) var(--space-3);
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-lg);
+      }
+
+      .notification-row__channel {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-primary);
+        flex: 1;
+        font-weight: var(--font-weight-medium);
+      }
+
+      .notification-row__select {
+        padding: var(--space-1) var(--space-2-5);
+        background: var(--color-bg-input);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-md);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-xs);
+        font-family: var(--font-family-sans);
+      }
+
+      /* Integrations */
+      .integration-card {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-2);
+      }
+
+      .integration-card__icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-bg-tertiary);
+        color: var(--color-text-secondary);
+        flex-shrink: 0;
+      }
+
+      .integration-card__icon svg { width: 20px; height: 20px; }
+
+      .integration-card__info { flex: 1; }
+
+      .integration-card__name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+      }
+
+      .integration-card__desc {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .integration-card__status {
+        font-size: var(--font-size-xs);
+        padding: var(--space-0-5) var(--space-2);
+        border-radius: var(--badge-radius);
+        font-weight: var(--font-weight-medium);
+      }
+
+      .integration-card__status--connected {
+        background: var(--color-success-subtle);
+        color: var(--color-success-light);
+      }
+
+      .integration-card__status--disconnected {
+        background: var(--color-bg-tertiary);
+        color: var(--color-text-tertiary);
+      }
+
+      /* Danger zone */
+      .danger-zone {
+        border: 1px solid var(--color-error-subtle);
+        border-radius: var(--radius-lg);
+        padding: var(--space-4);
+        margin-top: var(--space-8);
+      }
+
+      .danger-zone__title {
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-error);
+        margin-bottom: var(--space-2);
+      }
+
+      .danger-zone__desc {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-tertiary);
+        margin-bottom: var(--space-3);
+      }
+
+      /* ===== RESPONSIVE ===== */
+      .mobile-menu-btn {
+        display: none;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+      }
+
+      .mobile-menu-btn svg { width: 20px; height: 20px; }
+
+      @media (max-width: 1024px) {
+        .messenger-shell { grid-template-columns: 1fr; }
+        .sidebar { display: none; }
+        .mobile-menu-btn { display: flex; }
+      }
+
+      @media (max-width: 768px) {
+        .settings-layout { grid-template-columns: 1fr; }
+        .settings-tabs {
+          border-right: none;
+          border-bottom: 1px solid var(--color-border-default);
+          display: flex;
+          overflow-x: auto;
+          padding: var(--space-2);
+          gap: var(--space-1);
+        }
+        .settings-tab { white-space: nowrap; }
+        .settings-content { padding: var(--space-4); }
+        .settings-header { padding: 0 var(--space-4); }
+      }
+    </style>
+</head>
+<body>
+  <div data-product="agent-messenger" data-screen="workspace-settings">
+    <div class="messenger-shell">
+
+      <!-- SIDEBAR -->
+      <nav class="sidebar" aria-label="Workspace navigation">
+        <div class="sidebar__header">
+          <div class="sidebar__ws-avatar">S</div>
+          <span class="sidebar__ws-name">StoryCraft</span>
+        </div>
+        <div class="sidebar__section">
+          <div class="sidebar__section-title">Navigation</div>
+          <div class="sidebar__nav-item">
+            <svg class="sidebar__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Messages
+          </div>
+          <div class="sidebar__nav-item">
+            <svg class="sidebar__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            Tasks
+          </div>
+          <div class="sidebar__nav-item">
+            <svg class="sidebar__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Agents
+          </div>
+          <div class="sidebar__nav-item sidebar__nav-item--active">
+            <svg class="sidebar__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            Settings
+          </div>
+        </div>
+        <div class="sidebar__footer">
+          <img class="sidebar__user-avi" src="https://i.pravatar.cc/64?img=33" alt="User">
+          <span class="sidebar__user-name">Alex Chen</span>
+        </div>
+      </nav>
+
+      <!-- MAIN: Settings -->
+      <main class="settings-area">
+        <header class="settings-header">
+          <button class="mobile-menu-btn" aria-label="Open navigation menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+          </button>
+          <button class="settings-header__back" aria-label="Go back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <h1 class="settings-header__title">Workspace Settings</h1>
+        </header>
+
+        <div class="settings-layout">
+          <nav class="settings-tabs" aria-label="Settings tabs">
+            <div class="settings-tab settings-tab--active">
+              <svg class="settings-tab__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+              General
+            </div>
+            <div class="settings-tab">
+              <svg class="settings-tab__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Members
+            </div>
+            <div class="settings-tab">
+              <svg class="settings-tab__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Permissions
+            </div>
+            <div class="settings-tab">
+              <svg class="settings-tab__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              Notifications
+            </div>
+            <div class="settings-tab">
+              <svg class="settings-tab__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              Memory
+            </div>
+            <div class="settings-tab">
+              <svg class="settings-tab__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/></svg>
+              Integrations
+            </div>
+          </nav>
+
+          <div class="settings-content">
+            <div class="settings-content__inner">
+
+              <section class="settings-section">
+                <h2 class="settings-section__title">General</h2>
+                <p class="settings-section__desc">Manage your workspace identity and default settings.</p>
+
+                <div class="ws-avatar-edit">
+                  <img class="ws-avatar-edit__img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=128&h=128&fit=crop" alt="Workspace avatar">
+                  <div class="ws-avatar-edit__actions">
+                    <button class="btn btn--sm btn--ghost">Change Avatar</button>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-tertiary)">JPG, PNG or SVG. Max 2MB.</span>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <label class="form-row__label" for="ws-name">Workspace Name</label>
+                  <input class="form-row__input" type="text" id="ws-name" value="StoryCraft">
+                </div>
+
+                <div class="form-row">
+                  <label class="form-row__label" for="ws-desc">Description</label>
+                  <textarea class="form-row__textarea" id="ws-desc" rows="3">AI-powered storytelling and content creation workspace. Creative writing, marketing, and product design collaboration.</textarea>
+                </div>
+
+                <div class="form-row">
+                  <label class="form-row__label" for="ws-channel">Default Channel</label>
+                  <input class="form-row__input" type="text" id="ws-channel" value="#general" readonly>
+                  <p class="form-row__hint">New members will be added to this channel automatically.</p>
+                </div>
+              </section>
+
+              <section class="settings-section">
+                <h2 class="settings-section__title">Preferences</h2>
+                <p class="settings-section__desc">Customize workspace behavior and defaults.</p>
+
+                <div class="toggle-row">
+                  <div class="toggle-row__info">
+                    <div class="toggle-row__label">Dark Mode</div>
+                    <div class="toggle-row__desc">Use dark theme as default for this workspace</div>
+                  </div>
+                  <div class="toggle-switch toggle-switch--on" role="switch" aria-checked="true" aria-label="Dark mode toggle"></div>
+                </div>
+
+                <div class="toggle-row">
+                  <div class="toggle-row__info">
+                    <div class="toggle-row__label">Agent Activity Notifications</div>
+                    <div class="toggle-row__desc">Show real-time agent activity in the status bar</div>
+                  </div>
+                  <div class="toggle-switch toggle-switch--on" role="switch" aria-checked="true" aria-label="Activity notifications toggle"></div>
+                </div>
+
+                <div class="toggle-row">
+                  <div class="toggle-row__info">
+                    <div class="toggle-row__label">Auto-approve Low-risk Tasks</div>
+                    <div class="toggle-row__desc">Allow agents to execute read-only tasks without approval</div>
+                  </div>
+                  <div class="toggle-switch toggle-switch--on" role="switch" aria-checked="true" aria-label="Auto-approve toggle"></div>
+                </div>
+
+                <div class="toggle-row">
+                  <div class="toggle-row__info">
+                    <div class="toggle-row__label">Sound Notifications</div>
+                    <div class="toggle-row__desc">Play sounds for new messages and task completions</div>
+                  </div>
+                  <div class="toggle-switch" role="switch" aria-checked="false" aria-label="Sound notifications toggle"></div>
+                </div>
+
+                <div class="toggle-row">
+                  <div class="toggle-row__info">
+                    <div class="toggle-row__label">Agent Typing Indicators</div>
+                    <div class="toggle-row__desc">Show when agents are generating responses</div>
+                  </div>
+                  <div class="toggle-switch toggle-switch--on" role="switch" aria-checked="true" aria-label="Typing indicators toggle"></div>
+                </div>
+              </section>
+
+              <section class="settings-section">
+                <h2 class="settings-section__title">Channel Notifications</h2>
+                <p class="settings-section__desc">Set notification preferences per channel.</p>
+                <div class="notification-levels">
+                  <div class="notification-row">
+                    <span class="notification-row__channel"># general</span>
+                    <select class="notification-row__select" aria-label="General channel notification level">
+                      <option selected>All messages</option>
+                      <option>Mentions only</option>
+                      <option>Nothing</option>
+                    </select>
+                  </div>
+                  <div class="notification-row">
+                    <span class="notification-row__channel"># engineering</span>
+                    <select class="notification-row__select" aria-label="Engineering channel notification level">
+                      <option selected>All messages</option>
+                      <option>Mentions only</option>
+                      <option>Nothing</option>
+                    </select>
+                  </div>
+                  <div class="notification-row">
+                    <span class="notification-row__channel"># design</span>
+                    <select class="notification-row__select" aria-label="Design channel notification level">
+                      <option>All messages</option>
+                      <option selected>Mentions only</option>
+                      <option>Nothing</option>
+                    </select>
+                  </div>
+                  <div class="notification-row">
+                    <span class="notification-row__channel"># marketing</span>
+                    <select class="notification-row__select" aria-label="Marketing channel notification level">
+                      <option>All messages</option>
+                      <option selected>Mentions only</option>
+                      <option>Nothing</option>
+                    </select>
+                  </div>
+                  <div class="notification-row">
+                    <span class="notification-row__channel"># research</span>
+                    <select class="notification-row__select" aria-label="Research channel notification level">
+                      <option>All messages</option>
+                      <option>Mentions only</option>
+                      <option selected>Nothing</option>
+                    </select>
+                  </div>
+                </div>
+              </section>
+
+              <section class="settings-section">
+                <h2 class="settings-section__title">Integrations</h2>
+                <p class="settings-section__desc">Connect external services to your workspace.</p>
+
+                <div class="integration-card">
+                  <div class="integration-card__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+                  </div>
+                  <div class="integration-card__info">
+                    <div class="integration-card__name">GitHub</div>
+                    <div class="integration-card__desc">Repository access, PRs, and issues</div>
+                  </div>
+                  <span class="integration-card__status integration-card__status--connected">Connected</span>
+                </div>
+
+                <div class="integration-card">
+                  <div class="integration-card__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                  </div>
+                  <div class="integration-card__info">
+                    <div class="integration-card__name">Notion</div>
+                    <div class="integration-card__desc">Documents and knowledge base</div>
+                  </div>
+                  <span class="integration-card__status integration-card__status--connected">Connected</span>
+                </div>
+
+                <div class="integration-card">
+                  <div class="integration-card__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  </div>
+                  <div class="integration-card__info">
+                    <div class="integration-card__name">Gmail</div>
+                    <div class="integration-card__desc">Send and read emails</div>
+                  </div>
+                  <span class="integration-card__status integration-card__status--disconnected">Not connected</span>
+                </div>
+
+                <div class="integration-card">
+                  <div class="integration-card__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  </div>
+                  <div class="integration-card__info">
+                    <div class="integration-card__name">Google Calendar</div>
+                    <div class="integration-card__desc">Schedule and manage events</div>
+                  </div>
+                  <span class="integration-card__status integration-card__status--disconnected">Not connected</span>
+                </div>
+              </section>
+
+              <div class="danger-zone">
+                <h3 class="danger-zone__title">Danger Zone</h3>
+                <p class="danger-zone__desc">These actions are irreversible. Please be certain before proceeding.</p>
+                <div style="display: flex; gap: var(--space-3);">
+                  <button class="btn btn--danger">Export Workspace Data</button>
+                  <button class="btn btn--danger">Delete Workspace</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

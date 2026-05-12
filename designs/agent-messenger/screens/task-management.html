@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management — Agent Messenger</title>
+    <link rel="stylesheet" href="../../tokens.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-normal);
+        color: var(--color-text-primary);
+        background: var(--color-bg-primary);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .messenger-shell {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) 1fr var(--context-panel-width);
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        background: var(--color-bg-sidebar);
+        border-right: 1px solid var(--color-border-default);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .sidebar__header {
+        padding: var(--space-4);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        border-bottom: 1px solid var(--color-border-default);
+        min-height: var(--header-height);
+      }
+
+      .sidebar__ws-avatar {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-md);
+        background: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-primary-contrast);
+        font-weight: var(--font-weight-bold);
+        font-size: var(--font-size-sm);
+      }
+
+      .sidebar__ws-name {
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-base);
+      }
+
+      .sidebar__section { padding: var(--space-2) var(--space-3); }
+
+      .sidebar__section-title {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+        padding: var(--space-1) var(--space-2);
+        margin-bottom: var(--space-1);
+      }
+
+      .sidebar__nav-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-1-5) var(--space-2);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-sm);
+        transition: background var(--transition-fast);
+        min-height: 36px;
+      }
+
+      .sidebar__nav-item:hover { background: var(--color-bg-hover); }
+      .sidebar__nav-item--active {
+        background: var(--color-bg-active);
+        color: var(--color-text-primary);
+      }
+
+      .sidebar__nav-icon {
+        width: 18px;
+        height: 18px;
+        color: var(--color-text-tertiary);
+        flex-shrink: 0;
+      }
+
+      .sidebar__nav-item--active .sidebar__nav-icon {
+        color: var(--color-primary-light);
+      }
+
+      .sidebar__nav-badge {
+        margin-left: auto;
+        font-size: var(--font-size-2xs);
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        background: var(--color-primary);
+        color: var(--color-primary-contrast);
+        border-radius: var(--badge-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .sidebar__footer {
+        margin-top: auto;
+        padding: var(--space-3) var(--space-4);
+        border-top: 1px solid var(--color-border-default);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .sidebar__user-avi {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .sidebar__user-name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+      }
+
+      /* ===== MAIN: Tasks ===== */
+      .tasks-area {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .tasks-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-6);
+        min-height: var(--header-height);
+        border-bottom: 1px solid var(--color-border-default);
+      }
+
+      .tasks-header__left {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      .tasks-header__title {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .tasks-header__count {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        background: var(--color-bg-tertiary);
+        padding: var(--space-0-5) var(--space-2);
+        border-radius: var(--badge-radius);
+      }
+
+      .tasks-header__actions {
+        display: flex;
+        gap: var(--space-2);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        padding: 0 var(--space-4);
+        height: var(--btn-height-md);
+        border-radius: var(--btn-radius);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        font-family: var(--font-family-sans);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        min-height: var(--touch-target-min);
+        border: none;
+      }
+
+      .btn--primary { background: var(--color-primary); color: var(--color-primary-contrast); }
+      .btn--primary:hover { background: var(--color-primary-dark); }
+
+      .btn--ghost {
+        background: none;
+        color: var(--color-text-secondary);
+        border: 1px solid var(--color-border-default);
+      }
+
+      .btn--ghost:hover { background: var(--color-bg-hover); }
+
+      .btn svg { width: 16px; height: 16px; }
+
+      /* Filters bar */
+      .tasks-filters {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-6);
+        border-bottom: 1px solid var(--color-border-default);
+        overflow-x: auto;
+      }
+
+      .filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: var(--space-1) var(--space-3);
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-xs);
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background var(--transition-fast);
+        min-height: var(--btn-height-sm);
+        font-family: var(--font-family-sans);
+      }
+
+      .filter-chip:hover { background: var(--color-bg-tertiary); }
+
+      .filter-chip--active {
+        background: var(--color-primary-subtle);
+        border-color: var(--color-primary);
+        color: var(--color-primary-light);
+      }
+
+      .filter-chip__dot {
+        width: 6px;
+        height: 6px;
+        border-radius: var(--radius-full);
+      }
+
+      /* Task list */
+      .tasks-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-4) var(--space-6);
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .task-group {
+        margin-bottom: var(--space-6);
+      }
+
+      .task-group__header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-bottom: var(--space-3);
+        padding-bottom: var(--space-2);
+        border-bottom: 1px solid var(--color-border-subtle);
+      }
+
+      .task-group__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-full);
+      }
+
+      .task-group__title {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-primary);
+      }
+
+      .task-group__count {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .task-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-2);
+        cursor: pointer;
+        transition: background var(--transition-fast), border-color var(--transition-fast);
+      }
+
+      .task-row:hover {
+        background: var(--color-bg-tertiary);
+        border-color: var(--color-border-strong);
+      }
+
+      .task-row--selected {
+        border-color: var(--color-primary);
+        background: var(--color-primary-subtle);
+      }
+
+      .task-row__status {
+        width: 10px;
+        height: 10px;
+        border-radius: var(--radius-full);
+        flex-shrink: 0;
+      }
+
+      .task-row__status--running { background: var(--color-status-working); }
+      .task-row__status--pending { background: var(--color-status-idle); }
+      .task-row__status--completed { background: var(--color-status-online); }
+      .task-row__status--failed { background: var(--color-status-error); }
+      .task-row__status--blocked { background: var(--color-warning); }
+
+      .task-row__content { flex: 1; min-width: 0; }
+
+      .task-row__title {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+        margin-bottom: var(--space-0-5);
+      }
+
+      .task-row__meta {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .task-row__channel {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+      }
+
+      .task-row__agent {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1-5);
+      }
+
+      .task-row__agent-avi {
+        width: 20px;
+        height: 20px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .task-row__duration {
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .task-row__priority {
+        font-size: var(--font-size-2xs);
+        padding: 1px 6px;
+        border-radius: var(--radius-sm);
+        font-weight: var(--font-weight-medium);
+      }
+
+      .task-row__priority--high {
+        background: var(--color-error-subtle);
+        color: var(--color-error-light);
+      }
+
+      .task-row__priority--medium {
+        background: var(--color-warning-subtle);
+        color: var(--color-warning-light);
+      }
+
+      .task-row__priority--low {
+        background: var(--color-info-subtle);
+        color: var(--color-info-light);
+      }
+
+      /* ===== TASK DETAIL PANEL (Zone 3) ===== */
+      .task-detail-panel {
+        background: var(--color-bg-secondary);
+        border-left: 1px solid var(--color-border-default);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      .task-detail__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-4);
+        min-height: var(--header-height);
+        border-bottom: 1px solid var(--color-border-default);
+      }
+
+      .task-detail__header-title {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .task-detail__close {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-tertiary);
+        cursor: pointer;
+        border-radius: var(--radius-sm);
+      }
+
+      .task-detail__close:hover { background: var(--color-bg-hover); }
+      .task-detail__close svg { width: 16px; height: 16px; }
+
+      .task-detail__body {
+        padding: var(--space-4);
+      }
+
+      .task-detail__title {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-text-primary);
+        margin-bottom: var(--space-4);
+      }
+
+      .task-detail__field {
+        margin-bottom: var(--space-4);
+      }
+
+      .task-detail__label {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+        margin-bottom: var(--space-1-5);
+      }
+
+      .task-detail__value {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+      }
+
+      .task-detail__status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1-5);
+        padding: var(--space-1) var(--space-2-5);
+        border-radius: var(--badge-radius);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+      }
+
+      .task-detail__status-badge--running {
+        background: var(--color-primary-subtle);
+        color: var(--color-primary-light);
+      }
+
+      .task-detail__status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: var(--radius-full);
+      }
+
+      .task-detail__assignee {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .task-detail__assignee-avi {
+        width: var(--avatar-sm);
+        height: var(--avatar-sm);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+
+      .task-detail__assignee-info { flex: 1; }
+
+      .task-detail__assignee-name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+      }
+
+      .task-detail__assignee-role {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      /* Delegation chain */
+      .delegation-chain {
+        margin-top: var(--space-4);
+        padding-top: var(--space-4);
+        border-top: 1px solid var(--color-border-default);
+      }
+
+      .delegation-chain__title {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+        margin-bottom: var(--space-3);
+      }
+
+      .delegation-step {
+        display: flex;
+        gap: var(--space-2-5);
+        margin-bottom: var(--space-3);
+        position: relative;
+      }
+
+      .delegation-step::before {
+        content: '';
+        position: absolute;
+        left: 11px;
+        top: 24px;
+        bottom: -12px;
+        width: 1px;
+        background: var(--color-border-default);
+      }
+
+      .delegation-step:last-child::before { display: none; }
+
+      .delegation-step__avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        flex-shrink: 0;
+        z-index: 1;
+      }
+
+      .delegation-step__info { flex: 1; }
+
+      .delegation-step__name {
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+      }
+
+      .delegation-step__action {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      /* Output artifacts */
+      .task-artifacts {
+        margin-top: var(--space-4);
+        padding-top: var(--space-4);
+        border-top: 1px solid var(--color-border-default);
+      }
+
+      .task-artifacts__title {
+        font-size: var(--font-size-2xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+        margin-bottom: var(--space-2);
+      }
+
+      .artifact {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-2);
+        background: var(--color-bg-tertiary);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--space-1-5);
+        font-size: var(--font-size-xs);
+        color: var(--color-text-secondary);
+      }
+
+      .artifact__icon {
+        width: 16px;
+        height: 16px;
+        color: var(--color-text-tertiary);
+        flex-shrink: 0;
+      }
+
+      .artifact__name { flex: 1; }
+
+      .artifact__size {
+        font-size: var(--font-size-2xs);
+        color: var(--color-text-tertiary);
+      }
+
+      /* ===== RESPONSIVE ===== */
+      .mobile-menu-btn {
+        display: none;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+      }
+
+      .mobile-menu-btn svg { width: 20px; height: 20px; }
+
+      @media (max-width: 1024px) {
+        .messenger-shell { grid-template-columns: 1fr; }
+        .sidebar { display: none; }
+        .task-detail-panel { display: none; }
+        .mobile-menu-btn { display: flex; }
+      }
+
+      @media (max-width: 768px) {
+        .tasks-header { padding: 0 var(--space-4); }
+        .tasks-filters { padding: var(--space-3) var(--space-4); }
+        .tasks-body { padding: var(--space-4); }
+      }
+    </style>
+</head>
+<body>
+  <div data-product="agent-messenger" data-screen="task-management">
+    <div class="messenger-shell">
+
+      <!-- SIDEBAR -->
+      <nav class="sidebar" aria-label="Workspace navigation">
+        <div class="sidebar__header">
+          <div class="sidebar__ws-avatar">S</div>
+          <span class="sidebar__ws-name">StoryCraft</span>
+        </div>
+        <div class="sidebar__section">
+          <div class="sidebar__section-title">Navigation</div>
+          <div class="sidebar__nav-item">
+            <svg class="sidebar__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Messages
+            <span class="sidebar__nav-badge">4</span>
+          </div>
+          <div class="sidebar__nav-item sidebar__nav-item--active">
+            <svg class="sidebar__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            Tasks
+            <span class="sidebar__nav-badge">8</span>
+          </div>
+          <div class="sidebar__nav-item">
+            <svg class="sidebar__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Agents
+          </div>
+          <div class="sidebar__nav-item">
+            <svg class="sidebar__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+            Files
+          </div>
+          <div class="sidebar__nav-item">
+            <svg class="sidebar__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            Settings
+          </div>
+        </div>
+        <div class="sidebar__footer">
+          <img class="sidebar__user-avi" src="https://i.pravatar.cc/64?img=33" alt="User">
+          <span class="sidebar__user-name">Alex Chen</span>
+        </div>
+      </nav>
+
+      <!-- MAIN: TASKS -->
+      <main class="tasks-area">
+        <header class="tasks-header">
+          <div class="tasks-header__left">
+            <button class="mobile-menu-btn" aria-label="Open navigation menu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            </button>
+            <h1 class="tasks-header__title">Tasks</h1>
+            <span class="tasks-header__count">24 total</span>
+          </div>
+          <div class="tasks-header__actions">
+            <button class="btn btn--ghost">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M7 12h10M10 18h4"/></svg>
+              Sort
+            </button>
+            <button class="btn btn--primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              New Task
+            </button>
+          </div>
+        </header>
+
+        <div class="tasks-filters" role="group" aria-label="Task filters">
+          <button class="filter-chip filter-chip--active" type="button" aria-pressed="true">
+            All <span style="font-weight:var(--font-weight-semibold)">24</span>
+          </button>
+          <button class="filter-chip" type="button" aria-pressed="false">
+            <span class="filter-chip__dot" style="background: var(--color-status-working)"></span>
+            Running <span style="font-weight:var(--font-weight-semibold)">5</span>
+          </button>
+          <button class="filter-chip" type="button" aria-pressed="false">
+            <span class="filter-chip__dot" style="background: var(--color-status-idle)"></span>
+            Pending <span style="font-weight:var(--font-weight-semibold)">4</span>
+          </button>
+          <button class="filter-chip" type="button" aria-pressed="false">
+            <span class="filter-chip__dot" style="background: var(--color-warning)"></span>
+            Blocked <span style="font-weight:var(--font-weight-semibold)">2</span>
+          </button>
+          <button class="filter-chip" type="button" aria-pressed="false">
+            <span class="filter-chip__dot" style="background: var(--color-status-online)"></span>
+            Completed <span style="font-weight:var(--font-weight-semibold)">11</span>
+          </button>
+          <button class="filter-chip" type="button" aria-pressed="false">
+            <span class="filter-chip__dot" style="background: var(--color-status-error)"></span>
+            Failed <span style="font-weight:var(--font-weight-semibold)">2</span>
+          </button>
+        </div>
+
+        <div class="tasks-body">
+          <!-- Running -->
+          <div class="task-group">
+            <div class="task-group__header">
+              <span class="task-group__dot" style="background: var(--color-status-working)"></span>
+              <span class="task-group__title">Running</span>
+              <span class="task-group__count">5 tasks</span>
+            </div>
+
+            <article class="task-row task-row--selected">
+              <span class="task-row__status task-row__status--running"></span>
+              <div class="task-row__content">
+                <div class="task-row__title">Migrate authentication from sessions to JWT</div>
+                <div class="task-row__meta">
+                  <span class="task-row__channel"># engineering</span>
+                  <span class="task-row__agent">
+                    <img class="task-row__agent-avi" src="https://i.pravatar.cc/40?img=5" alt="Code Assistant">
+                    Code Assistant
+                  </span>
+                  <span class="task-row__duration">32m</span>
+                </div>
+              </div>
+              <span class="task-row__priority task-row__priority--high">High</span>
+            </article>
+
+            <article class="task-row">
+              <span class="task-row__status task-row__status--running"></span>
+              <div class="task-row__content">
+                <div class="task-row__title">Generate onboarding wireframe variants</div>
+                <div class="task-row__meta">
+                  <span class="task-row__channel"># design</span>
+                  <span class="task-row__agent">
+                    <img class="task-row__agent-avi" src="https://i.pravatar.cc/40?img=1" alt="UX Architect">
+                    UX Architect
+                  </span>
+                  <span class="task-row__duration">18m</span>
+                </div>
+              </div>
+              <span class="task-row__priority task-row__priority--medium">Medium</span>
+            </article>
+
+            <article class="task-row">
+              <span class="task-row__status task-row__status--running"></span>
+              <div class="task-row__content">
+                <div class="task-row__title">Draft Q2 marketing strategy blog post</div>
+                <div class="task-row__meta">
+                  <span class="task-row__channel"># marketing</span>
+                  <span class="task-row__agent">
+                    <img class="task-row__agent-avi" src="https://i.pravatar.cc/40?img=12" alt="Content Writer">
+                    Content Writer
+                  </span>
+                  <span class="task-row__duration">45m</span>
+                </div>
+              </div>
+              <span class="task-row__priority task-row__priority--medium">Medium</span>
+            </article>
+
+            <article class="task-row">
+              <span class="task-row__status task-row__status--running"></span>
+              <div class="task-row__content">
+                <div class="task-row__title">Analyze competitor pricing models</div>
+                <div class="task-row__meta">
+                  <span class="task-row__channel"># research</span>
+                  <span class="task-row__agent">
+                    <img class="task-row__agent-avi" src="https://i.pravatar.cc/40?img=8" alt="Research Bot">
+                    Research Bot
+                  </span>
+                  <span class="task-row__duration">1h 12m</span>
+                </div>
+              </div>
+              <span class="task-row__priority task-row__priority--low">Low</span>
+            </article>
+
+            <article class="task-row">
+              <span class="task-row__status task-row__status--running"></span>
+              <div class="task-row__content">
+                <div class="task-row__title">Set up CI/CD pipeline for staging</div>
+                <div class="task-row__meta">
+                  <span class="task-row__channel"># engineering</span>
+                  <span class="task-row__agent">
+                    <img class="task-row__agent-avi" src="https://i.pravatar.cc/40?img=5" alt="Code Assistant">
+                    Code Assistant
+                  </span>
+                  <span class="task-row__duration">5m</span>
+                </div>
+              </div>
+              <span class="task-row__priority task-row__priority--high">High</span>
+            </article>
+          </div>
+
+          <!-- Blocked -->
+          <div class="task-group">
+            <div class="task-group__header">
+              <span class="task-group__dot" style="background: var(--color-warning)"></span>
+              <span class="task-group__title">Blocked</span>
+              <span class="task-group__count">2 tasks</span>
+            </div>
+
+            <article class="task-row">
+              <span class="task-row__status task-row__status--blocked"></span>
+              <div class="task-row__content">
+                <div class="task-row__title">Deploy staging environment</div>
+                <div class="task-row__meta">
+                  <span class="task-row__channel"># engineering</span>
+                  <span class="task-row__agent">
+                    <img class="task-row__agent-avi" src="https://i.pravatar.cc/40?img=5" alt="Code Assistant">
+                    Code Assistant
+                  </span>
+                  <span style="color: var(--color-warning)">Blocked by: JWT migration</span>
+                </div>
+              </div>
+              <span class="task-row__priority task-row__priority--high">High</span>
+            </article>
+
+            <article class="task-row">
+              <span class="task-row__status task-row__status--blocked"></span>
+              <div class="task-row__content">
+                <div class="task-row__title">Create social media assets from blog post</div>
+                <div class="task-row__meta">
+                  <span class="task-row__channel"># marketing</span>
+                  <span class="task-row__agent">
+                    <img class="task-row__agent-avi" src="https://i.pravatar.cc/40?img=12" alt="Content Writer">
+                    Content Writer
+                  </span>
+                  <span style="color: var(--color-warning)">Blocked by: Blog post draft</span>
+                </div>
+              </div>
+              <span class="task-row__priority task-row__priority--low">Low</span>
+            </article>
+          </div>
+
+          <!-- Pending -->
+          <div class="task-group">
+            <div class="task-group__header">
+              <span class="task-group__dot" style="background: var(--color-status-idle)"></span>
+              <span class="task-group__title">Pending</span>
+              <span class="task-group__count">4 tasks</span>
+            </div>
+
+            <article class="task-row">
+              <span class="task-row__status task-row__status--pending"></span>
+              <div class="task-row__content">
+                <div class="task-row__title">Write API documentation for v2 endpoints</div>
+                <div class="task-row__meta">
+                  <span class="task-row__channel"># engineering</span>
+                  <span class="task-row__agent">
+                    <img class="task-row__agent-avi" src="https://i.pravatar.cc/40?img=5" alt="Code Assistant">
+                    Code Assistant
+                  </span>
+                </div>
+              </div>
+              <span class="task-row__priority task-row__priority--medium">Medium</span>
+            </article>
+
+            <article class="task-row">
+              <span class="task-row__status task-row__status--pending"></span>
+              <div class="task-row__content">
+                <div class="task-row__title">User interview synthesis report</div>
+                <div class="task-row__meta">
+                  <span class="task-row__channel"># research</span>
+                  <span class="task-row__agent">
+                    <img class="task-row__agent-avi" src="https://i.pravatar.cc/40?img=8" alt="Research Bot">
+                    Research Bot
+                  </span>
+                </div>
+              </div>
+              <span class="task-row__priority task-row__priority--medium">Medium</span>
+            </article>
+          </div>
+        </div>
+      </main>
+
+      <!-- TASK DETAIL PANEL (Zone 3) -->
+      <aside class="task-detail-panel" aria-label="Task details">
+        <div class="task-detail__header">
+          <h2 class="task-detail__header-title">Task Detail</h2>
+          <button class="task-detail__close" aria-label="Close detail">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="task-detail__body">
+          <h3 class="task-detail__title">Migrate authentication from sessions to JWT</h3>
+
+          <div class="task-detail__field">
+            <div class="task-detail__label">Status</div>
+            <span class="task-detail__status-badge task-detail__status-badge--running">
+              <span class="task-detail__status-dot" style="background: var(--color-status-working)"></span>
+              Running
+            </span>
+          </div>
+
+          <div class="task-detail__field">
+            <div class="task-detail__label">Assignee</div>
+            <div class="task-detail__assignee">
+              <img class="task-detail__assignee-avi" src="https://i.pravatar.cc/64?img=5" alt="Code Assistant">
+              <div class="task-detail__assignee-info">
+                <div class="task-detail__assignee-name">Code Assistant</div>
+                <div class="task-detail__assignee-role">Engineering</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-detail__field">
+            <div class="task-detail__label">Source</div>
+            <div class="task-detail__value">#engineering — Alex Chen at 9:15 AM</div>
+          </div>
+
+          <div class="task-detail__field">
+            <div class="task-detail__label">Duration</div>
+            <div class="task-detail__value" style="font-family: var(--font-family-mono)">00:32:14</div>
+          </div>
+
+          <div class="task-detail__field">
+            <div class="task-detail__label">Priority</div>
+            <span class="task-row__priority task-row__priority--high">High</span>
+          </div>
+
+          <div class="delegation-chain">
+            <div class="delegation-chain__title">Delegation Chain</div>
+            <div class="delegation-step">
+              <img class="delegation-step__avatar" src="https://i.pravatar.cc/48?img=33" alt="Alex Chen">
+              <div class="delegation-step__info">
+                <div class="delegation-step__name">Alex Chen</div>
+                <div class="delegation-step__action">Created task — 9:15 AM</div>
+              </div>
+            </div>
+            <div class="delegation-step">
+              <img class="delegation-step__avatar" src="https://i.pravatar.cc/48?img=5" alt="Code Assistant">
+              <div class="delegation-step__info">
+                <div class="delegation-step__name">Code Assistant</div>
+                <div class="delegation-step__action">Accepted and started — 9:16 AM</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-artifacts">
+            <div class="task-artifacts__title">Output Artifacts</div>
+            <div class="artifact">
+              <svg class="artifact__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+              <span class="artifact__name">auth-middleware.ts</span>
+              <span class="artifact__size">2.4 KB</span>
+            </div>
+            <div class="artifact">
+              <svg class="artifact__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+              <span class="artifact__name">token-service.ts</span>
+              <span class="artifact__size">1.8 KB</span>
+            </div>
+            <div class="artifact">
+              <svg class="artifact__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+              <span class="artifact__name">migration-plan.md</span>
+              <span class="artifact__size">896 B</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
