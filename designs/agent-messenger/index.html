@@ -22,8 +22,8 @@
         var slug = htmlFile.split("/").pop().replace(".html", "");
         var isProto = htmlFile.includes("prototypes/");
         return {
-          desktop: isProto ? "prototypes/screenshots/" + slug + "-desktop.png" : "screenshots/" + slug + ".png",
-          mobile:  isProto ? "prototypes/screenshots/" + slug + "-mobile.png"  : "screenshots/" + slug + ".png",
+          desktop: isProto ? "prototypes/screenshots/" + slug + "-desktop.png" : "screenshots/" + slug + "-desktop.png",
+          mobile:  isProto ? "prototypes/screenshots/" + slug + "-mobile.png"  : "screenshots/" + slug + "-mobile.png",
         };
       },
       screens: [
