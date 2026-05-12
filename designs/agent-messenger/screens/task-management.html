@@ -218,6 +218,7 @@
         padding: var(--space-3) var(--space-6);
         border-bottom: 1px solid var(--color-border-default);
         overflow-x: auto;
+        scroll-snap-type: x mandatory;
       }
 
       .filter-chip {
@@ -235,6 +236,7 @@
         transition: background var(--transition-fast);
         min-height: var(--btn-height-sm);
         font-family: var(--font-family-sans);
+        scroll-snap-align: start;
       }
 
       .filter-chip:hover { background: var(--color-bg-tertiary); }
@@ -636,6 +638,70 @@
         .tasks-filters { padding: var(--space-3) var(--space-4); }
         .tasks-body { padding: var(--space-4); }
       }
+
+      @media (max-width: 390px) {
+        .task-row__meta {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: var(--space-1);
+        }
+        .task-row__content {
+          min-width: 0;
+        }
+        .task-row__title {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .task-row__priority {
+          flex-shrink: 0;
+        }
+        .tasks-header__actions .btn span:not(.sr-only) {
+          display: none;
+        }
+      }
+
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: var(--color-bg-overlay);
+        z-index: calc(var(--z-sidebar) - 1);
+      }
+
+      .sidebar--mobile-open {
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: var(--sidebar-width);
+        z-index: var(--z-sidebar);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .sidebar--mobile-open ~ .sidebar-overlay {
+        display: block;
+      }
+
+      .sidebar__close-btn {
+        display: none;
+        position: absolute;
+        top: var(--space-3);
+        right: var(--space-3);
+        width: 32px;
+        height: 32px;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: var(--color-bg-hover);
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        z-index: 1;
+      }
+
+      .sidebar--mobile-open .sidebar__close-btn { display: flex; }
     </style>
 </head>
 <body>
@@ -644,6 +710,9 @@
 
       <!-- SIDEBAR -->
       <nav class="sidebar" aria-label="Workspace navigation">
+        <button class="sidebar__close-btn" aria-label="Close navigation">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
         <div class="sidebar__header">
           <div class="sidebar__ws-avatar">S</div>
           <span class="sidebar__ws-name">StoryCraft</span>
@@ -678,12 +747,13 @@
           <span class="sidebar__user-name">Alex Chen</span>
         </div>
       </nav>
+      <div class="sidebar-overlay"></div>
 
       <!-- MAIN: TASKS -->
       <main class="tasks-area">
         <header class="tasks-header">
           <div class="tasks-header__left">
-            <button class="mobile-menu-btn" aria-label="Open navigation menu">
+            <button class="mobile-menu-btn" aria-label="Open navigation menu" aria-expanded="false">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
             </button>
             <h1 class="tasks-header__title">Tasks</h1>
@@ -984,5 +1054,27 @@
       </aside>
     </div>
   </div>
+    <script>
+      (function() {
+        var menuBtn = document.querySelector('.mobile-menu-btn');
+        var sidebar = document.querySelector('.sidebar');
+        var overlay = document.querySelector('.sidebar-overlay');
+        var closeBtn = sidebar ? sidebar.querySelector('.sidebar__close-btn') : null;
+
+        function openSidebar() {
+          sidebar.classList.add('sidebar--mobile-open');
+          menuBtn.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeSidebar() {
+          sidebar.classList.remove('sidebar--mobile-open');
+          menuBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        if (menuBtn) menuBtn.addEventListener('click', openSidebar);
+        if (overlay) overlay.addEventListener('click', closeSidebar);
+        if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+      })();
+    </script>
 </body>
 </html>
