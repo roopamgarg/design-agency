@@ -391,7 +391,30 @@
       background: var(--color-surface);
       border-right: 1px solid var(--color-border);
       overflow-y: auto;
+      transition: margin-left 250ms ease, visibility 250ms;
     }
+
+    .preview-sidebar.collapsed {
+      margin-left: -280px;
+      visibility: hidden;
+    }
+
+    .sidebar-toggle-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: background 120ms;
+      flex-shrink: 0;
+    }
+    .sidebar-toggle-btn:hover { background: var(--color-elevated); }
+    .sidebar-toggle-btn svg { width: 16px; height: 16px; }
 
     .preview-sidebar-section { padding: 14px 10px 6px; }
 
@@ -500,10 +523,21 @@
       .header-meta { display: none; }
     }
 
+    .open-tab-btn .btn-label { white-space: nowrap; }
+
     @media (max-width: 768px) {
-      .preview-sidebar { display: none; }
+      .preview-sidebar { margin-left: -280px; visibility: hidden; }
+      .preview-sidebar.expanded { margin-left: 0; visibility: visible; }
+      .sidebar-toggle-btn { display: flex; }
       .preview-iframe-wrap { padding: 12px; }
       .device-frame { max-width: 100%; border-radius: var(--radius-md); }
+      .open-tab-btn .btn-label { display: none; }
+      .open-tab-btn { padding: 6px 8px; gap: 0; }
+    }
+
+    @media (min-width: 769px) {
+      .preview-sidebar.collapsed { margin-left: -280px; visibility: hidden; }
+      .sidebar-toggle-btn { display: flex; }
     }
   </style>
 </head>
@@ -560,6 +594,9 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         Back to Projects
       </button>
+      <button class="sidebar-toggle-btn" id="sidebar-toggle" aria-label="Toggle sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      </button>
       <div class="preview-divider"></div>
       <span class="preview-project-name" id="preview-project-name"></span>
       <span class="preview-spacer"></span>
@@ -570,9 +607,9 @@
       <button class="preview-nav-btn" id="pv-next" aria-label="Next screen">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
-      <button class="open-tab-btn" id="pv-open-tab">
+      <button class="open-tab-btn" id="pv-open-tab" title="Open in new tab">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Open in new tab
+        <span class="btn-label">Open in new tab</span>
       </button>
       <button class="open-project-btn" id="pv-open-project">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -717,6 +754,9 @@
     const pvOpenTab = document.getElementById("pv-open-tab");
     const pvOpenPrj = document.getElementById("pv-open-project");
     const pvClose   = document.getElementById("preview-close");
+    const sidebarToggle = document.getElementById("sidebar-toggle");
+
+    function isMobile() { return window.matchMedia("(max-width: 768px)").matches; }
 
     function openPreview(projectIdx) {
       currentProject = PROJECTS[projectIdx];
@@ -743,6 +783,8 @@
         if (!btn) return;
         selectPreview(parseInt(btn.dataset.idx, 10));
       });
+
+      pvSidebar.classList.remove("collapsed", "expanded");
 
       overlay.classList.add("open");
       document.body.style.overflow = "hidden";
@@ -780,6 +822,14 @@
       window.open(currentProject.screenBase + flatScreens[activeIdx].file, "_blank");
     });
     pvClose.addEventListener("click", closePreview);
+
+    sidebarToggle.addEventListener("click", () => {
+      if (isMobile()) {
+        pvSidebar.classList.toggle("expanded");
+      } else {
+        pvSidebar.classList.toggle("collapsed");
+      }
+    });
 
     document.addEventListener("keydown", (e) => {
       if (!overlay.classList.contains("open")) return;
