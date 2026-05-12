@@ -39,6 +39,48 @@ All child issues in a pipeline run MUST use `inheritExecutionWorkspaceFromIssueI
 | Reviews      | `review-vN.json`                    | `review-v1.json`                      |
 | Screenshots  | `{screen-name}-{viewport}.png`      | `05-home-mobile.png`                  |
 
+## Agent Commit Convention (S7)
+
+Every pipeline agent MUST commit its own work before marking its issue `done`. This ensures the shared workspace accumulates all changes on disk and in git.
+
+### Rules
+
+1. After writing all output files, run `git add` for only the paths you own (see Canonical Output Paths above).
+2. Commit with a descriptive message: `feat(pipeline): {agent-role} — {project-slug}` (e.g. `feat(pipeline): ui-screens — agent-messenger`).
+3. Include `Co-Authored-By: Paperclip <noreply@paperclip.ing>` at the end of every commit message.
+4. Do NOT push. The publish step handles the push.
+5. If the commit fails due to conflicts, mark your issue `blocked` with the conflict details and tag the CTO.
+
+### Example
+
+```bash
+git add designs/agent-messenger/screens/ designs/agent-messenger/screenshots/
+git commit -m "feat(pipeline): ui-screens — agent-messenger
+
+Generated 9 MVP screen designs with screenshots.
+
+Co-Authored-By: Paperclip <noreply@paperclip.ing>"
+```
+
+## Publish Stage (S8)
+
+After the design review agent marks its review issue `done`, the CTO orchestrator automatically runs the publish step. This is triggered by the `issue_children_completed` wake on the parent orchestration issue.
+
+### Publish Steps
+
+1. Verify the shared workspace has all expected files (`designs/{slug}/screens/`, `prototypes/`, `system/`).
+2. Run `scripts/pipeline-publish.sh {project-slug}` which:
+   - Validates all pipeline agent commits are present.
+   - Creates the project viewer page (`designs/{slug}/index.html`) if missing.
+   - Adds the project to the portfolio (`index.html`) if not already listed.
+   - Commits the portfolio update.
+   - Pushes the entire branch to `origin/main`.
+3. Mark the orchestration issue `done` with a summary of what was published.
+
+### Failure Handling
+
+If publish fails (merge conflict, missing files, push rejection), the CTO marks the orchestration issue `blocked` with the failure details and resolves manually.
+
 ## Run Batching Discipline (S6)
 
 If you encounter a minor issue during execution (file path typo, naming inconsistency, missing token reference, trivial formatting), fix it in the same heartbeat. Do not exit and re-enter for trivial fixes — each heartbeat has budget cost. Reserve separate heartbeats for substantive new work only.
